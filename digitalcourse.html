@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTECH NG | Digital Bootcamp 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-blue: #0056b3;
+            --brand-orange: #f97316;
+            --brand-dark: #0f172a;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .text-blue-main { color: var(--brand-blue); }
+        .bg-blue-main { background-color: var(--brand-blue); }
+        .border-blue-main { border-color: var(--brand-blue); }
+        
+        .hp-field { position: absolute; left: -5000px; visibility: hidden; }
+        
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-slide { animation: slideIn 0.6s ease-out forwards; }
+
+        /* Custom Checkbox UI */
+        .track-checkbox:checked + label {
+            border-color: var(--brand-blue);
+            background-color: #f0f7ff;
+            box-shadow: 0 10px 15px -3px rgba(0, 86, 179, 0.1);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Modal Styles */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+        .modal-overlay.active { display: flex; }
+    </style>
+</head>
+<body class="text-slate-900 antialiased overflow-x-hidden">
+
+    <!-- WhatsApp Floating Action -->
+    <a href="https://wa.me/2347084672771" target="_blank" class="fixed bottom-6 right-6 z-[60] flex items-center gap-3 bg-green-500 text-white p-3 pr-5 rounded-full shadow-2xl hover:bg-green-600 transition-all active:scale-95 group">
+        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,0l-17.46,8.73a74.22,74.22,0,0,1-26-26l8.73-17.46a8,8,0,0,0,0-8l-16-32a8,8,0,0,0-10.43-3.79l-32,16A8,8,0,0,0,60,75.46a124.07,124.07,0,0,0,120.54,120.54,8,8,0,0,0,8.13-7.58l16-32A8,8,0,0,0,187.58,144.84ZM128,232A104,104,0,1,1,232,128,104.11,104.11,0,0,1,128,232Z"></path></svg>
+        </div>
+        <span class="font-bold text-sm hidden sm:inline">Admission Desk</span>
+    </a>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="Logo" class="w-10 h-10 rounded-lg shadow-sm">
+                <div class="hidden w-10 h-10 bg-blue-main rounded-lg flex items-center justify-center text-white font-black text-xl">M</div>
+                <div>
+                    <h1 class="text-base md:text-lg font-black leading-none tracking-tighter">MBTECH <span class="text-orange-500">NG</span></h1>
+                    <p class="text-[9px] text-blue-main font-bold uppercase tracking-tighter">Mesobest Technology</p>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-slate-500">
+                <a href="#about" class="hover:text-blue-main transition-colors">About</a>
+                <a href="#tracks" class="hover:text-blue-main transition-colors">Tracks</a>
+                <a href="#enroll" class="hover:text-blue-main transition-colors">Admission</a>
+            </div>
+            <a href="#enroll" class="bg-blue-main text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-blue-200 hover:scale-105 transition-transform">
+                Enroll Now
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-32 pb-20 px-4 bg-gradient-to-b from-blue-50 to-white overflow-hidden">
+        <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center animate-slide">
+            <div class="space-y-6">
+                <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-main px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-main"></span>
+                    </span>
+                    Registration Open - 2026 Intake
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black text-slate-900 leading-[1.1]">
+                    THE ERA OF <span class="text-blue-main italic">DIGITAL</span> <br/>
+                    <span class="text-orange-500">GIANTS.</span>
+                </h1>
+                <p class="text-lg text-slate-600 font-medium max-w-xl">
+                    Bridge the gap between aspiration and expertise. Join MBTECH's intensive 2026 bootcamp to master high-income tech skills designed for the African landscape.
+                </p>
+                <div class="flex flex-wrap gap-6 pt-4">
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-black text-slate-900">₦50K+</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Starting Price</span>
+                    </div>
+                    <div class="w-px h-12 bg-slate-200"></div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-black text-slate-900">8 Wks</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Intensive</span>
+                    </div>
+                    <div class="w-px h-12 bg-slate-200"></div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-black text-slate-900">LIVE</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Interactive</span>
+                    </div>
+                </div>
+            </div>
+            <div class="relative group">
+                <div class="absolute -top-10 -right-10 w-64 h-64 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
+                <div class="relative bg-white p-4 rounded-[2.5rem] shadow-2xl border border-slate-100 rotate-2 group-hover:rotate-0 transition-transform duration-500">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="aspect-square bg-slate-100 rounded-2xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=400" alt="Students" class="w-full h-full object-cover">
+                        </div>
+                        <div class="aspect-square bg-blue-main rounded-2xl flex flex-col items-center justify-center text-white p-4 text-center">
+                            <span class="text-3xl font-black">2026</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest">Ready</span>
+                        </div>
+                        <div class="aspect-square bg-orange-500 rounded-2xl flex flex-col items-center justify-center text-white p-4 text-center">
+                            <span class="text-xl font-black">PRACTICAL</span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest">70% Focus</span>
+                        </div>
+                        <div class="aspect-square bg-slate-100 rounded-2xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=400" alt="Meeting" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-white scroll-mt-20">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="bg-slate-50 rounded-[3rem] p-8 md:p-16 border border-slate-100 relative overflow-hidden">
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+                    <div class="space-y-6">
+                        <span class="text-blue-main font-black uppercase text-xs tracking-widest">Our DNA</span>
+                        <h2 class="text-4xl md:text-5xl font-black text-slate-900 leading-tight">Empowering Nigeria's <br/><span class="text-orange-500">Digital Workforce</span></h2>
+                        <div class="space-y-4 text-slate-600 text-lg leading-relaxed font-medium">
+                            <p><strong>Mesobest Technology (MBTECH NG)</strong> is a premier technology hub dedicated to bridging the digital skills gap. We transform beginners into digital architects through immersion.</p>
+                            <p>Our curriculum is tailored for the Nigerian economic landscape, ensuring that every tool learned translates to immediate market value.</p>
+                        </div>
+                        <div class="flex gap-10 pt-4">
+                            <div><p class="text-3xl font-black">500+</p><p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Trained</p></div>
+                            <div class="w-px h-10 bg-slate-200"></div>
+                            <div><p class="text-3xl font-black">95%</p><p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Success</p></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex gap-4">
+                            <div class="w-12 h-12 bg-blue-50 text-blue-main rounded-xl flex items-center justify-center font-black">01</div>
+                            <div><h4 class="font-bold text-slate-900">Practicality First</h4><p class="text-sm text-slate-500">We prioritize build-projects over long slides.</p></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex gap-4">
+                            <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center font-black">02</div>
+                            <div><h4 class="font-bold text-slate-900">Global Standards</h4><p class="text-sm text-slate-500">Tools used by tech giants globally.</p></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex gap-4">
+                            <div class="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black">03</div>
+                            <div><h4 class="font-bold text-slate-900">African Tech Startup</h4><p class="text-sm text-slate-500">Bridging the gap for the next generation of African founders.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tracks Section -->
+    <section id="tracks" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-6xl font-black mb-4">The <span class="text-blue-main">Pathways</span></h2>
+                <p class="text-slate-500 font-medium">Select a specialized track to begin your journey.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="track-grid">
+                <!-- Tracks are rendered via JS for consistency with the price logic -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Enrollment Dashboard -->
+    <section id="enroll" class="py-24 bg-slate-900 text-white scroll-mt-20">
+        <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-5 space-y-8">
+                <div>
+                    <h2 class="text-4xl font-black mb-4">Admission <span class="text-blue-main underline decoration-orange-500">Dashboard</span></h2>
+                    <p class="text-slate-400 font-medium">Select your courses to calculate investment. Secure your spot in the 2026 Cohort.</p>
+                </div>
+                
+                <div class="bg-slate-800/50 backdrop-blur-md p-8 rounded-[2.5rem] border border-slate-700/50 space-y-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Selections</span>
+                        <span id="course-count" class="bg-blue-main px-4 py-1 rounded-full text-[10px] font-black uppercase">0 Tracks</span>
+                    </div>
+                    <div class="space-y-3 min-h-[100px]" id="selection-list">
+                        <p class="text-sm text-slate-500 italic">No courses selected yet...</p>
+                    </div>
+                    <div class="pt-6 border-t border-slate-700">
+                        <div class="flex justify-between items-end">
+                            <span class="text-slate-400 font-bold">Total Investment</span>
+                            <span class="text-4xl font-black text-orange-500 tracking-tighter">₦<span id="total-price">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 bg-white rounded-[3rem] p-8 md:p-12 text-slate-900 shadow-2xl relative overflow-hidden">
+                <form id="enrollForm" class="space-y-6 relative z-10">
+                    <div class="hp-field"><input type="text" name="hp_field" tabindex="-1"></div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Full Name</label>
+                            <input type="text" name="name" required class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl focus:border-blue-main outline-none transition-all" placeholder="Enter Full Name">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Email Address</label>
+                            <input type="email" name="email" required class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl focus:border-blue-main outline-none transition-all" placeholder="email@domain.com">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1">WhatsApp Number</label>
+                            <input type="tel" name="phone" required class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl focus:border-blue-main outline-none transition-all" placeholder="080...">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Learning Channel</label>
+                            <select name="platform" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl focus:border-blue-main outline-none transition-all appearance-none">
+                                <option>WhatsApp (Virtual)</option>
+                                <option>Telegram (Virtual)</option>
+                                <option>YouTube Live Only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1">Select Track(s)</label>
+                        <div class="grid sm:grid-cols-2 gap-3" id="form-check-grid">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-blue-main text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-100 hover:scale-[1.01] transition-transform active:scale-95">
+                        SUBMIT APPLICATION
+                    </button>
+                </form>
+
+                <!-- Success Overlay -->
+                <div id="successBox" class="hidden absolute inset-0 bg-white/98 backdrop-blur-xl z-20 flex flex-col items-center justify-center p-12 text-center">
+                    <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <h3 class="text-3xl font-black mb-2">Application Received!</h3>
+                    <p class="text-slate-500 mb-8 font-medium">To finalize payment and secure your ID, proceed to the WhatsApp confirmation desk.</p>
+                    <a id="wa-link" href="#" target="_blank" class="bg-green-600 text-white px-10 py-4 rounded-2xl font-black flex items-center gap-3 shadow-xl shadow-green-100 hover:scale-105 transition-transform">
+                        FINALIZE ON WHATSAPP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white pt-20 pb-12 border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div class="col-span-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-xl">M</div>
+                        <span class="font-black text-xl tracking-tighter">MBTECH <span class="text-orange-500">NG</span></span>
+                    </div>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6 font-medium">Mesobest Technology 2026. Developing Nigeria's digital future through practical, high-impact technical training.</p>
+                    
+                    <div class="flex flex-wrap gap-2.5">
+                        <a href="https://facebook.com/mbtech.ng" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,96h32a8,8,0,0,1,0,16H136v40a16,16,0,0,0,16,16,8,8,0,0,1,0,16,32,32,0,0,1-32-32V136H96a8,8,0,0,1,0-16h24V96a32,32,0,0,1,32-32,8,8,0,0,1,0,16,16,16,0,0,0-16,16Z"></path></svg>
+                        </a>
+                        <a href="https://instagram.com/mbtech_ng" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M176,32H80A48.05,48.05,0,0,0,32,80v96a48.05,48.05,0,0,0,48,48h96a48.05,48.05,0,0,0,48-48V80A48.05,48.05,0,0,0,176,32Zm32,144a32,32,0,0,1-32,32H80a32,32,0,0,1-32-32V80A32,32,0,0,1,80,48h96a32,32,0,0,1,32,32ZM128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm60-100a12,12,0,1,1-12,12A12,12,0,0,1,188,60Z"></path></svg>
+                        </a>
+                        <a href="https://tiktok.com/@mbtech_ng" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-black hover:bg-slate-100 transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M232,102c-20.72,0-36,11.33-44,22V56a8,8,0,0,0-8-8H144a8,8,0,0,0-8,8v120a32,32,0,1,1-41.5-30.49,8,8,0,0,0,5.5-7.66V113a8,8,0,0,0-9.69-7.85A48,48,0,1,0,152,152V104.72A80.12,80.12,0,0,0,192,120a8,8,0,0,0,8-8V80a8,8,0,0,0-5-7.39A48,48,0,0,1,224,32a8,8,0,0,0,8-8V10A8,8,0,0,0,232,102Z"></path></svg>
+                        </a>
+                        <a href="https://t.me/mbtech_connect" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-sky-500 hover:bg-sky-50 transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M236.88,26.19a9,9,0,0,0-9.16-1.57L25.06,103.93a14.22,14.22,0,0,0,2.43,27.21L80,141.45V192a15.94,15.94,0,0,0,26.14,12.28L127.46,187l47.72,31.81A15.82,15.82,0,0,0,190,224a16.13,16.13,0,0,0,15.17-11L240,40.48A9,9,0,0,0,236.88,26.19ZM190,208,120.47,161.64l63-63a8,8,0,1,0-11.31-11.31L109.12,150.36,44,127.25,221,50.36Z"></path></svg>
+                        </a>
+                        <a href="https://wa.me/2347084672771" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-green-600 hover:bg-green-50 transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,0l-17.46,8.73a74.22,74.22,0,0,1-26-26l8.73-17.46a8,8,0,0,0,0-8l-16-32a8,8,0,0,0-10.43-3.79l-32,16A8,8,0,0,0,60,75.46a124.07,124.07,0,0,0,120.54,120.54,8,8,0,0,0,8.13-7.58l16-32A8,8,0,0,0,187.58,144.84ZM128,232A104,104,0,1,1,232,128,104.11,104.11,0,0,1,128,232Z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-span-1">
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-6 text-slate-900">Support</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-blue-50 text-blue-main rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M222,110.39V192a22,22,0,0,1-22,22H56a22,22,0,0,1-22-22V110.39A30,30,0,0,1,26,82V72A30,30,0,0,1,56,42H200a30,30,0,0,1,30,30V82A30,30,0,0,1,222,110.39ZM214,72a14,14,0,0,0-14-14H56A14,14,0,0,0,42,72V82a14,14,0,0,0,14,14H200a14,14,0,0,0,14-14ZM50,112v80a6,6,0,0,0,6,6H200a6,6,0,0,0,6-6V112Z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Email Support</p>
+                                <p class="text-[11px] font-bold text-slate-600">mesobest.technology.org@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-orange-50 text-orange-500 rounded-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4L136,154.4a102.9,102.9,0,0,1-34.4-34.4l15.71-24a16,16,0,0,0,1.41-15.22l-.06-.13L97.54,33.63a16,16,0,0,0-15-9.63,16.16,16.16,0,0,0-7.11,1.66L31.66,47.43A16,16,0,0,0,22,62a170.18,170.18,0,0,0,172,172,16,16,0,0,0,14.57-9.66l21.77-43.77a16,16,0,0,0-7.97-22.11ZM194,218A154.17,154.17,0,0,1,38,62,15.66,15.66,0,0,1,47.43,47.66l43.78,21.78L75.4,103.4a8,8,0,0,0-.73,8.47,118.82,118.82,0,0,0,69.46,69.46,8,8,0,0,0,8.47-.73l33.95-22.25L208.34,202.13A15.66,15.66,0,0,1,194,218Z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Call / WhatsApp</p>
+                                <p class="text-sm font-bold text-slate-600">+234 708 467 2771</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-2 grid grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-widest mb-6 text-slate-900">Navigation</h4>
+                        <div class="flex flex-col gap-3">
+                            <a href="#about" class="text-sm font-bold text-slate-500 hover:text-blue-main transition-colors">About MBTECH</a>
+                            <a href="#tracks" class="text-sm font-bold text-slate-500 hover:text-blue-main transition-colors">Course Tracks</a>
+                            <a href="#enroll" class="text-sm font-bold text-slate-500 hover:text-blue-main transition-colors">Enrollment Portal</a>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-widest mb-6 text-slate-900">Legal</h4>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="openModal('terms')" class="text-left text-sm font-bold text-slate-500 hover:text-blue-main transition-colors">Terms of Service</button>
+                            <button onclick="openModal('privacy')" class="text-left text-sm font-bold text-slate-500 hover:text-blue-main transition-colors">Privacy Policy</button>
+                            <button onclick="openModal('refund')" class="text-left text-sm font-bold text-slate-500 hover:text-blue-main transition-colors">Refund Policy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-slate-100 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                <p>© 2026 Mesobest Technology (MBTECH NG). All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Policy Modals -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
+        <div class="bg-white w-full max-w-2xl max-h-[80vh] rounded-[2.5rem] p-8 md:p-12 overflow-y-auto no-scrollbar shadow-2xl relative" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-6 right-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div id="modalContent" class="prose prose-slate max-w-none">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const courses = [
+            { 
+                id: 'content', 
+                title: 'Content Creation 101', 
+                price: 50000, 
+                desc: 'AI Scriptwriting, Graphic Design, 2D/3D Animation.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>'
+            },
+            { 
+                id: 'digital_mkt', 
+                title: 'Digital Marketing 101', 
+                price: 50000, 
+                desc: 'SEO, Email Automation, Ads & Web Funnels.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>'
+            },
+            { 
+                id: 'social_mkt', 
+                title: 'Social Media Mkt 101', 
+                price: 50000, 
+                desc: 'TikTok, YT, LinkedIn & Meta Pro Management.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>'
+            },
+            { 
+                id: 'video', 
+                title: 'Videography & Edit 101', 
+                price: 50000, 
+                desc: 'CapCut, OBS Live, AI Video Tools & PC Editing.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>'
+            },
+            { 
+                id: 'web', 
+                title: 'Web Development', 
+                price: 75000, 
+                desc: 'HTML, CSS, JS & Tailwind Architecture.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>'
+            },
+            { 
+                id: 'uiux', 
+                title: 'UI/UX Design', 
+                price: 75000, 
+                desc: 'Figma, Design Systems & Human Centered UI.',
+                icon: '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>'
+            }
+        ];
+
+        const policies = {
+            terms: `
+                <h2 class="text-3xl font-black mb-6">Terms of Service</h2>
+                <div class="space-y-4 text-slate-600 font-medium">
+                    <p>By enrolling in the MBTECH 2026 Bootcamp, you agree to the following:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Training Delivery:</strong> Courses are delivered virtually via chosen platforms (WhatsApp/Telegram/YouTube). Reliable internet is the responsibility of the student.</li>
+                        <li><strong>Code of Conduct:</strong> Respectful interaction is mandatory in all group environments. Harassment or spamming results in immediate removal without refund.</li>
+                        <li><strong>Intellectual Property:</strong> Training materials provided are for individual use only. Redistribution or reselling of MBTECH curriculum is legally prohibited.</li>
+                        <li><strong>Certification:</strong> Certificates are issued based on project completion and attendance, not just registration.</li>
+                    </ul>
+                </div>
+            `,
+            privacy: `
+                <h2 class="text-3xl font-black mb-6">Privacy Policy</h2>
+                <div class="space-y-4 text-slate-600 font-medium">
+                    <p>At MBTECH NG, we value your data security:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Data Collection:</strong> We collect your name, email, and phone number solely for administrative and communication purposes.</li>
+                        <li><strong>Third Parties:</strong> We never sell your data to third parties. Data is used internally via Google Sheets and secure WhatsApp API for student tracking.</li>
+                        <li><strong>Security:</strong> Our enrollment forms use standard encryption to protect your information during transmission.</li>
+                    </ul>
+                </div>
+            `,
+            refund: `
+                <h2 class="text-3xl font-black mb-6">Refund Policy</h2>
+                <div class="space-y-4 text-slate-600 font-medium">
+                    <p>Our goal is your success, but we understand plans change:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Full Refund:</strong> Available if requested at least 7 days before the cohort start date.</li>
+                        <li><strong>Partial Refund (50%):</strong> Available if requested within the first 48 hours of the first class.</li>
+                        <li><strong>No Refund:</strong> After the first 48 hours of training, no refunds are issued as seats are limited and training resources are already allocated.</li>
+                        <li><strong>Processing:</strong> Refund requests are processed via WhatsApp support within 5-7 business days.</li>
+                    </ul>
+                </div>
+            `
+        };
+
+        function openModal(type) {
+            document.getElementById('modalContent').innerHTML = policies[type];
+            document.getElementById('modalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function renderTracks() {
+            const grid = document.getElementById('track-grid');
+            const checkGrid = document.getElementById('form-check-grid');
+            
+            courses.forEach(c => {
+                grid.innerHTML += `
+                    <div class="p-8 rounded-[2rem] bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-blue-100/50 transition-all duration-300 group">
+                        <div class="w-12 h-12 bg-blue-main text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-100">
+                             ${c.icon}
+                        </div>
+                        <h3 class="text-xl font-black mb-2 text-slate-900">${c.title}</h3>
+                        <p class="text-sm text-slate-500 mb-6 font-medium">${c.desc}</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-lg font-black text-blue-main tracking-tighter">₦${c.price.toLocaleString()}</span>
+                            <button onclick="scrollToEnroll('${c.id}')" class="text-xs font-black uppercase text-slate-400 group-hover:text-orange-500 transition-colors">Select Track →</button>
+                        </div>
+                    </div>
+                `;
+
+                checkGrid.innerHTML += `
+                    <div class="relative">
+                        <input type="checkbox" id="check-${c.id}" name="courses" value="${c.id}" class="hidden track-checkbox" onchange="updateDashboard()">
+                        <label for="check-${c.id}" class="flex flex-col p-4 rounded-2xl border-2 border-slate-100 cursor-pointer transition-all hover:bg-slate-50">
+                            <span class="font-bold text-xs">${c.title}</span>
+                            <span class="text-[9px] text-slate-400 font-bold uppercase">₦${c.price.toLocaleString()}</span>
+                        </label>
+                    </div>
+                `;
+            });
+        }
+
+        function scrollToEnroll(id) {
+            document.getElementById(`check-${id}`).checked = true;
+            updateDashboard();
+            window.location.href = "#enroll";
+        }
+
+        function updateDashboard() {
+            const checked = document.querySelectorAll('input[name="courses"]:checked');
+            const list = document.getElementById('selection-list');
+            const count = document.getElementById('course-count');
+            const totalDisplay = document.getElementById('total-price');
+            
+            count.innerText = `${checked.length} Track${checked.length === 1 ? '' : 's'}`;
+            
+            let total = 0;
+            if (checked.length === 0) {
+                list.innerHTML = `<p class="text-sm text-slate-500 italic font-medium">No courses selected yet...</p>`;
+            } else {
+                list.innerHTML = Array.from(checked).map(cb => {
+                    const course = courses.find(c => c.id === cb.value);
+                    total += course.price;
+                    return `
+                        <div class="flex justify-between items-center bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
+                            <span class="text-xs font-bold">${course.title}</span>
+                            <span class="text-[10px] font-black text-blue-400">₦${course.price.toLocaleString()}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+            totalDisplay.innerText = total.toLocaleString();
+        }
+
+        const form = document.getElementById('enrollForm');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const checked = document.querySelectorAll('input[name="courses"]:checked');
+            if (checked.length === 0) return;
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "PROCESSING...";
+
+            const formData = new FormData(form);
+            const selectedTitles = Array.from(checked).map(cb => courses.find(c => c.id === cb.value).title).join(', ');
+            const totalPrice = document.getElementById('total-price').innerText.replace(/,/g, ''); // Remove commas
+
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxJX_QbzVLial6YeiRxes9DmmPlD-7ZADQFGswsWwB_VpvCozJprfRXmHPSu9iFZys/exec';
+            
+            // Prepare data for Google Sheets (Must match Script Parameter Names exactly)
+            const submissionData = new FormData();
+            submissionData.append('SheetName', 'DigitalBootcamp'); // Identifies this specific landing page
+            submissionData.append('Name', formData.get('name'));
+            submissionData.append('Email', formData.get('email'));
+            submissionData.append('Phone', formData.get('phone'));
+            submissionData.append('Platform', formData.get('platform'));
+            submissionData.append('Courses', selectedTitles);
+            submissionData.append('Investment', totalPrice);
+
+            // 1. Submit to Google Sheets (Fire and Forget)
+            try {
+                // We use mode: 'no-cors' because Google Scripts don't return standard CORS headers for simple web forms.
+                // This allows the browser to send the data without throwing a security error, even though we can't read the "Success" response text.
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: submissionData
+                });
+            } catch (error) {
+                console.error('Sheet submission failed silently', error);
+                // We continue anyway because the WhatsApp link is the primary conversion point
+            }
+
+            // 2. Generate WhatsApp Link
+            const waMsg = `Hello MBTECH NG, I'm enrolling for the 2026 Digital Bootcamp!\n\nName: ${formData.get('name')}\nTracks: ${selectedTitles}\nTotal: ₦${document.getElementById('total-price').innerText}\nPlatform: ${formData.get('platform')}`;
+            document.getElementById('wa-link').href = `https://wa.me/2347084672771?text=${encodeURIComponent(waMsg)}`;
+
+            // 3. Show Success UI
+            setTimeout(() => {
+                document.getElementById('successBox').classList.remove('hidden');
+                btn.innerText = "SUBMIT APPLICATION";
+                btn.disabled = false;
+            }, 800);
+        };
+
+        window.onload = renderTracks;
+    </script>
+</body>
+</html>
