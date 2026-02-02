@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTECH Tutorials | WAEC, JAMB & Virtual Classes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-blue: #0056b3;
+            --brand-orange: #f97316;
+            --brand-dark: #0f172a;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        
+        /* Form Elements */
+        .form-input {
+            width: 100%;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: all 0.2s;
+            font-size: 16px; /* Prevents zoom on mobile */
+        }
+        .form-input:focus {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+            background-color: white;
+        }
+
+        .checkbox-card:checked + label {
+            border-color: var(--brand-orange);
+            background-color: #fff7ed;
+        }
+
+        /* Social Grid from your original file */
+        .social-grid a {
+            transition: all 0.2s ease;
+        }
+        .social-grid a:active {
+            transform: scale(0.9);
+        }
+        
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(15, 23, 42, 0.9); 
+            backdrop-filter: blur(8px); 
+            z-index: 100; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+        }
+        .modal-overlay.active { display: flex; }
+    </style>
+</head>
+<body class="text-slate-900 antialiased overflow-x-hidden flex flex-col min-h-screen">
+
+    <!-- Header Navigation (Redesigned) -->
+    <nav class="fixed top-0 w-full z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+            <!-- Logo Area -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('home')">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center text-white font-black shadow-blue-200 shadow-lg shrink-0">
+                    MB
+                </div>
+                <div class="hidden sm:block leading-none">
+                    <h1 class="text-lg font-black tracking-tight">MBTECH <span class="text-orange-500">TUTORS</span></h1>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Academic Excellence</p>
+                </div>
+            </div>
+            
+            <!-- Navigation Pills -->
+            <div class="flex gap-1 bg-slate-100 p-1 rounded-full">
+                <button onclick="switchView('home')" id="nav-home" class="px-3 md:px-5 py-2 rounded-full text-[10px] md:text-xs font-bold transition-all bg-white shadow-sm text-slate-900">Start</button>
+                <button onclick="switchView('booking')" id="nav-booking" class="px-3 md:px-5 py-2 rounded-full text-[10px] md:text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Book Class</button>
+                <button onclick="switchView('homework')" id="nav-homework" class="px-3 md:px-5 py-2 rounded-full text-[10px] md:text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Homework</button>
+            </div>
+
+            <!-- Contact Button -->
+            <a href="https://wa.me/2348109006065" target="_blank" class="hidden md:flex bg-blue-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold items-center gap-2 shadow-lg shadow-blue-200 hover:bg-blue-700 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
+                <span>Contact</span>
+            </a>
+            <!-- Mobile Contact Icon -->
+            <a href="https://wa.me/2348109006065" target="_blank" class="flex md:hidden bg-blue-600 text-white p-2 rounded-full shadow-lg shadow-blue-200">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
+            </a>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-20">
+        <!-- HOME VIEW -->
+        <div id="view-home" class="view-section active">
+            <header class="pt-16 pb-20 px-4 text-center max-w-5xl mx-auto">
+                <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 border border-blue-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+                    Admissions Open for WAEC/JAMB 2026
+                </div>
+                <h1 class="text-4xl md:text-7xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
+                    Smash Your Exams.<br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500">Master Your Future.</span>
+                </h1>
+                <p class="text-slate-500 text-lg md:text-xl font-medium max-w-2xl mx-auto mb-10">
+                    Expert virtual tutorials for JSS, SSS, and Exam Candidates. We specialize in WAEC, NECO, JAMB, and British Curriculums (IGCSE).
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <div onclick="switchView('booking')" class="group bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl text-left cursor-pointer hover:border-blue-200 transition-all relative overflow-hidden active:scale-[0.98]">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                        </div>
+                        <h2 class="text-2xl font-black mb-2 text-slate-900">Book Tutorials</h2>
+                        <p class="text-slate-500 text-sm mb-6">Private or Group classes for all major subjects. Prepare for WAEC, JAMB & IGCSE.</p>
+                        <span class="inline-flex items-center gap-2 font-bold text-blue-600 text-sm">Find a Tutor <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></span>
+                    </div>
+
+                    <div onclick="switchView('homework')" class="group bg-slate-900 p-8 rounded-[2rem] shadow-xl text-left cursor-pointer hover:bg-slate-800 transition-all relative overflow-hidden active:scale-[0.98]">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-white">
+                            <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+                        </div>
+                        <h2 class="text-2xl font-black mb-2 text-white">Homework Help</h2>
+                        <p class="text-slate-400 text-sm mb-6">Stuck on an assignment or project? Get expert assistance and explanations.</p>
+                        <span class="inline-flex items-center gap-2 font-bold text-orange-500 text-sm">Get Help Now <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></span>
+                    </div>
+                </div>
+            </header>
+        </div>
+
+        <!-- BOOKING VIEW -->
+        <div id="view-booking" class="view-section">
+            <div class="max-w-3xl mx-auto px-4 py-10">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-black mb-2">Student <span class="text-blue-600">Registration</span></h2>
+                    <p class="text-slate-500">Fill in the details below to join a class.</p>
+                </div>
+
+                <form id="bookingForm" class="bg-white p-6 md:p-10 rounded-[2rem] shadow-xl border border-slate-100 space-y-8">
+                    
+                    <!-- Section 1: Personal Info -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Student Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="studentName" required placeholder="Student's Full Name" class="form-input">
+                            <input type="number" name="studentAge" id="ageInput" required placeholder="Age (e.g. 15)" min="5" max="100" class="form-input">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="email" name="studentEmail" placeholder="Student Email (Optional)" class="form-input">
+                            <input type="tel" name="studentPhone" required placeholder="Student Phone/WhatsApp" class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Guardian Section (Hidden by default) -->
+                    <div id="guardianSection" class="hidden space-y-4 bg-orange-50 p-6 rounded-2xl border border-orange-100">
+                        <div class="flex items-center gap-2 text-orange-600 mb-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            <h3 class="text-xs font-black uppercase tracking-widest">Parent/Guardian Required</h3>
+                        </div>
+                        <p class="text-xs text-orange-800 mb-4">Since the student is under 16, we require a parent or guardian's contact details.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="parentName" name="parentName" placeholder="Parent's Name" class="form-input border-orange-200">
+                            <input type="tel" id="parentPhone" name="parentPhone" placeholder="Parent's Phone" class="form-input border-orange-200">
+                        </div>
+                        <input type="email" id="parentEmail" name="parentEmail" placeholder="Parent's Email" class="form-input border-orange-200">
+                    </div>
+
+                    <!-- Section 2: Academic Info -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Academic Goals</h3>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 ml-1 mb-1 block">Level</label>
+                                <select name="level" id="levelSelect" class="form-input" onchange="updateSubjects()">
+                                    <option value="JSS">Junior Secondary (JSS 1-3)</option>
+                                    <option value="SSS">Senior Secondary (SSS 1-3)</option>
+                                    <option value="WAEC">WAEC/NECO Prep</option>
+                                    <option value="JAMB">JAMB UTME</option>
+                                    <option value="IGCSE">British (IGCSE/Cambridge)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-600 ml-1 mb-1 block">Curriculum</label>
+                                <select name="curriculum" class="form-input">
+                                    <option value="West African">West African (NERDC)</option>
+                                    <option value="British">British (Cambridge)</option>
+                                    <option value="Hybrid">Hybrid/Mixed</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <label class="text-xs font-bold text-slate-600 mb-3 block">Select Focus Subjects</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="subjectContainer">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Classroom Preference -->
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Classroom Preference</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div class="relative">
+                                <input type="radio" name="platform" value="whatsapp" id="pf_wa" class="hidden checkbox-card" checked>
+                                <label for="pf_wa" class="flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition-all h-full">
+                                    <svg class="w-8 h-8 text-green-500 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
+                                    <span class="text-xs font-bold">WhatsApp</span>
+                                </label>
+                            </div>
+                            <div class="relative">
+                                <input type="radio" name="platform" value="telegram" id="pf_tg" class="hidden checkbox-card">
+                                <label for="pf_tg" class="flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition-all h-full">
+                                    <svg class="w-8 h-8 text-sky-500 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zM17.89 8.16l-1.99 9.37c-.15.68-.55.85-1.12.53l-3.04-2.24-1.46 1.41c-.16.16-.3.3-.61.3l.22-3.09 5.63-5.08c.24-.22-.05-.34-.37-.13l-6.96 4.38-2.99-.93c-.65-.2-.66-.65.14-.96l11.66-4.5c.54-.2.94.1.75 1.25z"/></svg>
+                                    <span class="text-xs font-bold">Telegram</span>
+                                </label>
+                            </div>
+                            <div class="relative">
+                                <input type="radio" name="platform" value="gmeet" id="pf_gm" class="hidden checkbox-card">
+                                <label for="pf_gm" class="flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition-all h-full">
+                                    <svg class="w-8 h-8 text-red-500 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6 13h-4.5v4.5h-3V13H6v-2h4.5V6.5h3V11H18v2z"/></svg>
+                                    <span class="text-xs font-bold">Google Meet</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all text-sm uppercase tracking-wider shadow-lg shadow-blue-200">Book Now</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- HOMEWORK HELP VIEW -->
+        <div id="view-homework" class="view-section">
+            <div class="max-w-3xl mx-auto px-4 py-10">
+                <div class="text-center mb-10">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-orange-100 text-orange-600 rounded-full mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h2 class="text-3xl font-black mb-2">Assignment <span class="text-orange-500">SOS</span></h2>
+                    <p class="text-slate-500">Need help with a tough project? We've got you covered.</p>
+                </div>
+
+                <form id="homeworkForm" class="bg-white p-6 md:p-10 rounded-[2rem] shadow-xl border border-slate-100 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" name="hw_name" required placeholder="Your Name" class="form-input">
+                        <input type="tel" name="hw_phone" required placeholder="WhatsApp Number" class="form-input">
+                    </div>
+                    
+                    <div>
+                        <label class="text-xs font-bold text-slate-600 ml-1 mb-1 block">Subject</label>
+                        <select name="hw_subject" class="form-input">
+                            <option>Mathematics</option>
+                            <option>Physics</option>
+                            <option>Chemistry</option>
+                            <option>English Language</option>
+                            <option>Literature</option>
+                            <option>Programming/ICT</option>
+                            <option>Economics</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-slate-600 ml-1 mb-1 block">Assignment Details</label>
+                        <textarea name="hw_details" rows="4" placeholder="Describe the assignment or paste the question here..." class="form-input"></textarea>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-xl flex items-start gap-3">
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p class="text-xs text-blue-800 leading-relaxed">
+                            <strong>Note:</strong> We provide guidance and explanations to help you understand, not just answers to copy.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="w-full bg-slate-900 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all text-sm uppercase tracking-wider shadow-lg">Get Help via WhatsApp</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER (Added) -->
+    <footer class="bg-slate-950 text-white pt-16 pb-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand & Location -->
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold">MB</div>
+                        <span class="font-black text-xl">MBTECH TUTORS</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <p class="text-slate-400 text-sm leading-relaxed">Lagos, Nigeria | Worldwide <br/><span class="text-[10px] text-slate-500">Virtual Learning Centre</span></p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <p class="text-slate-400 text-sm break-all">mesobest.technology.org@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest">Navigation</h4>
+                    <ul class="text-sm space-y-3 font-bold text-slate-300">
+                        <li><button onclick="switchView('home')" class="hover:text-white transition-colors">Home</button></li>
+                        <li><button onclick="switchView('booking')" class="hover:text-white transition-colors">Book Class</button></li>
+                        <li><button onclick="switchView('homework')" class="hover:text-white transition-colors">Homework Help</button></li>
+                    </ul>
+                </div>
+
+                <!-- Social Presence -->
+                <div class="col-span-1 md:col-span-2">
+                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest text-center md:text-left">Connect with Us</h4>
+                    <div class="social-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <!-- Facebook -->
+                        <a href="https://facebook.com/mbtech.ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-blue-600 transition-all">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.378 14.792 5 15.536 5H18V0h-3.977C10.038 0 9 2.292 9 4.833V8z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight">Facebook</span>
+                        </a>
+                        <!-- Instagram -->
+                        <a href="https://instagram.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-pink-600 transition-all">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.981 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.981-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.352-2.612-6.78-6.981-6.981C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight">Instagram</span>
+                        </a>
+                        <!-- TikTok -->
+                        <a href="https://tiktok.com/@mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-slate-100 hover:text-black transition-all">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.28-2.26.74-4.63 2.58-5.91 1.18-.87 2.63-1.35 4.13-1.35.24 0 .48.02.72.05v4.02c-.77-.17-1.6-.13-2.32.17-1.01.41-1.84 1.32-2.14 2.34-.35 1.19-.03 2.51.77 3.48.71.88 1.77 1.39 2.89 1.44 1.08.02 2.13-.39 2.9-1.15.8-.75 1.25-1.79 1.31-2.89.04-2.89.01-5.78.02-8.67z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight">TikTok</span>
+                        </a>
+                        <!-- Twitter/X -->
+                        <a href="https://x.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white hover:text-black transition-all">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight">X (Twitter)</span>
+                        </a>
+                        <!-- Telegram -->
+                        <a href="https://t.me/+2348109006065" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-sky-500 transition-all">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zM17.89 8.16l-1.99 9.37c-.15.68-.55.85-1.12.53l-3.04-2.24-1.46 1.41c-.16.16-.3.3-.61.3l.22-3.09 5.63-5.08c.24-.22-.05-.34-.37-.13l-6.96 4.38-2.99-.93c-.65-.2-.66-.65.14-.96l11.66-4.5c.54-.2.94.1.75 1.25z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight">Telegram</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 MBTECH TUTORS. ALL RIGHTS RESERVED.</p>
+                <div class="flex gap-4">
+                    <button class="text-[10px] font-bold text-slate-500 uppercase hover:text-white transition-colors">Privacy</button>
+                    <button class="text-[10px] font-bold text-slate-500 uppercase hover:text-white transition-colors">Refunds</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SUCCESS MODAL (Google Meet) -->
+    <div id="emailModal" class="modal-overlay">
+        <div class="bg-white rounded-[2rem] p-8 text-center max-w-sm w-full mx-4 relative">
+            <button onclick="closeModal('emailModal')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm6.623 7.929l-4.623 5.712v-11.174l4.623 5.462zm2.169 2.608l3.208 3.791 3.208-3.791 5.131 6.063h-16.678l5.131-6.063zm13.208-6.208v11.174l-4.623-5.712 4.623-5.462zm-12.006-2.329l6.006 7.094 6.006-7.094h-12.012z"/></svg>
+            </div>
+            <h3 class="text-xl font-black text-slate-900">Invite Sent!</h3>
+            <p class="text-slate-500 text-sm mt-2 mb-6">We've sent a Google Meet invitation and schedule details to your email address.</p>
+            <button onclick="closeModal('emailModal')" class="w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & CONFIG ---
+        const subjects = {
+            JSS: ['Mathematics', 'English Language', 'Basic Science', 'Basic Tech', 'Social Studies', 'ICT', 'Business Studies'],
+            SSS: ['Mathematics', 'English Language', 'Physics', 'Chemistry', 'Biology', 'Economics', 'Government', 'Lit-in-English'],
+            WAEC: ['General Math', 'English Lang', 'Physics', 'Chemistry', 'Biology', 'Civic Education', 'Economics', 'Geography', 'Agric Science'],
+            JAMB: ['Use of English', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'Government', 'Economics', 'Literature'],
+            IGCSE: ['Mathematics (0580)', 'English (First Lang)', 'Physics (0625)', 'Chemistry (0620)', 'Biology (0610)', 'Economics', 'ICT']
+        };
+
+        const CONTACT_NUMBER = "2348109006065"; // Updated Contact Number
+        const TELEGRAM_USER = "+2348109006065"; // Updated Telegram
+
+        // --- NAVIGATION ---
+        function switchView(view) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${view}`).classList.add('active');
+            
+            // Update nav pills
+            const buttons = ['home', 'booking', 'homework'];
+            buttons.forEach(btn => {
+                const el = document.getElementById(`nav-${btn}`);
+                if (btn === view) {
+                    el.classList.remove('text-slate-500');
+                    el.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+                } else {
+                    el.classList.add('text-slate-500');
+                    el.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // --- FORM LOGIC ---
+        
+        // Age Verification
+        const ageInput = document.getElementById('ageInput');
+        const guardianSection = document.getElementById('guardianSection');
+        const parentInputs = guardianSection.querySelectorAll('input');
+
+        ageInput.addEventListener('input', (e) => {
+            const age = parseInt(e.target.value);
+            if (age && age < 16) {
+                guardianSection.classList.remove('hidden');
+                parentInputs.forEach(input => input.setAttribute('required', 'true'));
+            } else {
+                guardianSection.classList.add('hidden');
+                parentInputs.forEach(input => input.removeAttribute('required'));
+            }
+        });
+
+        // Dynamic Subjects
+        function updateSubjects() {
+            const level = document.getElementById('levelSelect').value;
+            const container = document.getElementById('subjectContainer');
+            const list = subjects[level] || subjects['WAEC'];
+            
+            container.innerHTML = list.map(sub => `
+                <div class="relative">
+                    <input type="checkbox" id="sub-${sub.replace(/\s/g,'')}" name="subjects" value="${sub}" class="hidden checkbox-card">
+                    <label for="sub-${sub.replace(/\s/g,'')}" class="block text-[11px] font-bold p-2 border rounded-lg text-center cursor-pointer hover:border-blue-400 text-slate-600 select-none transition-colors">
+                        ${sub}
+                    </label>
+                </div>
+            `).join('');
+        }
+
+        // Initialize subjects on load
+        updateSubjects();
+
+        // Booking Submission
+        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const age = parseInt(formData.get('studentAge'));
+            const platform = formData.get('platform');
+            
+            // Gather Selected Subjects
+            const selectedSubjects = [];
+            e.target.querySelectorAll('input[name="subjects"]:checked').forEach(cb => selectedSubjects.push(cb.value));
+
+            // Build Message
+            let msg = `*NEW TUTORIAL BOOKING*\n`;
+            msg += `------------------\n`;
+            msg += `👤 *Student:* ${formData.get('studentName')} (Age: ${age})\n`;
+            msg += `📱 *Phone:* ${formData.get('studentPhone')}\n`;
+            
+            if (age < 16) {
+                msg += `👪 *Guardian:* ${formData.get('parentName')} (${formData.get('parentPhone')})\n`;
+            }
+            
+            msg += `\n📚 *Academic Info*\n`;
+            msg += `• Level: ${formData.get('level')}\n`;
+            msg += `• Curriculum: ${formData.get('curriculum')}\n`;
+            msg += `• Subjects: ${selectedSubjects.join(', ') || 'General Consultation'}\n`;
+            msg += `• Preference: ${platform.toUpperCase()}\n`;
+
+            if (platform === 'whatsapp') {
+                window.location.href = `https://wa.me/${CONTACT_NUMBER}?text=${encodeURIComponent(msg)}`;
+            } else if (platform === 'telegram') {
+                // For Telegram, we send to the contact number or username
+                // Note: t.me/number works for some accounts, t.me/username is safer.
+                // Using the number as requested.
+                window.location.href = `https://t.me/${TELEGRAM_USER}`; 
+            } else if (platform === 'gmeet') {
+                // Simulate Email Sending
+                console.log("Sending email to:", formData.get('studentEmail') || formData.get('parentEmail'));
+                document.getElementById('emailModal').classList.add('active');
+            }
+        });
+
+        // Homework Submission
+        document.getElementById('homeworkForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            let msg = `*HOMEWORK HELP REQUEST*\n`;
+            msg += `------------------\n`;
+            msg += `👤 *Name:* ${formData.get('hw_name')}\n`;
+            msg += `📱 *Phone:* ${formData.get('hw_phone')}\n`;
+            msg += `📚 *Subject:* ${formData.get('hw_subject')}\n`;
+            msg += `📝 *Details:* ${formData.get('hw_details')}\n`;
+
+            window.location.href = `https://wa.me/${CONTACT_NUMBER}?text=${encodeURIComponent(msg)}`;
+        });
+
+    </script>
+</body>
+</html>
