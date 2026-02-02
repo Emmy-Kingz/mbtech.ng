@@ -1,558 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <title>MBTECH NG | 2026 Tech Bootcamp Enrollment</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .chart-container { position: relative; width: 100%; max-width: 450px; margin: 0 auto; height: 350px; }
-        .hp-field { position: absolute; left: -5000px; visibility: hidden; }
-        input:focus { outline: none; border-color: #ea580c; ring: 2px; ring-color: #ea580c; }
-        
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes pulse-soft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        
-        .animate-slide { animation: slideIn 0.6s ease-out forwards; }
-        .float-wa { animation: pulse-soft 3s infinite ease-in-out; }
-        
-        .modal-overlay { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); }
-        #modal-content::-webkit-scrollbar { width: 6px; }
-        #modal-content::-webkit-scrollbar-track { background: #f1f1f1; }
-        #modal-content::-webkit-scrollbar-thumb { background: #ea580c; border-radius: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBTECH Tutors</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#f8fafc}
+.form-input{width:100%;background:#f8fafc;border:1px solid #e2e8f0;padding:1rem;border-radius:.75rem}
+</style>
 </head>
-<body class="bg-stone-50 text-stone-900 antialiased overflow-x-hidden">
 
-    <!-- Floating WhatsApp Button (Bottom Right) -->
-    <a href="https://wa.me/2347084672771" target="_blank" class="fixed bottom-6 right-6 z-[60] flex items-center gap-3 bg-green-500 text-white p-3 pr-5 rounded-full shadow-2xl shadow-green-200 float-wa hover:bg-green-600 transition-all active:scale-95">
-        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,0l-17.46,8.73a74.22,74.22,0,0,1-26-26l8.73-17.46a8,8,0,0,0,0-8l-16-32a8,8,0,0,0-10.43-3.79l-32,16A8,8,0,0,0,60,75.46a124.07,124.07,0,0,0,120.54,120.54,8,8,0,0,0,8.13-7.58l16-32A8,8,0,0,0,187.58,144.84ZM128,232A104,104,0,1,1,232,128,104.11,104.11,0,0,1,128,232Z"></path></svg>
-        </div>
-        <span class="font-bold text-sm hidden sm:inline">Chat us</span>
-    </a>
+<body class="p-4">
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 glass border-b border-stone-200">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 md:gap-3">
-                <img src="logo.png" onerror="this.style.display='none'" alt="MBTECH Logo" class="w-10 h-10 rounded-xl shadow-lg shadow-orange-200 object-cover bg-white">
-                <div>
-                    <h1 class="text-base md:text-lg font-bold leading-none tracking-tight">MBTECH NG</h1>
-                    <p class="text-[9px] text-orange-600 font-bold uppercase tracking-tighter">Mesobest Technology</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4 md:gap-6">
-                <a href="#register" class="bg-stone-900 text-white px-5 md:px-6 py-2 rounded-full text-xs md:text-sm font-bold hover:bg-orange-600 transition-all duration-300 whitespace-nowrap">Apply Now</a>
-            </div>
-        </div>
-    </nav>
+<div class="max-w-3xl mx-auto space-y-10">
 
-    <main class="pt-24 pb-12 px-4 md:px-6">
-        <!-- Hero Section -->
-        <section class="max-w-7xl mx-auto mb-16 md:mb-20 animate-slide">
-            <div class="text-center max-w-3xl mx-auto mb-12 md:mb-16 px-2">
-                <span class="bg-orange-100 text-orange-700 text-[10px] md:text-[11px] font-black uppercase px-4 py-1.5 rounded-full tracking-widest mb-4 inline-block">8-Week Tech BootCamp 2026</span>
-                <h2 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight leading-tight">Master the Future of <span class="text-orange-600">Technology.</span></h2>
-                <p class="text-stone-500 text-base md:text-lg leading-relaxed">Bridge the skill gap with MBTECH's localized curriculum. Choose your track, visualize growth, and launch your career.</p>
-            </div>
+<!-- ================= BOOKING ================= -->
+<div class="bg-white p-8 rounded-3xl shadow-xl border">
+<h2 class="text-2xl font-black mb-6">Student Registration</h2>
 
-            <!-- Interactive Dashboard -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
-                <!-- Course Selector -->
-                <div class="lg:col-span-4 space-y-3 overflow-x-auto pb-4 lg:pb-0 flex lg:flex-col gap-2 no-scrollbar">
-                    <h3 class="hidden lg:block text-xs font-bold text-stone-400 uppercase tracking-widest ml-2 mb-2">Available Tracks</h3>
-                    <div id="course-list" class="flex lg:flex-col gap-2 min-w-max lg:min-w-0"></div>
-                </div>
+<form id="bookingForm" class="space-y-4">
+<input name="studentName" required placeholder="Student Name" class="form-input">
+<input type="number" name="studentAge" required placeholder="Age" class="form-input">
+<input type="email" name="studentEmail" placeholder="Email" class="form-input">
+<input name="studentPhone" required placeholder="Phone" class="form-input">
 
-                <!-- Course Detail Card -->
-                <div class="lg:col-span-8">
-                    <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-xl shadow-stone-200/50 border border-stone-100 p-6 md:p-12 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
-                            <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                        </div>
-                        
-                        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center md:items-start gap-8">
-                            <div class="flex-1 text-center md:text-left w-full">
-                                <h2 class="text-3xl md:text-4xl font-extrabold mb-2" id="detail-title">Loading...</h2>
-                                <p class="text-orange-600 font-semibold mb-6 text-sm md:text-base" id="detail-tagline">...</p>
-                                <div class="flex items-center justify-center md:justify-start gap-6 mb-8">
-                                    <div>
-                                        <p class="text-[9px] md:text-[10px] uppercase font-bold text-stone-400">Tuition</p>
-                                        <p class="text-xl md:text-2xl font-black" id="detail-price">₦0</p>
-                                    </div>
-                                    <div class="w-px h-10 bg-stone-100"></div>
-                                    <div>
-                                        <p class="text-[9px] md:text-[10px] uppercase font-bold text-stone-400">Duration</p>
-                                        <p class="text-xl md:text-2xl font-black">8 Weeks</p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col sm:flex-row gap-3">
-                                    <button onclick="handleSelectCourse()" class="bg-stone-900 text-white px-8 py-3.5 rounded-full font-bold hover:bg-orange-600 transition-all shadow-lg shadow-stone-200 text-sm">Enroll in Track</button>
-                                    <button onclick="openModal('curriculum')" class="border-2 border-stone-100 text-stone-500 px-6 py-3.5 rounded-full font-bold hover:bg-stone-50 transition-all text-sm">View Curriculum</button>
-                                </div>
-                            </div>
-                            
-                            <div class="w-full md:w-1/2 flex justify-center">
-                                <div class="chart-container">
-                                    <canvas id="skillRadarChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<select name="level" class="form-input">
+<option>JSS</option><option>SSS</option><option>WAEC</option><option>JAMB</option>
+</select>
 
-        <!-- Registration Form Section -->
-        <section id="register" class="max-w-5xl mx-auto scroll-mt-32">
-            <div class="bg-stone-900 rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row">
-                <!-- Form Sidebar -->
-                <div class="lg:w-2/5 p-8 md:p-12 text-white bg-gradient-to-br from-stone-800 to-stone-900">
-                    <h2 class="text-2xl md:text-3xl font-extrabold mb-6">Start Application</h2>
-                    <ul class="space-y-4 md:space-y-6 mb-8 md:mb-12">
-                        <li class="flex gap-4 items-center">
-                            <div class="w-6 h-6 rounded-full bg-orange-600 flex-shrink-0 flex items-center justify-center text-[10px] font-bold">1</div>
-                            <p class="text-xs md:text-sm text-stone-300">Enter your official details.</p>
-                        </li>
-                        <li class="flex gap-4 items-center">
-                            <div class="w-6 h-6 rounded-full bg-orange-600 flex-shrink-0 flex items-center justify-center text-[10px] font-bold">2</div>
-                            <p class="text-xs md:text-sm text-stone-300">Select one or more career tracks.</p>
-                        </li>
-                        <li class="flex gap-4 items-center">
-                            <div class="w-6 h-6 rounded-full bg-orange-600 flex-shrink-0 flex items-center justify-center text-[10px] font-bold">3</div>
-                            <p class="text-xs md:text-sm text-stone-300">Finalize via the WhatsApp portal.</p>
-                        </li>
-                    </ul>
-                    <div class="p-6 bg-white/5 rounded-2xl border border-white/10 text-center lg:text-left">
-                        <p class="text-[10px] uppercase font-bold text-orange-500 mb-1 tracking-widest">Total Enrollment Fee</p>
-                        <div class="text-4xl md:text-5xl font-black" id="total-cart-value">₦0</div>
-                    </div>
-                </div>
+<select name="curriculum" class="form-input">
+<option>West African</option><option>British</option>
+</select>
 
-                <!-- Main Form -->
-                <div class="lg:w-3/5 p-6 md:p-12 bg-white relative">
-                    <form id="registrationForm" class="space-y-4 md:space-y-5">
-                        <div class="hp-field"><input type="text" name="website_hp" tabindex="-1" autocomplete="off"></div>
+<div>
+<label><input type="checkbox" name="subjects" value="Mathematics"> Math</label>
+<label><input type="checkbox" name="subjects" value="English"> English</label>
+<label><input type="checkbox" name="subjects" value="Physics"> Physics</label>
+</div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase ml-2">Full Name</label>
-                                <input type="text" name="name" placeholder="First & Last Name" required class="w-full bg-stone-50 border border-stone-200 rounded-xl md:rounded-2xl px-5 py-3.5 focus:bg-white transition-all text-sm">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase ml-2">WhatsApp Number</label>
-                                <input type="tel" name="phone" placeholder="080..." required class="w-full bg-stone-50 border border-stone-200 rounded-xl md:rounded-2xl px-5 py-3.5 focus:bg-white transition-all text-sm">
-                            </div>
-                        </div>
+<div>
+<label><input type="radio" name="platform" value="whatsapp" checked> WhatsApp</label>
+<label><input type="radio" name="platform" value="telegram"> Telegram</label>
+<label><input type="radio" name="platform" value="gmeet"> Google Meet</label>
+</div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase ml-2">Email Address</label>
-                                <input type="email" name="email" placeholder="email@example.com" required class="w-full bg-stone-50 border border-stone-200 rounded-xl md:rounded-2xl px-5 py-3.5 focus:bg-white transition-all text-sm">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-stone-400 uppercase ml-2">Current Location</label>
-                                <input type="text" name="location" placeholder="City, State" required class="w-full bg-stone-50 border border-stone-200 rounded-xl md:rounded-2xl px-5 py-3.5 focus:bg-white transition-all text-sm">
-                            </div>
-                        </div>
+<button class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Register</button>
+</form>
+</div>
 
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-bold text-stone-400 uppercase ml-2">Select Your 8-Week Tracks</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="form-course-options"></div>
-                        </div>
 
-                        <div class="pt-2">
-                             <label class="flex items-start gap-3 cursor-pointer group">
-                                <input type="checkbox" id="main-consent" required class="mt-1 w-5 h-5 accent-orange-600 rounded">
-                                <span class="text-xs text-stone-500 leading-tight">
-                                    I agree to MBTECH's <button type="button" onclick="openModal('terms')" class="text-orange-600 font-bold hover:underline">Terms of Enrollment</button> and <button type="button" onclick="openModal('privacy')" class="text-orange-600 font-bold hover:underline">Privacy Policy</button>.
-                                </span>
-                            </label>
-                        </div>
+<!-- ================= HOMEWORK ================= -->
+<div class="bg-white p-8 rounded-3xl shadow-xl border">
+<h2 class="text-2xl font-black mb-6">Homework Help</h2>
 
-                        <button type="submit" id="submitBtn" class="w-full bg-orange-600 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-base md:text-lg hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-3">
-                            Submit Application
-                        </button>
-                    </form>
+<form id="homeworkForm" class="space-y-4">
+<input name="hw_name" required placeholder="Your Name" class="form-input">
+<input name="hw_phone" required placeholder="Phone" class="form-input">
+<textarea name="hw_details" placeholder="Assignment description..." class="form-input"></textarea>
+<input type="file" id="hw_file" accept="image/*,.pdf,.doc,.docx" class="form-input">
+<button class="w-full bg-orange-600 text-white py-3 rounded-xl font-bold">Submit Homework</button>
+</form>
+</div>
 
-                    <!-- Success State -->
-                    <div id="successOverlay" class="hidden absolute inset-0 bg-white/98 backdrop-blur-xl z-20 flex flex-col items-center justify-center p-8 md:p-12 text-center">
-                        <div class="w-16 h-16 md:w-20 md:h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                        </div>
-                        <h3 class="text-2xl md:text-3xl font-black mb-4">Application Logged!</h3>
-                        <p class="text-stone-500 mb-8 leading-relaxed text-sm md:text-base">Your data has been saved. To confirm payment and secure your seat, message our Admission Desk on WhatsApp.</p>
-                        <a id="whatsappLink" href="#" target="_blank" class="bg-green-600 text-white px-10 py-4 rounded-full font-bold shadow-xl shadow-green-100 hover:scale-105 transition-transform text-sm md:text-base">Complete on WhatsApp</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+</div>
 
-    <!-- Footer -->
-    <footer class="bg-white pt-20 pb-12 border-t border-stone-100">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                <div class="col-span-1">
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="logo.png" onerror="this.style.display='none'" alt="MBTECH Logo" class="w-10 h-10 rounded-xl object-cover bg-white">
-                        <span class="font-black text-xl tracking-tight">MBTECH NG</span>
-                    </div>
-                    <p class="text-stone-500 text-sm leading-relaxed mb-6">Mesobest Technology (MBTECH) 2026. Developing Nigeria's next tech talent through practical, local context learning.</p>
-                    
-                    <!-- Social Media Icons -->
-                     <div class="flex flex-wrap gap-2.5">
-                        <a href="https://facebook.com/mbtech.ng" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,96h32a8,8,0,0,1,0,16H136v40a16,16,0,0,0,16,16,8,8,0,0,1,0,16,32,32,0,0,1-32-32V136H96a8,8,0,0,1,0-16h24V96a32,32,0,0,1,32-32,8,8,0,0,1,0,16,16,16,0,0,0-16,16Z"></path></svg>
-                        </a>
-                        <a href="https://instagram.com/mbtech_ng" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-pink-600 hover:bg-pink-50 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M176,32H80A48.05,48.05,0,0,0,32,80v96a48.05,48.05,0,0,0,48,48h96a48.05,48.05,0,0,0,48-48V80A48.05,48.05,0,0,0,176,32Zm32,144a32,32,0,0,1-32,32H80a32,32,0,0,1-32-32V80A32,32,0,0,1,80,48h96a32,32,0,0,1,32,32ZM128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm60-100a12,12,0,1,1-12,12A12,12,0,0,1,188,60Z"></path></svg>
-                        </a>
-                        <a href="https://tiktok.com/@mbtech_ng" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-black hover:bg-slate-100 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M232,102c-20.72,0-36,11.33-44,22V56a8,8,0,0,0-8-8H144a8,8,0,0,0-8,8v120a32,32,0,1,1-41.5-30.49,8,8,0,0,0,5.5-7.66V113a8,8,0,0,0-9.69-7.85A48,48,0,1,0,152,152V104.72A80.12,80.12,0,0,0,192,120a8,8,0,0,0,8-8V80a8,8,0,0,0-5-7.39A48,48,0,0,1,224,32a8,8,0,0,0,8-8V10A8,8,0,0,0,232,102Z"></path></svg>
-                        </a>
-                        <a href="https://t.me/mbtech_connect" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-sky-500 hover:bg-sky-50 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M236.88,26.19a9,9,0,0,0-9.16-1.57L25.06,103.93a14.22,14.22,0,0,0,2.43,27.21L80,141.45V192a15.94,15.94,0,0,0,26.14,12.28L127.46,187l47.72,31.81A15.82,15.82,0,0,0,190,224a16.13,16.13,0,0,0,15.17-11L240,40.48A9,9,0,0,0,236.88,26.19ZM190,208,120.47,161.64l63-63a8,8,0,1,0-11.31-11.31L109.12,150.36,44,127.25,221,50.36Z"></path></svg>
-                        </a>
-                        <a href="https://wa.me/2347084672771" target="_blank" class="w-10 h-10 bg-slate-50 flex items-center justify-center rounded-xl text-slate-400 hover:text-green-600 hover:bg-green-50 transition-all">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,0l-17.46,8.73a74.22,74.22,0,0,1-26-26l8.73-17.46a8,8,0,0,0,0-8l-16-32a8,8,0,0,0-10.43-3.79l-32,16A8,8,0,0,0,60,75.46a124.07,124.07,0,0,0,120.54,120.54,8,8,0,0,0,8.13-7.58l16-32A8,8,0,0,0,187.58,144.84ZM128,232A104,104,0,1,1,232,128,104.11,104.11,0,0,1,128,232Z"></path></svg>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-span-1">
-                    <h4 class="text-xs font-black uppercase tracking-widest mb-6 text-stone-900">Support</h4>
-                    
-                    <!-- Phone -->
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M222.37,158.46l-47.11-21.11a16,16,0,0,0-15.17,2.61l-16.89,12.89a88.13,88.13,0,0,1-55.23-55.23l12.89-16.89a16,16,0,0,0,2.61-15.17L82.37,33.63A16,16,0,0,0,63,24.05L24.28,36.93A16,16,0,0,0,12,52.18C13.62,154,99.58,242.36,203.8,244a16,16,0,0,0,15.27-12.29L231.93,193A16,16,0,0,0,222.37,158.46Z"></path></svg>
-                        </div>
-                        <div>
-                            <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Call</p>
-                            <p class="text-sm text-stone-800 font-bold">0810 900 6065</p>
-                        </div>
-                    </div>
+<script>
+const WEBAPP_URL="https://script.google.com/macros/s/AKfycbxJX_QbzVLial6YeiRxes9DmmPlD-7ZADQFGswsWwB_VpvCozJprfRXmHPSu9iFZys/exec";
 
-                    <!-- WhatsApp -->
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M187.58,144.84l-32-16a8,8,0,0,0-8,0l-17.46,8.73a74.22,74.22,0,0,1-26-26l8.73-17.46a8,8,0,0,0,0-8l-16-32a8,8,0,0,0-10.43-3.79l-32,16A8,8,0,0,0,60,75.46a124.07,124.07,0,0,0,120.54,120.54,8,8,0,0,0,8.13-7.58l16-32A8,8,0,0,0,187.58,144.84ZM128,232A104,104,0,1,1,232,128,104.11,104.11,0,0,1,128,232Z"></path></svg>
-                        </div>
-                        <div>
-                             <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">WhatsApp</p>
-                            <p class="text-sm text-stone-800 font-bold">0708 467 2771</p>
-                        </div>
-                    </div>
+// ===== BOOKING =====
+document.getElementById("bookingForm").addEventListener("submit",async e=>{
+e.preventDefault();
+const f=new FormData(e.target);
+const subjects=[...document.querySelectorAll('input[name="subjects"]:checked')].map(x=>x.value).join(", ");
 
-                    <!-- Email -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 flex-shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48Zm-8,144H40V64h0L128,127.43,216,64h0ZM128,112.57,51.88,58.09H204.12Z"></path></svg>
-                        </div>
-                         <div class="overflow-hidden">
-                             <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Email</p>
-                            <p class="text-[11px] text-stone-800 font-bold truncate" title="mesobest.technology.org@gmail.com">mesobest.technology.org@gmail.com</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-span-2">
-                    <h4 class="text-xs font-black uppercase tracking-widest mb-6 text-stone-900">Resources</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <button onclick="openModal('curriculum')" class="text-left text-sm text-stone-500 hover:text-orange-600 py-3.5 px-5 bg-stone-50 rounded-2xl font-bold border border-stone-100 transition-colors">View 8-Week Curriculum</button>
-                        <button onclick="openModal('terms')" class="text-left text-sm text-stone-500 hover:text-orange-600 py-3.5 px-5 bg-stone-50 rounded-2xl font-bold border border-stone-100 transition-colors">Enrollment Terms</button>
-                    </div>
-                </div>
-            </div>
-            <div class="pt-8 border-t border-stone-100 text-center text-[10px] font-bold text-stone-400">
-                <p>© 2026 Mesobest Technology. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+const payload={
+name:f.get("studentName"),
+age:f.get("studentAge"),
+email:f.get("studentEmail"),
+phone:f.get("studentPhone"),
+level:f.get("level"),
+curriculum:f.get("curriculum"),
+subjects:subjects,
+platform:f.get("platform")
+};
 
-    <!-- Universal Modal -->
-    <div id="modal" class="hidden fixed inset-0 z-[100] modal-overlay flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-[2rem] md:rounded-[2.5rem] shadow-2xl max-h-[85vh] overflow-hidden flex flex-col animate-slide">
-            <div class="p-6 md:p-8 border-b border-stone-100 flex justify-between items-center bg-stone-50">
-                <h3 class="text-lg md:text-xl font-black" id="modal-title">Information</h3>
-                <button onclick="closeModal()" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-stone-400 hover:text-orange-600 transition-colors shadow-sm">✕</button>
-            </div>
-            <div class="p-6 md:p-8 overflow-y-auto text-sm text-stone-600 leading-relaxed" id="modal-content"></div>
-            <div class="p-6 border-t border-stone-100 bg-stone-50 text-right">
-                <button onclick="closeModal()" class="bg-stone-900 text-white px-10 py-3 rounded-full text-xs font-bold hover:bg-orange-600 transition-all w-full md:w-auto">I Understand</button>
-            </div>
-        </div>
-    </div>
+await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
 
-    <script>
-        const registration_script_url = "https://script.google.com/macros/s/AKfycbxJX_QbzVLial6YeiRxes9DmmPlD-7ZADQFGswsWwB_VpvCozJprfRXmHPSu9iFZys/exec";
+if(payload.platform==="telegram")window.location.href="https://t.me/mbtech_connect/166";
+if(payload.platform==="whatsapp")window.location.href="https://wa.me/2348109006065";
 
-        const courses = [
-            { id: 'web', title: 'Web Design & Dev', price: 75000, tagline: 'Architecting the Modern Web', stats: [8, 9, 3, 4] },
-            { id: 'uiux', title: 'UI/UX Design', price: 75000, tagline: 'Crafting Human-Centric Experiences', stats: [2, 10, 8, 5] },
-            { id: 'coding', title: 'Coding Essentials', price: 75000, tagline: 'Mastering the Language of Logic', stats: [10, 2, 4, 7] },
-            { id: 'mobile', title: 'Mobile App Dev', price: 100000, tagline: 'Building for the Pocket', stats: [9, 7, 3, 5] },
-            { id: 'pm', title: 'Product Management', price: 100000, tagline: 'Leading with Vision & Strategy', stats: [3, 4, 10, 8] },
-            { id: 'cyber', title: 'Cyber & Data', price: 100000, tagline: 'Securing the Digital Frontier', stats: [6, 3, 6, 10] }
-        ];
+if(payload.platform==="gmeet"){
+const subject=encodeURIComponent("New Student Registration");
+const body=encodeURIComponent(
+`Name: ${payload.name}
+Age: ${payload.age}
+Phone: ${payload.phone}
+Email: ${payload.email}
+Level: ${payload.level}
+Subjects: ${payload.subjects}`);
+window.location.href=`mailto:mesobest.technology.org@gmail.com?subject=${subject}&body=${body}`;
+}
 
-        const modalData = {
-            curriculum: {
-                title: "8-Week Mastery Curriculum",
-                content: `
-                    <div class="space-y-8">
-                        <div>
-                            <h4 class="font-bold text-orange-900 text-sm mb-3 uppercase tracking-widest border-b border-orange-100 pb-2">1. Coding Essentials (Logic & Foundations)</h4>
-                            <ul class="space-y-2 text-xs text-stone-600">
-                                <li><strong>Week 1:</strong> Computational Thinking & Problem Solving.</li>
-                                <li><strong>Week 2:</strong> Python Basics (Variables, Data Types, Math).</li>
-                                <li><strong>Week 3:</strong> Control Flow (If-statements, Loops, Logic).</li>
-                                <li><strong>Week 4:</strong> Data Structures (Lists, Dictionaries, Tuples).</li>
-                                <li><strong>Week 5:</strong> Functions & Modular Programming.</li>
-                                <li><strong>Week 6:</strong> File Handling & Error Exception Management.</li>
-                                <li><strong>Week 7:</strong> Intro to Object-Oriented Programming (OOP).</li>
-                                <li><strong>Week 8:</strong> Capstone: Build a "Command-Line Inventory System."</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-orange-900 text-sm mb-3 uppercase tracking-widest border-b border-orange-100 pb-2">2. Web Design & Development</h4>
-                            <ul class="space-y-2 text-xs text-stone-600">
-                                <li><strong>Week 1:</strong> HTML5 Semantic Structure & Web Standards.</li>
-                                <li><strong>Week 2:</strong> CSS3 Styling, Flexbox, and Modern Layouts.</li>
-                                <li><strong>Week 3:</strong> Responsive Design & Tailwind CSS Framework.</li>
-                                <li><strong>Week 4:</strong> JavaScript Basics (DOM Manipulation & Events).</li>
-                                <li><strong>Week 5:</strong> Advanced JS (Async/Await, API Fetching).</li>
-                                <li><strong>Week 6:</strong> Version Control (Git/GitHub) & Collaborative Workflows.</li>
-                                <li><strong>Week 7:</strong> Modern Frontend Tools (Vite, Deployment Pipelines).</li>
-                                <li><strong>Week 8:</strong> Capstone: Build a "Full-Stack Portfolio Site."</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-orange-900 text-sm mb-3 uppercase tracking-widest border-b border-orange-100 pb-2">3. UI/UX Design</h4>
-                            <ul class="space-y-2 text-xs text-stone-600">
-                                <li><strong>Week 1:</strong> Design Thinking & User Research.</li>
-                                <li><strong>Week 2:</strong> Information Architecture & User Flow Mapping.</li>
-                                <li><strong>Week 3:</strong> Wireframing & Prototyping in Figma.</li>
-                                <li><strong>Week 4:</strong> Visual Design Principles (Typography, Grid, Color).</li>
-                                <li><strong>Week 5:</strong> Design Systems & Component Libraries.</li>
-                                <li><strong>Week 6:</strong> High-Fidelity Prototyping & Micro-interactions.</li>
-                                <li><strong>Week 7:</strong> Usability Testing & Iterative Design.</li>
-                                <li><strong>Week 8:</strong> Capstone: Design a "FinTech Mobile App Concept."</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-orange-900 text-sm mb-3 uppercase tracking-widest border-b border-orange-100 pb-2">4. Mobile App Development</h4>
-                            <ul class="space-y-2 text-xs text-stone-600">
-                                <li><strong>Week 1:</strong> Flutter/React Native Setup & UI Basics.</li>
-                                <li><strong>Week 2:</strong> Layouts, Widgets, and Custom Styling.</li>
-                                <li><strong>Week 3:</strong> Navigation & User Input Handling.</li>
-                                <li><strong>Week 4:</strong> State Management (Provider/Redux).</li>
-                                <li><strong>Week 5:</strong> API Integration & JSON Parsing.</li>
-                                <li><strong>Week 6:</strong> Working with Device Hardware (Camera/Location).</li>
-                                <li><strong>Week 7:</strong> Performance Optimization & App Store Prep.</li>
-                                <li><strong>Week 8:</strong> Capstone: Build a "Functional E-commerce App."</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-orange-900 text-sm mb-3 uppercase tracking-widest border-b border-orange-100 pb-2">5. Product & Project Management</h4>
-                            <ul class="space-y-2 text-xs text-stone-600">
-                                <li><strong>Week 1:</strong> Product Lifecycle & Market Validation.</li>
-                                <li><strong>Week 2:</strong> Agile, Scrum, and Kanban Methodologies.</li>
-                                <li><strong>Week 3:</strong> Tools: Jira, Trello, and Notion for PMs.</li>
-                                <li><strong>Week 4:</strong> Writing User Stories & PRDs (Product Docs).</li>
-                                <li><strong>Week 5:</strong> Product Metrics & Data-Driven Decision Making.</li>
-                                <li><strong>Week 6:</strong> Stakeholder Management & Conflict Resolution.</li>
-                                <li><strong>Week 7:</strong> Go-to-Market (GTM) Strategy & Scaling.</li>
-                                <li><strong>Week 8:</strong> Capstone: Create a "Product Roadmap Portfolio."</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-orange-900 text-sm mb-3 uppercase tracking-widest border-b border-orange-100 pb-2">6. Cyber & Data Analysis</h4>
-                            <ul class="space-y-2 text-xs text-stone-600">
-                                <li><strong>Week 1:</strong> Advanced Excel (Power Query & Pivot Tables).</li>
-                                <li><strong>Week 2:</strong> SQL Basics: Querying and Database Logic.</li>
-                                <li><strong>Week 3:</strong> Advanced SQL: Joins, Subqueries & Unions.</li>
-                                <li><strong>Week 4:</strong> Data Visualization with Power BI / Tableau.</li>
-                                <li><strong>Week 5:</strong> Intro to Cybersecurity (Threats & CIA Triad).</li>
-                                <li><strong>Week 6:</strong> Network Security & Data Privacy (NDPR).</li>
-                                <li><strong>Week 7:</strong> Security Auditing & Compliance Frameworks.</li>
-                                <li><strong>Week 8:</strong> Capstone: Build a "Data-Driven Security Audit."</li>
-                            </ul>
-                        </div>
-                    </div>`
-            },
-            terms: { 
-                title: "Terms of Enrollment", 
-                content: `
-                    <div class="space-y-6">
-                        <div>
-                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-widest mb-2">1. Fees & Taxation</h4>
-                            <p class="mb-2 text-xs">All tuition fees listed are inclusive of 7.5% Value Added Tax (VAT) as per Nigerian tax regulations. A non-refundable registration fee of ₦5,000 is included in the total cost.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-widest mb-2">2. Refund Policy</h4>
-                            <ul class="list-disc ml-4 space-y-1 text-xs">
-                                <li><strong>Full Refund (Minus Registration Fee):</strong> Requests made at least 7 days before the bootcamp start date.</li>
-                                <li><strong>Partial Refund (50%):</strong> Requests made within the first 3 days of lectures.</li>
-                                <li><strong>No Refund:</strong> After the first week of lectures, no refunds will be processed under any circumstances.</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-widest mb-2">3. Academic Requirements</h4>
-                            <p class="text-xs">To qualify for the MBTECH Certificate of Completion, students must maintain a minimum of 80% attendance and complete the final capstone project with a passing grade.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-widest mb-2">4. Code of Conduct</h4>
-                            <p class="text-xs">Students are expected to maintain professional behavior. MBTECH reserves the right to terminate enrollment for any student engaged in harassment, plagiarism, or disruption of the learning environment.</p>
-                        </div>
-                    </div>` 
-            },
-            privacy: { 
-                title: "Privacy Policy", 
-                content: `
-                    <div class="space-y-6">
-                        <p class="text-xs">At MBTECH NG, we are committed to protecting your personal data in compliance with the Nigeria Data Protection Regulation (NDPR).</p>
-                        <div>
-                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-widest mb-2">Information We Collect</h4>
-                            <p class="text-xs">We collect your name, email, phone number, and location solely for the purpose of enrollment verification and communication regarding the 2026 Bootcamp.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-widest mb-2">Data Usage</h4>
-                            <p class="text-xs">Your data is used to customize your learning experience and process your application. We do not sell, rent, or trade your personal information to third parties for marketing purposes.</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-stone-900 text-xs uppercase tracking-widest mb-2">Security</h4>
-                            <p class="text-xs">We implement industry-standard security measures to protect your data from unauthorized access. Your payment information is handled via secured WhatsApp channels.</p>
-                        </div>
-                        <p class="text-[10px] text-stone-400 italic">Last Updated: January 2026</p>
-                    </div>` 
-            }
-        };
+alert("Registration saved!");
+e.target.reset();
+});
 
-        let skillChart = null;
+// ===== HOMEWORK =====
+document.getElementById("homeworkForm").addEventListener("submit",async e=>{
+e.preventDefault();
+const file=document.getElementById("hw_file").files[0];
 
-        function openModal(type) {
-            document.getElementById('modal-title').innerText = modalData[type].title;
-            document.getElementById('modal-content').innerHTML = modalData[type].content;
-            document.getElementById('modal').classList.remove('hidden');
-        }
+if(file){
+const reader=new FileReader();
+reader.onload=async()=>{
+const base64=reader.result.split(',')[1];
+await sendHomework({name:file.name,data:base64});
+};
+reader.readAsDataURL(file);
+}else{await sendHomework(null);}
+});
 
-        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+async function sendHomework(fileData){
+const payload={
+hw_name:document.querySelector('[name="hw_name"]').value,
+hw_phone:document.querySelector('[name="hw_phone"]').value,
+hw_details:document.querySelector('[name="hw_details"]').value,
+file:fileData
+};
+await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
+alert("Homework submitted!");
+}
+</script>
 
-        function updateDashboard(index) {
-            const course = courses[index];
-            document.getElementById('detail-title').textContent = course.title;
-            document.getElementById('detail-tagline').textContent = course.tagline;
-            document.getElementById('detail-price').textContent = `₦${course.price.toLocaleString()}`;
-            
-            const list = document.getElementById('course-list');
-            list.innerHTML = '';
-            courses.forEach((c, i) => {
-                const btn = document.createElement('button');
-                btn.className = `whitespace-nowrap lg:whitespace-normal text-left p-4 rounded-xl md:rounded-2xl transition-all ${i === index ? 'bg-orange-600 text-white shadow-lg lg:translate-x-2 scale-[1.02]' : 'bg-white hover:bg-stone-100'}`;
-                btn.innerHTML = `<div class="font-bold text-xs md:text-sm">${c.title}</div><div class="text-[9px] md:text-[10px] opacity-60 font-bold">₦${c.price.toLocaleString()}</div>`;
-                btn.onclick = () => updateDashboard(i);
-                list.appendChild(btn);
-            });
-
-            if (skillChart) skillChart.destroy();
-            const ctx = document.getElementById('skillRadarChart').getContext('2d');
-            skillChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['LOGIC', 'DESIGN', 'STRATEGY', 'SECURITY'],
-                    datasets: [{ data: course.stats, backgroundColor: 'rgba(234, 88, 12, 0.15)', borderColor: '#ea580c', borderWidth: 3 }]
-                },
-                options: {
-                    scales: { r: { beginAtZero: true, max: 10, ticks: { display: false } } },
-                    plugins: { legend: { display: false } },
-                    maintainAspectRatio: false
-                }
-            });
-        }
-
-        function handleSelectCourse() {
-            const currentTitle = document.getElementById('detail-title').textContent;
-            const checkboxes = document.querySelectorAll('input[name="courses"]');
-            checkboxes.forEach(cb => {
-                const course = courses.find(c => c.id === cb.value);
-                if (course.title === currentTitle) cb.checked = true;
-            });
-            updateCart();
-            window.location.href = "#register";
-        }
-
-        function updateCart() {
-            const checked = document.querySelectorAll('input[name="courses"]:checked');
-            let total = 0;
-            checked.forEach(cb => { total += courses.find(c => c.id === cb.value).price; });
-            document.getElementById('total-cart-value').textContent = `₦${total.toLocaleString()}`;
-        }
-
-        const form = document.getElementById('registrationForm');
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            const checked = document.querySelectorAll('input[name="courses"]:checked');
-            if (checked.length === 0) return;
-
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerHTML = `Processing...`;
-
-            const formData = new FormData(form);
-            const selectedStr = Array.from(checked).map(c => courses.find(cr => cr.id === c.value).title).join(', ');
-            const totalFeeText = document.getElementById('total-cart-value').textContent;
-            
-            // Clean the fee string to be just numbers (remove '₦' and ',')
-            const totalFeeClean = totalFeeText.replace(/[^\d.]/g, '');
-
-            // Construct FormData with Capitalized keys to match Google Script
-            const submissionData = new FormData();
-            submissionData.append('SheetName', 'TechBootcamp'); // Unique identifier for this page
-            submissionData.append('Name', formData.get('name'));
-            submissionData.append('Email', formData.get('email'));
-            submissionData.append('Phone', formData.get('phone'));
-            submissionData.append('Platform', 'Tech Bootcamp (Physical)'); // Defaulting platform since this form lacks the selector
-            submissionData.append('Courses', selectedStr);
-            submissionData.append('Investment', totalFeeClean);
-
-            const waMsg = `Hello MBTECH! I just registered for the 2026 Bootcamp.\n\nName: ${formData.get('name')}\nTracks: ${selectedStr}\nTotal: ${totalFeeText}`;
-            document.getElementById('whatsappLink').href = `https://wa.me/2347084672771?text=${encodeURIComponent(waMsg)}`;
-
-            try {
-                await fetch(registration_script_url, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: submissionData
-                });
-            } catch (err) {
-                console.error("Silent submission error", err);
-            }
-            
-            // Show success overlay regardless of fetch outcome (fire and forget)
-            document.getElementById('successOverlay').classList.remove('hidden');
-        };
-
-        window.onload = () => {
-            updateDashboard(0);
-            const options = document.getElementById('form-course-options');
-            courses.forEach(c => {
-                options.innerHTML += `
-                    <label class="group flex items-center justify-between gap-2 p-3 bg-stone-50 rounded-xl cursor-pointer border-2 border-transparent hover:border-orange-100 transition-all">
-                        <div class="flex items-center gap-3">
-                            <input type="checkbox" name="courses" value="${c.id}" onchange="updateCart()" class="w-5 h-5 accent-orange-600 rounded-lg">
-                            <span class="text-xs font-bold text-stone-700">${c.title}</span>
-                        </div>
-                        <span class="text-[9px] font-black text-stone-400">₦${c.price.toLocaleString()}</span>
-                    </label>`;
-            });
-        };
-    </script>
 </body>
 </html>
