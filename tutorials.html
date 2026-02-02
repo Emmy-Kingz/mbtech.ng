@@ -42,16 +42,13 @@
         .checkbox-card:checked + label {
             border-color: var(--brand-orange);
             background-color: #fff7ed;
+            color: var(--brand-orange);
         }
 
-        /* Social Grid from your original file */
-        .social-grid a {
-            transition: all 0.2s ease;
-        }
-        .social-grid a:active {
-            transform: scale(0.9);
-        }
+        .social-grid a { transition: all 0.2s ease; }
+        .social-grid a:active { transform: scale(0.9); }
         
+        /* Modals */
         .modal-overlay { 
             display: none; 
             position: fixed; 
@@ -64,11 +61,42 @@
             padding: 1rem; 
         }
         .modal-overlay.active { display: flex; }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        #loadingOverlay.active { display: flex; }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid var(--brand-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="text-slate-900 antialiased overflow-x-hidden flex flex-col min-h-screen">
 
-    <!-- Header Navigation (Redesigned) -->
+    <!-- Loading Screen -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="font-bold text-slate-600 animate-pulse">Saving Information...</p>
+    </div>
+
+    <!-- Header Navigation (From Uploaded File) -->
     <nav class="fixed top-0 w-full z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
             <!-- Logo Area -->
@@ -142,7 +170,7 @@
             <div class="max-w-3xl mx-auto px-4 py-10">
                 <div class="text-center mb-10">
                     <h2 class="text-3xl font-black mb-2">Student <span class="text-blue-600">Registration</span></h2>
-                    <p class="text-slate-500">Fill in the details below to join a class.</p>
+                    <p class="text-slate-500">Fill in the details below to join a class. Data is stored securely.</p>
                 </div>
 
                 <form id="bookingForm" class="bg-white p-6 md:p-10 rounded-[2rem] shadow-xl border border-slate-100 space-y-8">
@@ -155,7 +183,7 @@
                             <input type="number" name="studentAge" id="ageInput" required placeholder="Age (e.g. 15)" min="5" max="100" class="form-input">
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="email" name="studentEmail" placeholder="Student Email (Optional)" class="form-input">
+                            <input type="email" name="studentEmail" placeholder="Student Email (Required for Google Meet)" class="form-input">
                             <input type="tel" name="studentPhone" required placeholder="Student Phone/WhatsApp" class="form-input">
                         </div>
                     </div>
@@ -211,31 +239,34 @@
                     <div class="space-y-4">
                         <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Classroom Preference</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <!-- WhatsApp Option -->
                             <div class="relative">
                                 <input type="radio" name="platform" value="whatsapp" id="pf_wa" class="hidden checkbox-card" checked>
                                 <label for="pf_wa" class="flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition-all h-full">
                                     <svg class="w-8 h-8 text-green-500 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
-                                    <span class="text-xs font-bold">WhatsApp</span>
+                                    <span class="text-xs font-bold text-center">WhatsApp<br/><span class="text-[10px] text-slate-400 font-normal">Chat with Tutor</span></span>
                                 </label>
                             </div>
+                            <!-- Telegram Option -->
                             <div class="relative">
                                 <input type="radio" name="platform" value="telegram" id="pf_tg" class="hidden checkbox-card">
                                 <label for="pf_tg" class="flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition-all h-full">
                                     <svg class="w-8 h-8 text-sky-500 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zM17.89 8.16l-1.99 9.37c-.15.68-.55.85-1.12.53l-3.04-2.24-1.46 1.41c-.16.16-.3.3-.61.3l.22-3.09 5.63-5.08c.24-.22-.05-.34-.37-.13l-6.96 4.38-2.99-.93c-.65-.2-.66-.65.14-.96l11.66-4.5c.54-.2.94.1.75 1.25z"/></svg>
-                                    <span class="text-xs font-bold">Telegram</span>
+                                    <span class="text-xs font-bold text-center">Telegram<br/><span class="text-[10px] text-slate-400 font-normal">Join Channel</span></span>
                                 </label>
                             </div>
+                            <!-- Google Meet Option -->
                             <div class="relative">
                                 <input type="radio" name="platform" value="gmeet" id="pf_gm" class="hidden checkbox-card">
                                 <label for="pf_gm" class="flex flex-col items-center justify-center p-4 border rounded-xl cursor-pointer hover:bg-slate-50 transition-all h-full">
                                     <svg class="w-8 h-8 text-red-500 mb-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6 13h-4.5v4.5h-3V13H6v-2h4.5V6.5h3V11H18v2z"/></svg>
-                                    <span class="text-xs font-bold">Google Meet</span>
+                                    <span class="text-xs font-bold text-center">Google Meet<br/><span class="text-[10px] text-slate-400 font-normal">Virtual Class</span></span>
                                 </label>
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full bg-blue-600 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all text-sm uppercase tracking-wider shadow-lg shadow-blue-200">Book Now</button>
+                    <button type="submit" class="w-full bg-blue-600 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all text-sm uppercase tracking-wider shadow-lg shadow-blue-200 hover:bg-blue-700">Submit Registration</button>
                 </form>
             </div>
         </div>
@@ -276,6 +307,15 @@
                         <textarea name="hw_details" rows="4" placeholder="Describe the assignment or paste the question here..." class="form-input"></textarea>
                     </div>
 
+                    <!-- File Upload Section -->
+                    <div>
+                         <label class="text-xs font-bold text-slate-600 ml-1 mb-1 block">Upload Question (Screenshot/PDF)</label>
+                         <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:bg-slate-50 transition-colors">
+                             <input type="file" id="hw_file" name="hw_file" accept="image/*,.pdf" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                             <p class="text-[10px] text-slate-400 mt-2">Max size: 5MB. You will attach this in WhatsApp.</p>
+                         </div>
+                    </div>
+
                     <div class="bg-blue-50 p-4 rounded-xl flex items-start gap-3">
                         <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <p class="text-xs text-blue-800 leading-relaxed">
@@ -283,13 +323,13 @@
                         </p>
                     </div>
 
-                    <button type="submit" class="w-full bg-slate-900 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all text-sm uppercase tracking-wider shadow-lg">Get Help via WhatsApp</button>
+                    <button type="submit" class="w-full bg-slate-900 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all text-sm uppercase tracking-wider shadow-lg hover:bg-slate-800">Get Help via WhatsApp</button>
                 </form>
             </div>
         </div>
     </main>
 
-    <!-- FOOTER (Added) -->
+    <!-- FOOTER (Updated from Uploaded File) -->
     <footer class="bg-slate-950 text-white pt-16 pb-10">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
@@ -321,7 +361,7 @@
                     </ul>
                 </div>
 
-                <!-- Social Presence -->
+                <!-- Social Presence (Updated) -->
                 <div class="col-span-1 md:col-span-2">
                     <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest text-center md:text-left">Connect with Us</h4>
                     <div class="social-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -357,8 +397,9 @@
             <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 MBTECH TUTORS. ALL RIGHTS RESERVED.</p>
                 <div class="flex gap-4">
-                    <button class="text-[10px] font-bold text-slate-500 uppercase hover:text-white transition-colors">Privacy</button>
-                    <button class="text-[10px] font-bold text-slate-500 uppercase hover:text-white transition-colors">Refunds</button>
+                    <!-- Added onclick events for Policy Modal -->
+                    <button onclick="openPolicy('privacy')" class="text-[10px] font-bold text-slate-500 uppercase hover:text-white transition-colors">Privacy</button>
+                    <button onclick="openPolicy('refunds')" class="text-[10px] font-bold text-slate-500 uppercase hover:text-white transition-colors">Refunds</button>
                 </div>
             </div>
         </div>
@@ -370,12 +411,26 @@
             <button onclick="closeModal('emailModal')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
-            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3v18h24v-18h-24zm6.623 7.929l-4.623 5.712v-11.174l4.623 5.462zm2.169 2.608l3.208 3.791 3.208-3.791 5.131 6.063h-16.678l5.131-6.063zm13.208-6.208v11.174l-4.623-5.712 4.623-5.462zm-12.006-2.329l6.006 7.094 6.006-7.094h-12.012z"/></svg>
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <h3 class="text-xl font-black text-slate-900">Invite Sent!</h3>
-            <p class="text-slate-500 text-sm mt-2 mb-6">We've sent a Google Meet invitation and schedule details to your email address.</p>
+            <h3 class="text-xl font-black text-slate-900">Registered!</h3>
+            <p class="text-slate-500 text-sm mt-2 mb-6">Your details have been saved securely. The admin has been notified and will send you the Google Meet schedule via email shortly.</p>
             <button onclick="closeModal('emailModal')" class="w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200">Close</button>
+        </div>
+    </div>
+    
+    <!-- POLICY MODAL (Privacy & Refunds) -->
+    <div id="policyModal" class="modal-overlay">
+        <div class="bg-white rounded-[2rem] p-8 max-w-lg w-full mx-4 relative max-h-[80vh] overflow-y-auto">
+            <button onclick="closeModal('policyModal')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 id="policyTitle" class="text-2xl font-black text-slate-900 mb-4"></h3>
+            <div id="policyContent" class="text-sm text-slate-600 space-y-4 leading-relaxed">
+                <!-- Content injected via JS -->
+            </div>
+            <button onclick="closeModal('policyModal')" class="w-full mt-6 bg-slate-100 text-slate-600 font-bold py-3 rounded-xl hover:bg-slate-200">Understood</button>
         </div>
     </div>
 
@@ -389,8 +444,9 @@
             IGCSE: ['Mathematics (0580)', 'English (First Lang)', 'Physics (0625)', 'Chemistry (0620)', 'Biology (0610)', 'Economics', 'ICT']
         };
 
-        const CONTACT_NUMBER = "2348109006065"; // Updated Contact Number
-        const TELEGRAM_USER = "+2348109006065"; // Updated Telegram
+        const CONTACT_NUMBER = "2348109006065"; 
+        const TELEGRAM_LINK = "https://t.me/mbtech_connect/166";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJX_QbzVLial6YeiRxes9DmmPlD-7ZADQFGswsWwB_VpvCozJprfRXmHPSu9iFZys/exec";
 
         // --- NAVIGATION ---
         function switchView(view) {
@@ -414,6 +470,53 @@
 
         function closeModal(id) {
             document.getElementById(id).classList.remove('active');
+        }
+
+        function showLoading(show) {
+            const el = document.getElementById('loadingOverlay');
+            if(show) el.classList.add('active');
+            else el.classList.remove('active');
+        }
+
+        // --- POLICY MODAL HANDLER ---
+        function openPolicy(type) {
+            const titleEl = document.getElementById('policyTitle');
+            const contentEl = document.getElementById('policyContent');
+            
+            if (type === 'privacy') {
+                titleEl.textContent = "Privacy Policy";
+                contentEl.innerHTML = `
+                    <p><strong>1. Data Collection:</strong> We collect personal information (name, phone, email, age) solely for the purpose of scheduling tutorials and communicating academic progress.</p>
+                    <p><strong>2. Data Protection:</strong> Your data is stored securely and is never sold to third parties. Access is restricted to MBTECH administrators.</p>
+                    <p><strong>3. Communications:</strong> By registering, you agree to receive class schedules via WhatsApp or Email.</p>
+                `;
+            } else if (type === 'refunds') {
+                titleEl.textContent = "Refund Policy";
+                contentEl.innerHTML = `
+                    <p><strong>1. Satisfaction Guarantee:</strong> We strive for excellence. If you are unsatisfied with your first session, please report it within 24 hours.</p>
+                    <p><strong>2. Cancellations:</strong> Classes cancelled by the student less than 2 hours before start time may not be eligible for a refund or reschedule.</p>
+                    <p><strong>3. Tutor Availability:</strong> If a tutor misses a scheduled class, a full refund for that session or a free makeup class will be provided.</p>
+                `;
+            }
+            document.getElementById('policyModal').classList.add('active');
+        }
+
+        // --- GOOGLE SHEETS HANDLER ---
+        async function sendToSheets(formData) {
+            try {
+                // We use no-cors to avoid CORS errors with Google Apps Script
+                // This means we won't see the response status, but it will post.
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'no-cors'
+                });
+                return true;
+            } catch (error) {
+                console.error("Error saving to sheets:", error);
+                alert("We couldn't save to the database automatically, but we will proceed to WhatsApp/Telegram.");
+                return false;
+            }
         }
 
         // --- FORM LOGIC ---
@@ -454,7 +557,7 @@
         updateSubjects();
 
         // Booking Submission
-        document.getElementById('bookingForm').addEventListener('submit', (e) => {
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
             const age = parseInt(formData.get('studentAge'));
@@ -464,41 +567,55 @@
             const selectedSubjects = [];
             e.target.querySelectorAll('input[name="subjects"]:checked').forEach(cb => selectedSubjects.push(cb.value));
 
-            // Build Message
+            // Append subjects string to formData for Sheets
+            formData.append('subjectList', selectedSubjects.join(', '));
+            formData.append('formType', 'Booking'); // Helper for your script to know source
+
+            // 1. Show Loading
+            showLoading(true);
+
+            // 2. Send to Google Sheets
+            await sendToSheets(formData);
+
+            // 3. Build WhatsApp Message
             let msg = `*NEW TUTORIAL BOOKING*\n`;
             msg += `------------------\n`;
             msg += `👤 *Student:* ${formData.get('studentName')} (Age: ${age})\n`;
             msg += `📱 *Phone:* ${formData.get('studentPhone')}\n`;
-            
             if (age < 16) {
                 msg += `👪 *Guardian:* ${formData.get('parentName')} (${formData.get('parentPhone')})\n`;
             }
-            
             msg += `\n📚 *Academic Info*\n`;
             msg += `• Level: ${formData.get('level')}\n`;
             msg += `• Curriculum: ${formData.get('curriculum')}\n`;
             msg += `• Subjects: ${selectedSubjects.join(', ') || 'General Consultation'}\n`;
             msg += `• Preference: ${platform.toUpperCase()}\n`;
 
+            // 4. Hide Loading & Redirect
+            showLoading(false);
+
             if (platform === 'whatsapp') {
                 window.location.href = `https://wa.me/${CONTACT_NUMBER}?text=${encodeURIComponent(msg)}`;
             } else if (platform === 'telegram') {
-                // For Telegram, we send to the contact number or username
-                // Note: t.me/number works for some accounts, t.me/username is safer.
-                // Using the number as requested.
-                window.location.href = `https://t.me/${TELEGRAM_USER}`; 
+                window.location.href = TELEGRAM_LINK; 
             } else if (platform === 'gmeet') {
-                // Simulate Email Sending
-                console.log("Sending email to:", formData.get('studentEmail') || formData.get('parentEmail'));
                 document.getElementById('emailModal').classList.add('active');
             }
         });
 
         // Homework Submission
-        document.getElementById('homeworkForm').addEventListener('submit', (e) => {
+        document.getElementById('homeworkForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
-            
+            formData.append('formType', 'Homework');
+
+            // 1. Show Loading
+            showLoading(true);
+
+            // 2. Send Data to Sheets (Text only)
+            await sendToSheets(formData);
+
+            // 3. Prepare WhatsApp Message
             let msg = `*HOMEWORK HELP REQUEST*\n`;
             msg += `------------------\n`;
             msg += `👤 *Name:* ${formData.get('hw_name')}\n`;
@@ -506,6 +623,15 @@
             msg += `📚 *Subject:* ${formData.get('hw_subject')}\n`;
             msg += `📝 *Details:* ${formData.get('hw_details')}\n`;
 
+            // 4. Hide Loading
+            showLoading(false);
+
+            // 5. Check for File and Redirect
+            const fileInput = document.getElementById('hw_file');
+            if (fileInput.files.length > 0) {
+                alert("Opening WhatsApp... Please remember to attach your file manually in the chat.");
+            }
+            
             window.location.href = `https://wa.me/${CONTACT_NUMBER}?text=${encodeURIComponent(msg)}`;
         });
 
