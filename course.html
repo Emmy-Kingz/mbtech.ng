@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>MBTECH NG | Tech & Tutorials</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-blue: #0056b3;
+            --brand-orange: #f97316;
+            --brand-dark: #0f172a;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; padding-bottom: 80px; }
+        @media (min-width: 768px) { body { padding-bottom: 0; } }
+        
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            outline: none;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+        .form-input:focus {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
+            background-color: white;
+        }
+        
+        /* Checkbox & Radio Styling */
+        .checkbox-card:checked + label {
+            border-color: var(--brand-orange);
+            background-color: #fff7ed;
+            color: var(--brand-orange);
+        }
+        .track-checkbox:checked + label {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Modals */
+        .modal-overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(15, 23, 42, 0.9); 
+            backdrop-filter: blur(8px); 
+            z-index: 100; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 1rem; 
+        }
+        .modal-overlay.active { display: flex; }
+
+        /* Social Grid */
+        .social-grid a { transition: all 0.2s ease; }
+        .social-grid a:active { transform: scale(0.9); }
+
+        /* Bottom Nav Active State */
+        .mobile-nav-btn.active { color: var(--brand-blue); }
+        .mobile-nav-btn.active svg { fill: currentColor; }
+
+        /* Loading Spinner */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        #loadingOverlay.active { display: flex; }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid var(--brand-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-slate-900 antialiased overflow-x-hidden flex flex-col min-h-screen">
+
+    <!-- Loading Screen -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="font-bold text-slate-600 animate-pulse">Processing Request...</p>
+    </div>
+
+    <!-- Header Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-nav h-20">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('home')">
+                <img src="logo.png" alt="MBTECH Logo" class="w-10 h-10 object-contain rounded-lg shadow-sm" onerror="this.src='https://placehold.co/100x100?text=MB'">
+                <div class="leading-none">
+                    <h1 class="text-lg font-black tracking-tight">MBTECH <span class="text-orange-500">NG</span></h1>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest hidden sm:block">Global Tech & Tutors</p>
+                </div>
+            </div>
+            
+            <!-- Desktop Nav Pills (Hidden on Mobile) -->
+            <div class="hidden md:flex gap-1 bg-slate-100 p-1 rounded-full">
+                <button onclick="switchView('home')" id="nav-home" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold transition-all bg-white shadow-sm text-slate-900">Home</button>
+                <button onclick="switchView('digital')" id="nav-digital" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Digital School</button>
+                <button onclick="switchView('tech')" id="nav-tech" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Tech Academy</button>
+                <button onclick="switchView('tutorials')" id="nav-tutorials" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Tutorials</button>
+            </div>
+
+            <!-- Contact Button -->
+            <a href="https://wa.me/2347084672771" target="_blank" class="bg-blue-600 text-white p-2.5 rounded-full md:rounded-xl md:px-5 md:py-2.5 text-xs font-bold flex items-center gap-2 shadow-lg shadow-blue-200 active:scale-95 transition-transform">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
+                <span class="hidden md:inline">Contact Us</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="flex-grow pt-20">
+        <!-- HOME VIEW -->
+        <div id="view-home" class="view-section active">
+            <header class="pt-12 md:pt-24 pb-20 px-4 text-center">
+                <div class="inline-flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-orange-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                    Registration Open - 2026 Session
+                </div>
+                <h1 class="text-4xl md:text-7xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tighter">
+                    One Platform.<br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Endless Possibilities.</span>
+                </h1>
+                <p class="text-slate-500 text-base md:text-xl font-medium max-w-2xl mx-auto mb-12 px-4">
+                    Choose your path: Launch a high-paying tech career or smash your academic exams with expert tutoring.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-4">
+                    <!-- Digital Card -->
+                    <div onclick="switchView('digital')" class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl text-left hover:border-blue-200 transition-all cursor-pointer group active:scale-[0.98]">
+                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        </div>
+                        <h2 class="text-xl font-black mb-2">Digital Skills</h2>
+                        <p class="text-slate-500 text-sm font-medium mb-6">Marketing, Content Creation & Social Media Mastery.</p>
+                        <span class="text-blue-600 font-bold text-xs group-hover:underline">View Courses →</span>
+                    </div>
+
+                    <!-- Tech Card -->
+                    <div onclick="switchView('tech')" class="bg-slate-900 p-8 rounded-[2rem] shadow-xl text-left cursor-pointer group active:scale-[0.98]">
+                        <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                        </div>
+                        <h2 class="text-xl font-black mb-2 text-white">Tech Academy</h2>
+                        <p class="text-slate-400 text-sm font-medium mb-6">Coding, Cyber Security, Data Science & Design.</p>
+                        <span class="text-orange-500 font-bold text-xs group-hover:underline">Start Coding →</span>
+                    </div>
+
+                    <!-- Tutorials Card -->
+                    <div onclick="switchView('tutorials')" class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl text-left hover:border-green-200 transition-all cursor-pointer group active:scale-[0.98]">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                        <h2 class="text-xl font-black mb-2">Academic Tutorials</h2>
+                        <p class="text-slate-500 text-sm font-medium mb-6">WAEC, JAMB, JSS/SSS Classes & Homework Help.</p>
+                        <span class="text-green-600 font-bold text-xs group-hover:underline">Book a Tutor →</span>
+                    </div>
+                </div>
+            </header>
+        </div>
+
+        <!-- DIGITAL VIEW -->
+        <div id="view-digital" class="view-section">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <div class="mb-10">
+                    <h2 class="text-3xl md:text-5xl font-black mb-4">Digital <span class="text-blue-600">Bootcamp</span></h2>
+                    <p class="text-slate-500 font-medium">Become a digital creator or marketing expert.</p>
+                </div>
+                
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <div class="bg-slate-950 p-6 md:p-10 rounded-[2.5rem] text-white shadow-2xl order-2 lg:order-1">
+                        <form id="digitalForm" class="space-y-4">
+                            <input type="text" name="name" required placeholder="Full Name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-blue-500">
+                            <input type="email" name="email" required placeholder="Email Address" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-blue-500">
+                            <input type="tel" name="phone" required placeholder="WhatsApp Number" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-blue-500">
+                            
+                            <div class="bg-white/5 p-4 md:p-6 rounded-2xl border border-white/10 mt-4">
+                                <label class="text-[10px] font-black uppercase text-blue-400 mb-4 block">Select Courses (Click 'i' for info)</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="digital-checkboxes"></div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center py-4">
+                                <span class="font-bold text-sm">Total:</span>
+                                <span class="text-2xl font-black text-orange-500">₦<span id="digital-total">0</span></span>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-600 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all">RESERVE MY SPOT</button>
+                        </form>
+                    </div>
+
+                    <div class="space-y-4 order-1 lg:order-2" id="digital-info-cards">
+                        <!-- Cards added via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TECH VIEW -->
+        <div id="view-tech" class="view-section">
+            <div class="max-w-7xl mx-auto px-4 py-10">
+                <div class="flex flex-col lg:flex-row gap-10">
+                    <div class="lg:w-1/3 order-1">
+                        <div class="lg:sticky lg:top-28 space-y-6">
+                            <h2 class="text-3xl md:text-5xl font-black leading-tight">Newbie to<br class="hidden md:block"/><span class="text-orange-500">Pro Classes</span></h2>
+                            <p class="text-slate-500 font-medium">8 weeks of intensive training. 100% practical. Click on tracks for full syllabus.</p>
+                            
+                            <div class="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-lg hidden md:block">
+                                <div class="w-full h-48 mb-6"><canvas id="techRadar"></canvas></div>
+                                <div id="tech-active-info">
+                                    <h4 class="font-black text-lg mb-1" id="tech-t">Select a track</h4>
+                                    <p class="text-xs text-slate-400" id="tech-d">Click on a course below to see details.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:w-2/3 space-y-8 order-2">
+                        <div class="bg-white border border-slate-100 rounded-[2.5rem] p-6 md:p-10 shadow-xl">
+                            <form id="techForm" class="space-y-6">
+                                <h3 class="text-2xl font-black">Application Entry</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <input type="text" name="name" required placeholder="Legal Name" class="form-input">
+                                        <input type="email" name="email" required placeholder="Email Address" class="form-input">
+                                        <input type="tel" name="phone" required placeholder="WhatsApp Number" class="form-input">
+                                    </div>
+                                    <div class="bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-100">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block">Tracks (₦100,000 each)</label>
+                                        <div class="grid grid-cols-1 gap-2" id="tech-checkboxes"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between pt-4 border-t">
+                                    <div class="text-2xl font-black">₦<span id="tech-total">0</span></div>
+                                    <button type="submit" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-black hover:bg-orange-600 transition-all">SUBMIT</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <h4 class="text-xl font-black pt-4">Available Tech Specializations (Click to View)</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="tech-track-cards"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TUTORIALS VIEW -->
+        <div id="view-tutorials" class="view-section">
+            <div class="max-w-4xl mx-auto px-4 py-10">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl md:text-5xl font-black mb-4">Academic <span class="text-green-600">Excellence</span></h2>
+                    <p class="text-slate-500 font-medium mb-8">Virtual classes for WAEC, JAMB, JSS & SSS.</p>
+                    
+                    <!-- Feature Tabs -->
+                    <div class="inline-flex bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100">
+                        <button onclick="toggleTutorialTab('booking')" id="tab-booking" class="px-6 py-3 rounded-xl text-xs font-black bg-slate-900 text-white transition-all shadow-md">Book a Class</button>
+                        <button onclick="toggleTutorialTab('homework')" id="tab-homework" class="px-6 py-3 rounded-xl text-xs font-black text-slate-500 hover:text-slate-900 transition-all">Homework Help</button>
+                    </div>
+                </div>
+
+                <!-- Booking Form -->
+                <form id="tutorialForm" class="bg-white p-6 md:p-10 rounded-[2rem] shadow-xl border border-slate-100 space-y-8 animate-fade">
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Student Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="studentName" required placeholder="Student's Name" class="form-input">
+                            <input type="number" name="studentAge" id="ageInput" required placeholder="Age (e.g. 15)" class="form-input">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="email" name="studentEmail" placeholder="Student Email" class="form-input">
+                            <input type="tel" name="studentPhone" required placeholder="Student Phone" class="form-input">
+                        </div>
+                    </div>
+
+                    <div id="guardianSection" class="hidden space-y-4 bg-orange-50 p-6 rounded-2xl border border-orange-100">
+                        <h3 class="text-xs font-black uppercase text-orange-600 tracking-widest">Parent/Guardian Required (< 16 yrs)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" id="parentName" name="parentName" placeholder="Parent Name" class="form-input border-orange-200">
+                            <input type="tel" id="parentPhone" name="parentPhone" placeholder="Parent Phone" class="form-input border-orange-200">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Academic Goals</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <select name="level" id="levelSelect" class="form-input" onchange="updateSubjects()">
+                                <option value="JSS">JSS 1-3</option>
+                                <option value="SSS">SSS 1-3</option>
+                                <option value="WAEC">WAEC/NECO</option>
+                                <option value="JAMB">JAMB UTME</option>
+                                <option value="IGCSE">British (IGCSE)</option>
+                            </select>
+                            <select name="curriculum" class="form-input">
+                                <option value="West African">West African</option>
+                                <option value="British">British</option>
+                            </select>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <label class="text-xs font-bold text-slate-600 mb-3 block">Focus Subjects</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="subjectContainer"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Platform</h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="relative"><input type="radio" name="platform" value="whatsapp" id="pf_wa" class="hidden checkbox-card" checked><label for="pf_wa" class="block p-3 border rounded-xl text-center cursor-pointer text-xs font-bold transition-all hover:bg-slate-50">WhatsApp</label></div>
+                            <div class="relative"><input type="radio" name="platform" value="telegram" id="pf_tg" class="hidden checkbox-card"><label for="pf_tg" class="block p-3 border rounded-xl text-center cursor-pointer text-xs font-bold transition-all hover:bg-slate-50">Telegram</label></div>
+                            <div class="relative"><input type="radio" name="platform" value="gmeet" id="pf_gm" class="hidden checkbox-card"><label for="pf_gm" class="block p-3 border rounded-xl text-center cursor-pointer text-xs font-bold transition-all hover:bg-slate-50">G-Meet</label></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-slate-900 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all shadow-lg hover:bg-slate-800">COMPLETE REGISTRATION</button>
+                </form>
+
+                <!-- Homework Form (Hidden by default) -->
+                <form id="homeworkForm" class="hidden bg-white p-6 md:p-10 rounded-[2rem] shadow-xl border border-slate-100 space-y-6 animate-fade">
+                    <div class="text-left border-b pb-4 mb-4">
+                         <h3 class="text-xl font-black text-slate-900">Get Homework Help</h3>
+                         <p class="text-sm text-slate-500">Stuck on an assignment? We'll guide you through it.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" name="hw_name" required placeholder="Your Name" class="form-input">
+                        <input type="tel" name="hw_phone" required placeholder="WhatsApp Number" class="form-input">
+                    </div>
+                    <select name="hw_subject" class="form-input">
+                        <option>Mathematics</option><option>Physics</option><option>Chemistry</option>
+                        <option>English Language</option><option>Literature</option><option>Programming</option><option>Other</option>
+                    </select>
+                    <textarea name="hw_details" rows="5" placeholder="Describe the assignment or paste the question here..." class="form-input"></textarea>
+                    
+                    <div class="bg-blue-50 p-5 rounded-xl flex gap-4 items-start">
+                        <div class="bg-white p-2 rounded-full shadow-sm text-blue-600">
+                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-blue-900 mb-1">Upload File via WhatsApp</p>
+                            <p class="text-[11px] text-blue-700 leading-relaxed">Due to security, file uploads are handled in our secure WhatsApp channel. After clicking submit, you will be redirected to attach your PDF or Image.</p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-orange-600 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all shadow-lg hover:bg-orange-700">SUBMIT REQUEST</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-white pt-16 pb-24 md:pb-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand & Location -->
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="logo.png" alt="Logo" class="w-8 h-8 rounded bg-white p-0.5 object-contain" onerror="this.src='https://placehold.co/100x100?text=MB'">
+                        <span class="font-black text-xl">MBTECH NG</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <p class="text-slate-400 text-sm leading-relaxed">Lagos, Nigeria | Worldwide <br/><span class="text-[10px] text-slate-500">Virtual & Physical Learning</span></p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <p class="text-slate-400 text-sm break-all">mesobest.technology.org@gmail.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest">Navigation</h4>
+                    <ul class="text-sm space-y-3 font-bold text-slate-300">
+                        <li><button onclick="switchView('home')" class="hover:text-white transition-colors">Home</button></li>
+                        <li><button onclick="switchView('digital')" class="hover:text-white transition-colors">Digital School</button></li>
+                        <li><button onclick="switchView('tech')" class="hover:text-white transition-colors">Tech Academy</button></li>
+                        <li><button onclick="switchView('tutorials')" class="hover:text-white transition-colors">Tutorials</button></li>
+                        <!-- New Policy Links -->
+                        <li><button onclick="openPolicy('terms')" class="hover:text-white transition-colors text-slate-400">Terms of Use</button></li>
+                        <li><button onclick="openPolicy('privacy')" class="hover:text-white transition-colors text-slate-400">Privacy Policy</button></li>
+                        <li><button onclick="openPolicy('refund')" class="hover:text-white transition-colors text-slate-400">Refund Policy</button></li>
+                    </ul>
+                </div>
+
+                <!-- Social Presence -->
+                <div class="col-span-1 md:col-span-2">
+                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest text-center md:text-left">Connect with Us</h4>
+                    <div class="social-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <a href="https://facebook.com/mbtech.ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-blue-600 transition-all group">
+                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.378 14.792 5 15.536 5H18V0h-3.977C10.038 0 9 2.292 9 4.833V8z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">FB</span>
+                        </a>
+                        <a href="https://instagram.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-pink-600 transition-all group">
+                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.981 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.981-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.352-2.612-6.78-6.981-6.981C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">IG</span>
+                        </a>
+                        <a href="https://tiktok.com/@mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-slate-100 hover:text-black transition-all group">
+                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.28-2.26.74-4.63 2.58-5.91 1.18-.87 2.63-1.35 4.13-1.35.24 0 .48.02.72.05v4.02c-.77-.17-1.6-.13-2.32.17-1.01.41-1.84 1.32-2.14 2.34-.35 1.19-.03 2.51.77 3.48.71.88 1.77 1.39 2.89 1.44 1.08.02 2.13-.39 2.9-1.15.8-.75 1.25-1.79 1.31-2.89.04-2.89.01-5.78.02-8.67z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">TikTok</span>
+                        </a>
+                        <a href="https://x.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white hover:text-black transition-all group">
+                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">X</span>
+                        </a>
+                        <a href="https://www.linkedin.com/company/mbtech-ng/" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-blue-700 transition-all group">
+                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">In</span>
+                        </a>
+                        <a href="https://t.me/mbtech_connect" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-sky-500 transition-all group">
+                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zM17.89 8.16l-1.99 9.37c-.15.68-.55.85-1.12.53l-3.04-2.24-1.46 1.41c-.16.16-.3.3-.61.3l.22-3.09 5.63-5.08c.24-.22-.05-.34-.37-.13l-6.96 4.38-2.99-.93c-.65-.2-.66-.65.14-.96l11.66-4.5c.54-.2.94.1.75 1.25z"/></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">TG</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 MBTECH TECHNOLOGY NG. ALL RIGHTS RESERVED.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation (Visible on Mobile) -->
+    <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-100 pb-safe z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="grid grid-cols-4 h-16">
+            <button onclick="switchView('home')" id="mobile-home" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="switchView('digital')" id="mobile-digital" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <span class="text-[10px] font-bold">Digital</span>
+            </button>
+            <button onclick="switchView('tech')" id="mobile-tech" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <span class="text-[10px] font-bold">Tech</span>
+            </button>
+            <button onclick="switchView('tutorials')" id="mobile-tutorials" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <span class="text-[10px] font-bold">Tutors</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal-overlay">
+        <div class="bg-white rounded-[2rem] p-10 text-center max-w-sm w-full">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">✓</div>
+            <h3 class="text-xl font-black">Success!</h3>
+            <p class="text-slate-500 text-sm mt-2 mb-6">Your data has been saved securely. Redirecting to WhatsApp...</p>
+        </div>
+    </div>
+    
+    <!-- Info/Policy Modal -->
+    <div id="policyModal" class="modal-overlay" onclick="closeModal()">
+        <div class="bg-white w-full max-w-lg rounded-[2rem] p-8 relative shadow-2xl m-4 max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 bg-slate-50 p-2 rounded-full">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h3 id="policyTitle" class="text-2xl font-black text-slate-900 mb-4 pr-8"></h3>
+            <div id="policyContent" class="text-sm text-slate-600 space-y-4 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsmvy6QEKZY3jtHpeduxBxWBiPkxnU5YXNwaQ8veFq6fFM4nAOm9VEnTKqD0o7I-W6/exec";
+        const WA_NUM_TECH = "2347084672771"; // For Tech/Digital
+        const WA_NUM_TUTOR = "2348109006065"; // For Tutorials
+
+        // --- DATA ---
+        const digitalData = [
+            { id: 'content', title: 'Content Creation', price: 50000, d: 'Video Editing & Storytelling', details: 'Master video editing tools (CapCut, Premiere Rush), storytelling techniques, scriptwriting, and lighting fundamentals for TikTok & Reels.' },
+            { id: 'marketing', title: 'Digital Marketing', price: 50000, d: 'SEO, Ads & Funnels', details: 'Learn Search Engine Optimization (SEO), Google Ads, Facebook/Instagram Ads, and how to build high-converting sales funnels.' },
+            { id: 'social', title: 'Social Media Mgt', price: 50000, d: 'Growth & Branding', details: 'Community management strategies, content calendars, analytics interpretation, and brand voice development for businesses.' },
+            { id: 'videography', title: 'Smartphone Videography', price: 50000, d: 'Pro Mobile Shooting', details: 'Cinematic camera movements, composition rules, mobile editing apps, and color grading on smartphones.' }
+        ];
+
+        const techData = [
+            { id: 'fullstack', title: 'Full-Stack Web Dev', price: 100000, s:[9,8,4,6], d: 'MERN Stack & APIs', details: '<b>Modules:</b><br>1. HTML5 & CSS3 Mastery<br>2. JavaScript ES6+ & DOM<br>3. React.js & Tailwind CSS<br>4. Node.js & Express<br>5. MongoDB Database<br>6. REST API Architecture' },
+            { id: 'uiux', title: 'Product Design', price: 100000, s:[3,10,10,5], d: 'Figma & Systems', details: '<b>Modules:</b><br>1. User Research & Personas<br>2. Wireframing & Prototyping<br>3. Visual Design Principles<br>4. Figma Advanced Features<br>5. Design Systems<br>6. Usability Testing' },
+            { id: 'data', title: 'Data Science', price: 100000, s:[10,3,5,8], d: 'Python & ML', details: '<b>Modules:</b><br>1. Python Programming<br>2. NumPy & Pandas<br>3. Data Visualization (Matplotlib)<br>4. Statistical Analysis<br>5. Intro to Machine Learning<br>6. Capstone Project' },
+            { id: 'cyber', title: 'Cyber Security', price: 100000, s:[7,2,6,10], d: 'Ethical Hacking', details: '<b>Modules:</b><br>1. Networking Fundamentals<br>2. Linux Administration<br>3. Threat Intelligence<br>4. Vulnerability Assessment<br>5. Penetration Testing Tools<br>6. Security Protocols' }
+        ];
+
+        const subjects = {
+            JSS: ['Math', 'English', 'Basic Sci', 'Basic Tech', 'ICT', 'Business'],
+            SSS: ['Math', 'English', 'Physics', 'Chemistry', 'Biology', 'Econs'],
+            WAEC: ['Math', 'English', 'Physics', 'Chem', 'Bio', 'Econs', 'Geog', 'Civic'],
+            JAMB: ['Use of English', 'Math', 'Physics', 'Chem', 'Bio', 'Govt', 'Lit'],
+            IGCSE: ['Math (0580)', 'English', 'Physics', 'Chem', 'Bio', 'ICT']
+        };
+
+        const policies = {
+            terms: `
+                <p><strong>1. Enrollment:</strong> By registering, you agree to attend classes punctually and respect instructors/peers.</p>
+                <p><strong>2. Certification:</strong> Certificates are awarded only upon 80% attendance and completion of final projects.</p>
+                <p><strong>3. Intellectual Property:</strong> Course materials are for personal use only and may not be redistributed.</p>
+            `,
+            privacy: `
+                <p><strong>Data Collection:</strong> We collect your name, email, and phone number solely for enrollment and communication purposes.</p>
+                <p><strong>Security:</strong> Your data is stored securely and never sold to third parties.</p>
+                <p><strong>Consent:</strong> By submitting forms, you consent to receiving course updates via WhatsApp/Email.</p>
+            `,
+            refund: `
+                <p><strong>1. Tech/Digital:</strong> 50% refund available if requested 1 week before classes start. No refunds after classes begin.</p>
+                <p><strong>2. Tutorials:</strong> If unsatisfied with the first session, report within 24 hours for a tutor change or refund.</p>
+                <p><strong>3. Cancellations:</strong> Classes missed by students without 24h notice are forfeited.</p>
+            `
+        };
+
+        // --- NAVIGATION LOGIC ---
+        function switchView(view) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${view}`).classList.add('active');
+            
+            // Desktop Nav Updates
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+                b.classList.add('text-slate-500');
+            });
+            const dNav = document.getElementById(`nav-${view}`);
+            if(dNav) {
+                dNav.classList.remove('text-slate-500');
+                dNav.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+            }
+
+            // Mobile Nav Updates
+            document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+            const mNav = document.getElementById(`mobile-${view}`);
+            if(mNav) mNav.classList.add('active');
+            
+            if(view === 'tech') setTimeout(initTechChart, 100);
+            window.scrollTo(0,0);
+        }
+
+        function toggleTutorialTab(tab) {
+            const formBooking = document.getElementById('tutorialForm');
+            const formHomework = document.getElementById('homeworkForm');
+            const btnBooking = document.getElementById('tab-booking');
+            const btnHomework = document.getElementById('tab-homework');
+
+            if(tab === 'booking') {
+                formBooking.classList.remove('hidden');
+                formHomework.classList.add('hidden');
+                btnBooking.classList.add('bg-slate-900', 'text-white', 'shadow-md'); btnBooking.classList.remove('text-slate-500');
+                btnHomework.classList.remove('bg-slate-900', 'text-white', 'shadow-md'); btnHomework.classList.add('text-slate-500');
+            } else {
+                formBooking.classList.add('hidden');
+                formHomework.classList.remove('hidden');
+                btnHomework.classList.add('bg-slate-900', 'text-white', 'shadow-md'); btnHomework.classList.remove('text-slate-500');
+                btnBooking.classList.remove('bg-slate-900', 'text-white', 'shadow-md'); btnBooking.classList.add('text-slate-500');
+            }
+        }
+
+        // --- MODAL LOGIC ---
+        function openPolicy(type) {
+            const titleMap = { terms: 'Terms of Use', privacy: 'Privacy Policy', refund: 'Refund Policy' };
+            document.getElementById('policyTitle').innerText = titleMap[type];
+            document.getElementById('policyContent').innerHTML = policies[type];
+            document.getElementById('policyModal').classList.add('active');
+        }
+
+        function showCourseDetails(type, id) {
+            const data = type === 'digital' ? digitalData : techData;
+            const course = data.find(c => c.id === id || c.title === id); // Handle title for tech checkboxes
+            if(course) {
+                document.getElementById('policyTitle').innerText = course.title;
+                document.getElementById('policyContent').innerHTML = course.details;
+                document.getElementById('policyModal').classList.add('active');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('policyModal').classList.remove('active');
+        }
+
+        // --- INITIALIZATION ---
+        function initForms() {
+            // Digital Checkboxes
+            const dContainer = document.getElementById('digital-checkboxes');
+            digitalData.forEach(c => {
+                dContainer.innerHTML += `
+                <div class="relative group">
+                    <input type="checkbox" id="d-${c.id}" name="courses" value="${c.title}" onchange="calcTotal('digital')" class="hidden track-checkbox">
+                    <label for="d-${c.id}" class="flex flex-col p-3 border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-all text-white relative pr-8">
+                        <span class="text-[11px] font-black">${c.title}</span>
+                        <span class="text-[9px] text-blue-400">₦${c.price.toLocaleString()}</span>
+                    </label>
+                    <button type="button" onclick="showCourseDetails('digital', '${c.id}')" class="absolute top-2 right-2 text-slate-400 hover:text-white bg-white/10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold z-10">i</button>
+                </div>`;
+            });
+
+            // Tech Checkboxes
+            const tContainer = document.getElementById('tech-checkboxes');
+            const tCards = document.getElementById('tech-track-cards');
+            techData.forEach((c, idx) => {
+                tContainer.innerHTML += `
+                <label class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl cursor-pointer active:bg-orange-50">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" name="courses" value="${c.title}" onchange="calcTotal('tech')" class="w-4 h-4 accent-orange-600">
+                        <span class="text-[11px] font-bold text-slate-700">${c.title}</span>
+                    </div>
+                </label>`;
+                
+                tCards.innerHTML += `
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 hover:border-orange-500 transition-all cursor-pointer shadow-sm group" onclick="showCourseDetails('tech', '${c.title}')">
+                    <div class="flex justify-between items-start">
+                        <h4 class="font-black text-slate-900 group-hover:text-orange-600 transition-colors">${c.title}</h4>
+                        <span class="bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-full">DETAILS</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">${c.d}</p>
+                </div>`;
+            });
+
+            // Tutorial Subjects
+            updateSubjects();
+            
+            // Set initial active state for mobile nav
+            document.getElementById('mobile-home').classList.add('active');
+        }
+
+        function updateSubjects() {
+            const level = document.getElementById('levelSelect').value;
+            const container = document.getElementById('subjectContainer');
+            const list = subjects[level] || subjects['WAEC'];
+            container.innerHTML = list.map(sub => `
+                <div class="relative">
+                    <input type="checkbox" id="sub-${sub.replace(/\s/g,'')}" name="subjects" value="${sub}" class="hidden checkbox-card">
+                    <label for="sub-${sub.replace(/\s/g,'')}" class="block text-[11px] font-bold p-2 border rounded-lg text-center cursor-pointer hover:border-blue-400 text-slate-600 select-none transition-colors">${sub}</label>
+                </div>
+            `).join('');
+        }
+
+        // --- CALCULATIONS ---
+        function calcTotal(view) {
+            const form = document.getElementById(`${view}Form`);
+            const checked = form.querySelectorAll('input[name="courses"]:checked');
+            let total = 0;
+            const data = view === 'digital' ? digitalData : techData;
+            checked.forEach(cb => {
+                const item = data.find(x => x.title === cb.value);
+                if(item) total += item.price;
+            });
+            document.getElementById(`${view}-total`).innerText = total.toLocaleString();
+        }
+
+        // --- SUBMISSION HANDLER ---
+        async function handleSubmit(e, type) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            formData.append('formType', type);
+
+            // Additional logic for checkboxes
+            if(type === 'Digital' || type === 'Tech') {
+                const courses = Array.from(form.querySelectorAll('input[name="courses"]:checked')).map(cb => cb.value).join(', ');
+                formData.set('courses', courses);
+            } else if (type === 'Tutorials') {
+                const subs = Array.from(form.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value).join(', ');
+                formData.set('subjects', subs);
+            }
+
+            // Show Loading
+            document.getElementById('loadingOverlay').classList.add('active');
+
+            // Send to Google Sheets
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+            } catch (err) { console.error(err); }
+
+            // WhatsApp Redirection
+            let msg = "", waNum = "";
+            
+            if(type === 'Digital' || type === 'Tech') {
+                waNum = WA_NUM_TECH;
+                msg = `Hello MBTECH! I applied for ${type} School.\nName: ${formData.get('name')}\nCourses: ${formData.get('courses')}`;
+            } else if (type === 'Tutorials') {
+                waNum = WA_NUM_TUTOR;
+                msg = `Hello Tutor! New Booking.\nStudent: ${formData.get('studentName')} (${formData.get('studentAge')})\nLevel: ${formData.get('level')}\nSubjects: ${formData.get('subjects')}\nPlatform: ${formData.get('platform')}`;
+            } else if (type === 'Homework') {
+                waNum = WA_NUM_TUTOR;
+                msg = `Homework Help Request\nName: ${formData.get('hw_name')}\nSubject: ${formData.get('hw_subject')}\nDetails: ${formData.get('hw_details')}`;
+            }
+
+            // Success & Redirect
+            document.getElementById('loadingOverlay').classList.remove('active');
+            document.getElementById('successModal').classList.add('active');
+            
+            setTimeout(() => {
+                window.location.href = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
+            }, 1500);
+        }
+
+        // --- EVENT LISTENERS ---
+        document.getElementById('digitalForm').onsubmit = (e) => handleSubmit(e, 'Digital');
+        document.getElementById('techForm').onsubmit = (e) => handleSubmit(e, 'Tech');
+        document.getElementById('tutorialForm').onsubmit = (e) => handleSubmit(e, 'Tutorials');
+        document.getElementById('homeworkForm').onsubmit = (e) => handleSubmit(e, 'Homework');
+
+        document.getElementById('ageInput').addEventListener('input', function(e) {
+            const sec = document.getElementById('guardianSection');
+            if(parseInt(e.target.value) < 16) sec.classList.remove('hidden');
+            else sec.classList.add('hidden');
+        });
+
+        // Chart.js for Tech
+        let techChart = null;
+        function initTechChart() {
+            if(techChart) return;
+            const ctx = document.getElementById('techRadar');
+            if(!ctx) return;
+            techChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Logic', 'Design', 'UX', 'Secure'],
+                    datasets: [{
+                        data: [8, 8, 6, 7],
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderColor: '#f97316',
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: { scales: { r: { min: 0, max: 10, ticks: { display: false } } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
+            });
+        }
+
+        window.onload = initForms;
+    </script>
+</body>
+</html>
