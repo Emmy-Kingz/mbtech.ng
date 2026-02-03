@@ -68,6 +68,31 @@
             padding: 1rem; 
         }
         .modal-overlay.active { display: flex; }
+
+        /* Loading Spinner */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 200;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        #loadingOverlay.active { display: flex; }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid var(--brand-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         /* Animations */
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -81,6 +106,12 @@
     </style>
 </head>
 <body class="text-slate-900 antialiased overflow-x-hidden min-h-screen flex flex-col">
+
+    <!-- Loading Screen -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <p class="font-bold text-slate-600 animate-pulse">Saving Profile...</p>
+    </div>
 
     <!-- Header Navigation (Matches Index.html) -->
     <nav class="fixed top-0 w-full z-50 glass-nav h-20">
@@ -96,8 +127,8 @@
             <!-- Desktop Nav Pills -->
             <div class="hidden md:flex gap-1 bg-slate-100 p-1 rounded-full">
                 <a href="index.html" class="px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all">Home</a>
-                <a href="index.html" class="px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all">Digital School</a>
-                <a href="index.html" class="px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all">Tech Academy</a>
+                <a href="course.html?view=digital" class="px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all">Digital School</a>
+                <a href="course.html?view=tech" class="px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all">Tech Academy</a>
             </div>
 
             <!-- Community Button -->
@@ -252,8 +283,8 @@
                     <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest">Navigation</h4>
                     <ul class="text-sm space-y-3 font-bold text-slate-300">
                         <li><a href="index.html" class="hover:text-white transition-colors">Home</a></li>
-                        <li><a href="index.html" class="hover:text-white transition-colors">Digital School</a></li>
-                        <li><a href="index.html" class="hover:text-white transition-colors">Tech Academy</a></li>
+                        <li><a href="course.html?view=digital" class="hover:text-white transition-colors">Digital School</a></li>
+                        <li><a href="course.html?view=tech" class="hover:text-white transition-colors">Tech Academy</a></li>
                         <li><a href="#" class="text-white">Connect</a></li>
                     </ul>
                 </div>
@@ -267,7 +298,7 @@
                             <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">FB</span>
                         </a>
                         <a href="https://instagram.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-pink-600 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.981 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.981-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.352-2.612-6.78-6.981-6.981C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.981 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.981-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.352-2.612-6.78-6.981-6.981C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                             <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">IG</span>
                         </a>
                         <a href="https://tiktok.com/@mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-slate-100 hover:text-black transition-all group">
@@ -291,7 +322,7 @@
             </div>
             
             <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 MBTECH TECHNOLOGY NG. ALL RIGHTS RESERVED.</p>
+                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 Mesobest Technology Ng. ALL RIGHTS RESERVED.</p>
             </div>
         </div>
     </footer>
@@ -325,17 +356,28 @@
 
     <script>
         const WA_NUM = "2348109006065"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsmvy6QEKZY3jtHpeduxBxWBiPkxnU5YXNwaQ8veFq6fFM4nAOm9VEnTKqD0o7I-W6/exec";
 
         // Form Handler
-        document.getElementById('connectForm').addEventListener('submit', function(e) {
+        document.getElementById('connectForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(e.target);
+            formData.append('formType', 'Connect'); // Mark as Connect form for the backend
+            
             const name = formData.get('name');
             const email = formData.get('email');
             const status = formData.get('status'); 
             const industry = formData.get('industry'); 
             const pitch = formData.get('pitch');
+
+            // Show Loading
+            document.getElementById('loadingOverlay').classList.add('active');
+
+            // Data Persistence: Send to Google Sheets
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+            } catch (err) { console.error('Error saving data:', err); }
 
             // Construct WhatsApp Message
             let msg = `*MBTECH CONNECT APPLICATION*\n`;
@@ -352,7 +394,8 @@
             const link = `https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`;
             document.getElementById('waButton').href = link;
 
-            // Show Modal
+            // Hide Loading & Show Modal
+            document.getElementById('loadingOverlay').classList.remove('active');
             document.getElementById('successModal').classList.add('active');
         });
 
