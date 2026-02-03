@@ -214,8 +214,29 @@
                         </form>
                     </div>
 
-                    <div class="space-y-4 order-1 lg:order-2" id="digital-info-cards">
-                        <!-- Cards added via JS -->
+                    <div class="lg:sticky lg:top-28 space-y-6 order-1 lg:order-2">
+                        <!-- Chart Card -->
+                        <div class="bg-white border border-slate-100 p-6 md:p-8 rounded-[2rem] shadow-xl">
+                             <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="font-black text-xl text-slate-900">Skill Insights</h3>
+                                    <p class="text-xs text-slate-500 font-medium">Market relevance & growth</p>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                </div>
+                             </div>
+                             <div class="w-full h-64"><canvas id="digitalChart"></canvas></div>
+                        </div>
+
+                        <!-- Promo Card -->
+                        <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
+                            <div class="relative z-10">
+                                <h4 class="font-black text-2xl mb-3">Why Digital?</h4>
+                                <p class="text-sm text-blue-100 font-medium leading-relaxed">Digital skills are the currency of the future. 85% of global businesses require a digital presence to survive and scale.</p>
+                            </div>
+                            <svg class="absolute -right-4 -bottom-4 w-32 h-32 text-white/5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22c-5.523 0-10-4.477-10-10S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -496,10 +517,10 @@
 
         // --- DATA ---
         const digitalData = [
-            { id: 'content', title: 'Content Creation', price: 50000, d: 'Video Editing & Storytelling', details: 'Master video editing tools (CapCut, Premiere Rush), storytelling techniques, scriptwriting, and lighting fundamentals for TikTok & Reels.' },
-            { id: 'marketing', title: 'Digital Marketing', price: 50000, d: 'SEO, Ads & Funnels', details: 'Learn Search Engine Optimization (SEO), Google Ads, Facebook/Instagram Ads, and how to build high-converting sales funnels.' },
-            { id: 'social', title: 'Social Media Mgt', price: 50000, d: 'Growth & Branding', details: 'Community management strategies, content calendars, analytics interpretation, and brand voice development for businesses.' },
-            { id: 'videography', title: 'Smartphone Videography', price: 50000, d: 'Pro Mobile Shooting', details: 'Cinematic camera movements, composition rules, mobile editing apps, and color grading on smartphones.' }
+            { id: 'content', title: 'Content Creation', price: 50000, d: 'Video Editing & Storytelling', details: 'Master video editing tools (CapCut, Premiere Rush), storytelling techniques, scriptwriting, and lighting fundamentals for TikTok & Reels.', stats: [85, 90, 75] },
+            { id: 'marketing', title: 'Digital Marketing', price: 50000, d: 'SEO, Ads & Funnels', details: 'Learn Search Engine Optimization (SEO), Google Ads, Facebook/Instagram Ads, and how to build high-converting sales funnels.', stats: [95, 80, 85] },
+            { id: 'social', title: 'Social Media Mgt', price: 50000, d: 'Growth & Branding', details: 'Community management strategies, content calendars, analytics interpretation, and brand voice development for businesses.', stats: [90, 70, 95] },
+            { id: 'videography', title: 'Smartphone Videography', price: 50000, d: 'Pro Mobile Shooting', details: 'Cinematic camera movements, composition rules, mobile editing apps, and color grading on smartphones.', stats: [80, 85, 60] }
         ];
 
         const techData = [
@@ -557,6 +578,7 @@
             if(mNav) mNav.classList.add('active');
             
             if(view === 'tech') setTimeout(initTechChart, 100);
+            if(view === 'digital') setTimeout(initDigitalChart, 100);
             window.scrollTo(0,0);
         }
 
@@ -732,6 +754,8 @@
 
         // Chart.js for Tech
         let techChart = null;
+        let digitalChart = null;
+
         function initTechChart() {
             if(techChart) return;
             const ctx = document.getElementById('techRadar');
@@ -749,6 +773,44 @@
                     }]
                 },
                 options: { scales: { r: { min: 0, max: 10, ticks: { display: false } } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
+            });
+        }
+
+        function initDigitalChart() {
+            if(digitalChart) return;
+            const ctx = document.getElementById('digitalChart');
+            if(!ctx) return;
+            
+            // Average stats or specific view
+            const labels = digitalData.map(d => d.title.split(' ')[0]); // Short names
+            const dataPoints = [85, 92, 88, 78]; // Hardcoded Demand/Growth metric for visual appeal
+
+            digitalChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Growth Potential (%)',
+                        data: dataPoints,
+                        backgroundColor: [
+                            'rgba(37, 99, 235, 0.8)', // Blue
+                            'rgba(37, 99, 235, 0.6)',
+                            'rgba(37, 99, 235, 0.4)',
+                            'rgba(37, 99, 235, 0.2)'
+                        ],
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { display: false }, ticks: { display: false } },
+                        x: { grid: { display: false }, ticks: { font: { size: 9, family: 'Plus Jakarta Sans' } } }
+                    }
+                }
             });
         }
 
