@@ -111,7 +111,7 @@
     <!-- Header Navigation -->
     <nav class="fixed top-0 w-full z-50 glass-nav h-20">
         <div class="max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('home')">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
                 <img src="logo.png" alt="MBTECH Logo" class="w-10 h-10 object-contain rounded-lg shadow-sm" onerror="this.src='https://placehold.co/100x100?text=MB'">
                 <div class="leading-none">
                     <h1 class="text-lg font-black tracking-tight">MBTECH <span class="text-orange-500">NG</span></h1>
@@ -121,7 +121,7 @@
             
             <!-- Desktop Nav Pills (Hidden on Mobile) -->
             <div class="hidden md:flex gap-1 bg-slate-100 p-1 rounded-full">
-                <button onclick="switchView('home')" id="nav-home" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold transition-all bg-white shadow-sm text-slate-900">Home</button>
+                <a href="index.html" class="px-6 py-2.5 rounded-full text-xs font-bold text-slate-900 hover:bg-white hover:shadow-sm transition-all">Home</a>
                 <button onclick="switchView('digital')" id="nav-digital" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Digital School</button>
                 <button onclick="switchView('tech')" id="nav-tech" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Tech Academy</button>
                 <button onclick="switchView('tutorials')" id="nav-tutorials" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Tutorials</button>
@@ -136,7 +136,7 @@
     </nav>
 
     <main class="flex-grow pt-20">
-        <!-- HOME VIEW -->
+        <!-- HUB VIEW (Default) -->
         <div id="view-home" class="view-section active">
             <header class="pt-12 md:pt-24 pb-20 px-4 text-center">
                 <div class="inline-flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-orange-100">
@@ -339,6 +339,10 @@
                             <select name="curriculum" class="form-input">
                                 <option value="West African">West African</option>
                                 <option value="British">British</option>
+                                <option value="American">American</option>
+                                <option value="Canadian">Canadian</option>
+                                <option value="Hybrid">Hybrid (Combined)</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
@@ -418,14 +422,12 @@
                 <div>
                     <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest">Navigation</h4>
                     <ul class="text-sm space-y-3 font-bold text-slate-300">
-                        <li><button onclick="switchView('home')" class="hover:text-white transition-colors">Home</button></li>
+                        <li><a href="index.html" class="hover:text-white transition-colors">Home</a></li>
                         <li><button onclick="switchView('digital')" class="hover:text-white transition-colors">Digital School</button></li>
                         <li><button onclick="switchView('tech')" class="hover:text-white transition-colors">Tech Academy</button></li>
                         <li><button onclick="switchView('tutorials')" class="hover:text-white transition-colors">Tutorials</button></li>
-                        <!-- New Policy Links -->
-                        <li><button onclick="openPolicy('terms')" class="hover:text-white transition-colors text-slate-400">Terms of Use</button></li>
-                        <li><button onclick="openPolicy('privacy')" class="hover:text-white transition-colors text-slate-400">Privacy Policy</button></li>
-                        <li><button onclick="openPolicy('refund')" class="hover:text-white transition-colors text-slate-400">Refund Policy</button></li>
+                        <li><button onclick="openPolicy('terms')" class="hover:text-white transition-colors text-slate-400">Terms</button></li>
+                        <li><button onclick="openPolicy('refund')" class="hover:text-white transition-colors text-slate-400">Refunds</button></li>
                     </ul>
                 </div>
 
@@ -462,7 +464,7 @@
             </div>
             
             <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 MBTECH TECHNOLOGY NG. ALL RIGHTS RESERVED.</p>
+                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 Mesobest Technology Ng. ALL RIGHTS RESERVED.</p>
             </div>
         </div>
     </footer>
@@ -470,7 +472,7 @@
     <!-- Mobile Bottom Navigation (Visible on Mobile) -->
     <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-100 pb-safe z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div class="grid grid-cols-4 h-16">
-            <button onclick="switchView('home')" id="mobile-home" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
+            <button onclick="window.location.href='index.html'" id="mobile-home" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span class="text-[10px] font-bold">Home</span>
             </button>
@@ -559,7 +561,7 @@
         // --- NAVIGATION LOGIC ---
         function switchView(view) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(`view-${view}`).classList.add('active');
+            document.getElementById(`view-${view === 'home' ? 'home' : view}`).classList.add('active');
             
             // Desktop Nav Updates
             document.querySelectorAll('.nav-btn').forEach(b => {
@@ -579,6 +581,17 @@
             
             if(view === 'tech') setTimeout(initTechChart, 100);
             if(view === 'digital') setTimeout(initDigitalChart, 100);
+            
+            // Update URL without reload if not home
+            if(view !== 'home') {
+                 try {
+                     const newUrl = window.location.pathname + '?view=' + view;
+                     window.history.pushState({path:newUrl},'',newUrl);
+                 } catch (e) {
+                     console.warn('History API not supported in this environment');
+                 }
+            }
+            
             window.scrollTo(0,0);
         }
 
@@ -663,9 +676,6 @@
 
             // Tutorial Subjects
             updateSubjects();
-            
-            // Set initial active state for mobile nav
-            document.getElementById('mobile-home').classList.add('active');
         }
 
         function updateSubjects() {
@@ -814,7 +824,18 @@
             });
         }
 
-        window.onload = initForms;
+        // Initialize and Check URL for specific view
+        window.onload = function() {
+            initForms();
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+            
+            if (view && ['digital', 'tech', 'tutorials'].includes(view)) {
+                switchView(view);
+            } else {
+                switchView('home'); 
+            }
+        };
     </script>
 </body>
 </html>
