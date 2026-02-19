@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mbtech Store - Solar Inverters, Laptops & Gadgets in Nigeria</title>
     
     <!-- SEO Meta Tags -->
@@ -33,7 +33,7 @@
       "@context": "https://schema.org",
       "@type": "Store",
       "name": "Mbtech Store",
-      "image": "https://raw.githubusercontent.com/Emmy-Kingz/mbtech.ng/main/logo.png",
+      "image": "https://emmy-kingz.github.io/mbtech.ng/logo.png",
       "description": "Official Mbtech Store. Buy Solar Inverters, Laptops, Gadgets and Book Installations.",
       "telephone": "+2347084672771",
       "url": "https://emmy-kingz.github.io/mbtech.ng/store.html",
@@ -46,7 +46,7 @@
     </script>
     
     <!-- Favicon from your repo -->
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Emmy-Kingz/mbtech.ng/main/favicon.png">
+    <link rel="icon" type="image/png" href="./favicon.png">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -95,7 +95,7 @@
     <style>
         /* Smooth scrolling */
         html { scroll-behavior: smooth; }
-        /* Hide scrollbar for category list */
+        /* Hide scrollbar for category list to allow swiping on mobile */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -113,9 +113,12 @@
                 background-position: 200% center;
             }
         }
+        
+        /* Ensure modals take full dynamic height on mobile Safari/Chrome */
+        .dvh-screen { height: 100vh; height: 100dvh; }
     </style>
 </head>
-<body class="bg-white font-sans text-slate-900 selection:bg-emerald-100">
+<body class="bg-slate-50 font-sans text-slate-900 selection:bg-emerald-100">
     
     <div id="root"></div>
 
@@ -130,7 +133,7 @@
             LayoutDashboard, Trash2, Download, FileSpreadsheet,
             Facebook, Twitter, Instagram, Linkedin, HelpCircle, Lightbulb,
             ShieldAlert, Lock, Github, Image as ImageIcon, ExternalLink, UploadCloud,
-            Home, BookOpen, Users, Store as StoreIcon, FileText
+            Home, BookOpen, Users, Store as StoreIcon, FileText, Plus, Minus
         } from 'lucide-react';
 
         // --- FIREBASE IMPORTS ---
@@ -138,13 +141,12 @@
         import { 
             getAuth, signInAnonymously, onAuthStateChanged, signOut, 
             updateProfile, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-            GoogleAuthProvider, signInWithPopup
+            GoogleAuthProvider, signInWithPopup, signInWithCustomToken
         } from 'firebase/auth';
         import { 
             getFirestore, collection, addDoc, serverTimestamp, doc, 
-            deleteDoc, updateDoc, onSnapshot, initializeFirestore 
+            deleteDoc, updateDoc, onSnapshot
         } from 'firebase/firestore';
-        import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
         import { getAnalytics } from 'firebase/analytics';
 
         // --- CONFIGURATION ---
@@ -160,22 +162,20 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+        let analytics;
+        try { analytics = getAnalytics(app); } catch(e) { console.warn("Analytics blocked"); }
         const auth = getAuth(app);
-        const storage = getStorage(app);
-        const db = initializeFirestore(app, { experimentalForceLongPolling: true });
+        const db = getFirestore(app);
         
-        const appId = 'mbtech-public-store';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mbtech-public-store';
 
         // --- CONSTANTS ---
         const BRAND_GREEN = "bg-emerald-600";
         const BRAND_GREEN_HOVER = "hover:bg-emerald-700";
-        const BRAND_TEXT_GREEN = "text-emerald-600";
 
-        // GitHub Assets
-        const GITHUB_REPO_URL = "https://raw.githubusercontent.com/Emmy-Kingz/mbtech.ng/main/";
-        const LOGO_URL = `${GITHUB_REPO_URL}logo.png`;
-        const FAVICON_URL = `${GITHUB_REPO_URL}favicon.png`;
+        // Local Branding Assets
+        const LOGO_URL = "./logo.png";
+        const FAVICON_URL = "./favicon.png";
         
         const NAV_ITEMS = [
             { name: 'Home', url: 'index.html', icon: <Home size={18} /> },
@@ -183,28 +183,26 @@
             { name: 'Connect', url: 'connect.html', icon: <Users size={18} /> }
         ];
 
-        const GITHUB_PRODUCT_IMG_BASE = `${GITHUB_REPO_URL}products-img/`;
-
         const ADMIN_EMAILS = ["emmanuel.amobi03@gmail.com"];
         const MANAGER_EMAILS = ["mesobest2000@gmail.com", "mesobest.technology.org@gmail.com"];
         const CONTACT_NUMBER = "07084672771";
         const WHATSAPP_LINK = `https://wa.me/234${CONTACT_NUMBER.slice(1)}`;
 
         const CATEGORIES = [
-            { name: "All", icon: <Zap size={16} /> },
-            { name: "Solar & Energy", icon: <Sun size={16} /> },
-            { name: "Gadgets", icon: <Monitor size={16} /> },
-            { name: "Electricals", icon: <Cpu size={16} /> },
-            { name: "Software", icon: <FileSpreadsheet size={16} /> },
-            { name: "Services", icon: <Wrench size={16} /> },
+            { name: "All", icon: <Zap size={18} /> },
+            { name: "Solar & Energy", icon: <Sun size={18} /> },
+            { name: "Gadgets", icon: <Monitor size={18} /> },
+            { name: "Electricals", icon: <Cpu size={18} /> },
+            { name: "Software", icon: <FileSpreadsheet size={18} /> },
+            { name: "Services", icon: <Wrench size={18} /> },
         ];
 
         const INITIAL_PRODUCTS = [
-            { name: "5KVA Hybrid Inverter", category: "Solar & Energy", price: 1200000, image: "https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&q=80&w=800", rating: 5, type: "good" },
-            { name: "MacBook Pro M3", category: "Gadgets", price: 2800000, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&q=80&w=800", rating: 5, type: "good" },
-            { name: "Student Power Bank (500Wh)", category: "Solar & Energy", price: 150000, image: "https://images.unsplash.com/photo-1622730278709-66c5e21966a3?auto=format&fit=crop&q=80&w=800", rating: 4, type: "good" },
-            { name: "Home Wiring Service", category: "Services", price: 50000, image: "https://images.unsplash.com/photo-1558002038-1091a1661116?auto=format&fit=crop&q=80&w=800", rating: 5, type: "service" },
-            { name: "Office 365 License", category: "Software", price: 45000, image: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800", rating: 4, type: "good" },
+            { name: "5KVA Hybrid Inverter", category: "Solar & Energy", price: 1200000, image: "https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&q=80&w=800", rating: 5, type: "good", featured: true },
+            { name: "MacBook Pro M3", category: "Gadgets", price: 2800000, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&q=80&w=800", rating: 5, type: "good", featured: true },
+            { name: "Student Power Bank (500Wh)", category: "Solar & Energy", price: 150000, image: "https://images.unsplash.com/photo-1622730278709-66c5e21966a3?auto=format&fit=crop&q=80&w=800", rating: 4, type: "good", featured: true },
+            { name: "Home Wiring Service", category: "Services", price: 50000, image: "https://images.unsplash.com/photo-1558002038-1091a1661116?auto=format&fit=crop&q=80&w=800", rating: 5, type: "service", featured: false },
+            { name: "Office 365 License", category: "Software", price: 45000, image: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800", rating: 4, type: "good", featured: false },
         ];
 
         // --- LEGAL CONTENT ---
@@ -288,9 +286,7 @@
         const checkRateLimit = (key, cooldownSeconds = 30) => {
             const lastAction = localStorage.getItem(key);
             const now = Date.now();
-            if (lastAction && (now - parseInt(lastAction)) < (cooldownSeconds * 1000)) {
-                return false;
-            }
+            if (lastAction && (now - parseInt(lastAction)) < (cooldownSeconds * 1000)) return false;
             localStorage.setItem(key, now.toString());
             return true;
         };
@@ -298,16 +294,16 @@
         // --- COMPONENTS ---
 
         const TopBar = () => (
-            <div className="bg-slate-900 text-slate-300 text-xs py-2 hidden md:block border-b border-slate-800">
-                <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <div className="bg-slate-900 text-slate-300 text-xs py-2.5 hidden lg:block border-b border-slate-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                     <div className="flex gap-6">
                         <a href={`tel:${CONTACT_NUMBER}`} className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Phone size={14} /> +234 {CONTACT_NUMBER.slice(1)}</a>
                         <a href="mailto:mesobest2000@gmail.com" className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Mail size={14} /> sales@mbtech.ng</a>
                     </div>
-                    <div className="flex gap-4">
-                        <a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-white cursor-pointer">Support</a>
-                        <span className="hover:text-white cursor-pointer">Partner Portal</span>
-                        <span className="text-emerald-500 font-semibold flex items-center gap-1"><Lock size={10}/> Secure Connection</span>
+                    <div className="flex gap-5">
+                        <a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-white cursor-pointer transition-colors">Support</a>
+                        <span className="hover:text-white cursor-pointer transition-colors">Partner Portal</span>
+                        <span className="text-emerald-500 font-semibold flex items-center gap-1.5"><Lock size={12}/> Secure Connection</span>
                     </div>
                 </div>
             </div>
@@ -320,256 +316,160 @@
             return (
             <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-20">
-                    {/* Hamburger Menu (Mobile) */}
-                    <div className="flex md:hidden items-center mr-4">
-                        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-slate-600">
-                            {mobileMenuOpen ? <X size={24}/> : <Menu size={24}/>}
-                        </button>
-                    </div>
-
-                    {/* Brand Logo */}
-                    <div className="flex items-center gap-3 cursor-pointer group flex-1 md:flex-none" onClick={() => onViewChange('home')}>
-                        <img src={LOGO_URL} alt="Mbtech Logo" className="h-10 w-auto object-contain" onError={(e) => {e.target.onerror = null; e.target.src='https://placehold.co/100x40/059669/ffffff?text=MBTech'}} />
-                        <div className="flex flex-col">
-                            <span className="text-xl font-extrabold text-slate-900 tracking-tight leading-none">
-                                Mbtech <span className="animated-gradient-text">Store</span>
-                            </span>
-                            <span className="text-[9px] text-slate-500 font-medium tracking-widest uppercase">Mesobest Technology</span>
-                        </div>
-                    </div>
-            
-                    {/* Desktop Navigation - Icon + Text */}
-                    <div className="hidden md:flex items-center space-x-8">
-                        {NAV_ITEMS.map(link => (
-                            <a 
-                                key={link.name} 
-                                href={link.url} 
-                                className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-emerald-600 transition-colors group"
-                            >
-                                <span className="group-hover:scale-110 transition-transform">{link.icon}</span>
-                                {link.name}
-                            </a>
-                        ))}
-                        <button 
-                            onClick={() => onViewChange('shop')}
-                            className={`flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:text-emerald-600 transition-colors ${currentView === 'shop' ? 'text-emerald-600 border-b-2 border-emerald-600' : 'text-slate-900'}`}
-                        >
-                            <StoreIcon size={18} />
-                            Store
-                        </button>
-                    </div>
-            
-                    {/* Icons */}
-                    <div className="flex items-center gap-3 md:gap-5">
-                        <button className="text-slate-500 hover:text-emerald-600 transition-colors hidden sm:block"><Search size={22} /></button>
-                        <button className="relative text-slate-800 hover:text-emerald-600 transition-colors" onClick={onCartClick}>
-                            <ShoppingCart size={22} />
-                            {cartCount > 0 && (
-                            <span className={`absolute -top-2 -right-2 ${BRAND_GREEN} text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full`}>
-                                {cartCount}
-                            </span>
-                            )}
-                        </button>
-                        
-                        {user ? (
-                            <div className="flex items-center gap-3 pl-3 border-l border-gray-200">
-                                <div className="text-right hidden sm:block">
-                                    <div className="text-xs text-slate-400">Welcome,</div>
-                                    <div className="text-sm font-bold text-slate-900 truncate max-w-[100px]">{user.displayName || 'User'}</div>
-                                </div>
-                                {isStaff && (
-                                    <button onClick={() => onViewChange('admin')} className="p-2 bg-slate-100 rounded-full hover:bg-slate-200" title="Store Manager Portal">
-                                        <LayoutDashboard size={18} className="text-slate-700"/>
-                                    </button>
-                                )}
-                                <button onClick={() => signOut(auth)} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors">
-                                    <LogOut size={18} />
-                                </button>
-                            </div>
-                        ) : (
-                            <button onClick={onAuthClick} className={`hidden sm:flex items-center gap-2 px-5 py-2.5 ${BRAND_GREEN} ${BRAND_GREEN_HOVER} text-white rounded-full text-sm font-bold shadow-md transition-all`}>
-                                <User size={16} /> Login
+                    <div className="flex justify-between items-center h-16 md:h-20">
+                        {/* Mobile Left: Hamburger + Logo */}
+                        <div className="flex items-center gap-3 md:gap-0 flex-1 md:flex-none">
+                            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-1 -ml-1 text-slate-600 hover:text-emerald-600 transition-colors">
+                                {mobileMenuOpen ? <X size={26}/> : <Menu size={26}/>}
                             </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Mobile Menu Dropdown with Icons */}
-                {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-gray-100 bg-white absolute w-full left-0 top-20 shadow-lg animate-in slide-in-from-top-2 z-50">
-                        <div className="p-4 space-y-2">
+                            <div className="flex items-center gap-2 md:gap-3 cursor-pointer group" onClick={() => onViewChange('home')}>
+                                <img src={LOGO_URL} alt="Mbtech Logo" className="h-8 md:h-10 w-auto object-contain" onError={(e) => {e.target.onerror = null; e.target.src='https://placehold.co/100x40/059669/ffffff?text=MBTech'}} />
+                                <div className="flex flex-col">
+                                    <span className="text-lg md:text-xl font-extrabold text-slate-900 tracking-tight leading-none">
+                                        Mbtech <span className="animated-gradient-text">Store</span>
+                                    </span>
+                                    <span className="hidden sm:block text-[9px] text-slate-500 font-medium tracking-widest uppercase">Mesobest Technology</span>
+                                </div>
+                            </div>
+                        </div>
+                
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center space-x-8">
                             {NAV_ITEMS.map(link => (
-                                <a 
-                                    key={link.name} 
-                                    href={link.url} 
-                                    className="flex items-center gap-3 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 font-medium p-3 rounded-lg transition-colors"
-                                >
-                                    {link.icon}
+                                <a key={link.name} href={link.url} className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-emerald-600 transition-colors group">
+                                    <span className="group-hover:scale-110 transition-transform text-slate-400 group-hover:text-emerald-600">{link.icon}</span>
                                     {link.name}
                                 </a>
                             ))}
-                            <button 
-                                onClick={() => { setMobileMenuOpen(false); onViewChange('shop'); }} 
-                                className={`flex items-center gap-3 w-full text-left font-bold p-3 rounded-lg ${currentView === 'shop' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-900 hover:bg-slate-50'}`}
-                            >
-                                <StoreIcon size={18} />
-                                Store
+                            <button onClick={() => onViewChange('shop')} className={`flex items-center gap-2 text-sm font-bold uppercase tracking-wide hover:text-emerald-600 transition-colors ${currentView === 'shop' ? 'text-emerald-600 border-b-2 border-emerald-600 py-2' : 'text-slate-900'}`}>
+                                <StoreIcon size={18} className={currentView === 'shop' ? 'text-emerald-600' : 'text-slate-400'} /> Store
                             </button>
-                            {!user && (
-                                <button 
-                                    onClick={() => { setMobileMenuOpen(false); onAuthClick(); }} 
-                                    className={`w-full py-3 ${BRAND_GREEN} text-white rounded-lg mt-4 flex items-center justify-center gap-2 font-bold`}
-                                >
-                                    <User size={18} /> Login
+                        </div>
+                
+                        {/* Right Icons: Cart & Auth */}
+                        <div className="flex items-center gap-4 md:gap-5">
+                            <button className="relative text-slate-700 hover:text-emerald-600 transition-colors p-1" onClick={onCartClick}>
+                                <ShoppingCart size={24} />
+                                {cartCount > 0 && (
+                                <span className={`absolute -top-1.5 -right-1.5 ${BRAND_GREEN} text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm`}>
+                                    {cartCount}
+                                </span>
+                                )}
+                            </button>
+                            
+                            {user ? (
+                                <div className="flex items-center gap-3 pl-3 border-l border-gray-200 hidden sm:flex">
+                                    <div className="text-right">
+                                        <div className="text-xs text-slate-400">Welcome,</div>
+                                        <div className="text-sm font-bold text-slate-900 truncate max-w-[100px]">{user.displayName?.split(' ')[0] || 'User'}</div>
+                                    </div>
+                                    {isStaff && (
+                                        <a href="admin.html" className="p-2 bg-emerald-50 text-emerald-600 rounded-full hover:bg-emerald-100 transition-colors border border-emerald-100" title="Store Manager Portal">
+                                            <LayoutDashboard size={18} />
+                                        </a>
+                                    )}
+                                    <button onClick={() => signOut(auth)} className="p-2 hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-full transition-colors" title="Sign Out">
+                                        <LogOut size={18} />
+                                    </button>
+                                </div>
+                            ) : (
+                                <button onClick={onAuthClick} className={`hidden sm:flex items-center gap-2 px-5 py-2.5 ${BRAND_GREEN} ${BRAND_GREEN_HOVER} text-white rounded-full text-sm font-bold shadow-md shadow-emerald-500/20 transition-all hover:-translate-y-0.5`}>
+                                    <User size={16} /> Login
                                 </button>
                             )}
                         </div>
                     </div>
-                )}
+
+                    {/* Mobile Dropdown Menu */}
+                    {mobileMenuOpen && (
+                        <div className="md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-xl absolute w-full left-0 top-[65px] shadow-xl animate-in slide-in-from-top-4 duration-200 z-50 rounded-b-2xl">
+                            <div className="p-4 space-y-2 pb-6">
+                                {user && (
+                                    <div className="p-4 bg-slate-50 rounded-xl mb-4 flex items-center justify-between border border-slate-100">
+                                        <div>
+                                            <p className="text-xs text-slate-500">Logged in as</p>
+                                            <p className="font-bold text-slate-900">{user.displayName || user.email}</p>
+                                        </div>
+                                        <button onClick={() => {signOut(auth); setMobileMenuOpen(false);}} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
+                                            <LogOut size={20}/>
+                                        </button>
+                                    </div>
+                                )}
+                                {NAV_ITEMS.map(link => (
+                                    <a key={link.name} href={link.url} className="flex items-center gap-3 text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 font-bold p-3.5 rounded-xl transition-colors">
+                                        <span className="text-slate-400">{link.icon}</span> {link.name}
+                                    </a>
+                                ))}
+                                <button onClick={() => { setMobileMenuOpen(false); onViewChange('shop'); }} className={`flex items-center gap-3 w-full text-left font-bold p-3.5 rounded-xl transition-colors ${currentView === 'shop' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-700 hover:bg-slate-50'}`}>
+                                    <StoreIcon size={18} className={currentView === 'shop' ? 'text-emerald-600' : 'text-slate-400'} /> Full Store
+                                </button>
+                                {isStaff && (
+                                    <a href="admin.html" className="flex items-center gap-3 w-full text-left font-bold p-3.5 rounded-xl text-emerald-700 bg-emerald-50 border border-emerald-100 mt-2">
+                                        <LayoutDashboard size={18} /> Admin Dashboard
+                                    </a>
+                                )}
+                                {!user && (
+                                    <button onClick={() => { setMobileMenuOpen(false); onAuthClick(); }} className={`w-full py-4 ${BRAND_GREEN} text-white rounded-xl mt-4 flex items-center justify-center gap-2 font-bold shadow-md`}>
+                                        <User size={18} /> Sign In / Register
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </nav>
             );
         };
 
         const Hero = ({ onShopNow }) => (
-            <div className="relative bg-slate-900 text-white overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+            <div className="relative bg-slate-900 text-white overflow-hidden rounded-b-[2rem] sm:rounded-none sm:mb-0 mb-6">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/30 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3"></div>
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
                 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-32 relative z-10 flex flex-col md:flex-row items-center">
-                <div className="md:w-1/2">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/50 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6">
-                    <Zap size={12} fill="currentColor" /> Authorized Distributor
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-32 relative z-10 flex flex-col md:flex-row items-center">
+                    <div className="md:w-[55%] text-center md:text-left pt-6 md:pt-0">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-900/50 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                            <Zap size={14} fill="currentColor" /> Authorized Distributor
+                        </div>
+                        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+                            Reliable Tech for <br className="hidden sm:block"/>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Modern Living</span>
+                        </h1>
+                        <p className="text-base sm:text-lg text-slate-300 mb-8 sm:mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                            Connect to a world of premium gadgets, high-capacity solar energy solutions, and expert installations. Seamlessly integrated with Mesobest Technology.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <button onClick={onShopNow} className={`px-8 py-4 ${BRAND_GREEN} ${BRAND_GREEN_HOVER} text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2`}>
+                                Shop Catalog <ArrowRight size={18} />
+                            </button>
+                            <a href="connect.html" className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white font-bold rounded-xl transition-all flex items-center justify-center">
+                                Learn More
+                            </a>
+                        </div>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
-                    Reliable Tech for <br/>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Modern Living</span>
-                    </h1>
-                    <p className="text-lg text-slate-300 mb-8 max-w-lg leading-relaxed">
-                    Connect to a world of premium gadgets, solar energy solutions, and expert installations. 
-                    Seamlessly integrated with Mesobest Technology.
-                    </p>
-                    <div className="flex gap-4">
-                    <button onClick={onShopNow} className={`px-8 py-4 ${BRAND_GREEN} ${BRAND_GREEN_HOVER} text-white font-bold rounded-lg shadow-lg hover:shadow-emerald-500/25 transition-all flex items-center gap-2`}>
-                        Shop Now <ArrowRight size={18} />
-                    </button>
+                    <div className="md:w-[45%] mt-16 md:mt-0 flex justify-center relative w-full">
+                        <div className="relative z-10 w-full max-w-sm lg:max-w-md bg-gradient-to-br from-slate-800 to-slate-900 p-2 sm:p-3 rounded-[2rem] shadow-2xl border border-slate-700/50 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
+                            <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=800" className="rounded-[1.5rem] w-full object-cover aspect-[4/3]" alt="Premium Tech Showcase" />
+                            {/* Floating UI Elements for aesthetics */}
+                            <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-4 rounded-2xl shadow-xl border border-slate-100 hidden sm:flex items-center gap-3 animate-bounce" style={{animationDuration: '3s'}}>
+                                <div className="bg-emerald-100 text-emerald-600 p-2 rounded-full"><ShieldAlert size={20}/></div>
+                                <div>
+                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Warranty</p>
+                                    <p className="font-extrabold text-sm">100% Guaranteed</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div className="md:w-1/2 mt-12 md:mt-0 flex justify-center relative">
-                    <div className="relative z-10 w-full max-w-md bg-gradient-to-br from-slate-800 to-slate-900 p-2 rounded-2xl shadow-2xl border border-slate-700">
-                        <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=800" className="rounded-xl w-full" alt="Tech" />
-                    </div>
-                </div>
                 </div>
             </div>
         );
 
         const FloatingSupport = () => (
-            <a 
-                href={WHATSAPP_LINK} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#20b858] transition-transform hover:scale-110 flex items-center justify-center animate-in slide-in-from-bottom-10 md:bottom-8 md:right-8"
-                aria-label="Chat on WhatsApp"
-            >
-                <MessageCircle size={28} fill="white" className="text-white" />
-                <span className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></span>
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl shadow-[#25D366]/30 hover:bg-[#20b858] transition-transform hover:scale-110 flex items-center justify-center animate-in slide-in-from-bottom-10" aria-label="Chat on WhatsApp">
+                <MessageCircle size={30} fill="white" className="text-white" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
             </a>
-        );
-
-        const LegalView = ({ type, onClose }) => {
-            const doc = LEGAL_DOCS[type];
-            if (!doc) return null;
-
-            return (
-                <div className="fixed inset-0 z-[80] bg-white overflow-y-auto">
-                    <div className="max-w-4xl mx-auto px-4 py-12">
-                        <button onClick={onClose} className="mb-8 flex items-center gap-2 text-slate-500 hover:text-emerald-600 transition-colors">
-                            <ChevronRight className="rotate-180" size={20}/> Back to Store
-                        </button>
-                        <h1 className="text-3xl font-bold text-slate-900 mb-8">{doc.title}</h1>
-                        <div className="prose prose-slate max-w-none whitespace-pre-wrap text-slate-700 leading-relaxed">
-                            {doc.content.split('\n').map((line, i) => {
-                                const trimmed = line.trim();
-                                if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
-                                    return <h3 key={i} className="text-lg font-bold text-slate-900 mt-6 mb-2">{trimmed.replace(/\*\*/g, '')}</h3>;
-                                } else if (trimmed.startsWith('- ')) {
-                                    return <li key={i} className="ml-4 mb-1 list-disc">{trimmed.replace('- ', '')}</li>;
-                                } else {
-                                    return <p key={i} className="mb-2">{trimmed}</p>;
-                                }
-                            })}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const RecommendationForm = ({ onSubmit, onClose }) => {
-            const [desc, setDesc] = useState('');
-            const [honeypot, setHoneypot] = useState(''); 
-
-            const handleSubmit = () => {
-                if (honeypot) return; 
-                onSubmit(desc);
-                onClose();
-            };
-
-            return (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="bg-white p-6 rounded-2xl w-full max-w-md relative shadow-2xl">
-                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><X size={20}/></button>
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-3 bg-emerald-100 text-emerald-600 rounded-full"><Lightbulb size={24}/></div>
-                            <h2 className="text-xl font-bold text-slate-900">Request a Product</h2>
-                        </div>
-                        <p className="text-sm text-slate-500 mb-4">Can't find what you're looking for? Tell us, and we'll try to stock it or order it for you.</p>
-                        <input type="text" className="opacity-0 absolute top-0 left-0 h-0 w-0 -z-10" tabIndex={-1} autoComplete="off" value={honeypot} onChange={e => setHoneypot(e.target.value)} />
-                        <textarea className="w-full border p-3 rounded-lg h-32 mb-4 focus:ring-2 focus:ring-emerald-500 outline-none resize-none" placeholder="E.g., I need a 10KVA stabilizer..." value={desc} onChange={e => setDesc(e.target.value)}></textarea>
-                        <button onClick={handleSubmit} disabled={!desc.trim()} className={`w-full py-3 ${BRAND_GREEN} disabled:opacity-50 text-white font-bold rounded-lg`}>Submit Request</button>
-                    </div>
-                </div>
-            );
-        };
-
-        const Footer = ({ onLegalClick }) => (
-            <footer className="bg-slate-950 text-slate-400 pt-16 pb-24 md:pb-8 border-t border-slate-900">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                    <div className="col-span-1 md:col-span-1">
-                    <div className="flex items-center gap-2 mb-6">
-                        <img src={FAVICON_URL} alt="Favicon" className="w-8 h-8 rounded" onError={(e)=>{e.target.style.display='none'}}/>
-                        <span className="text-xl font-bold text-white">Mbtech Store</span>
-                    </div>
-                    <p className="text-sm leading-relaxed mb-6">Mesobest Technology Digital & Tech Courses. Your one-stop shop for electricals, electronics, and alternative power solutions.</p>
-                    <div className="flex gap-4">
-                        {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                            <div key={i} className="w-8 h-8 rounded bg-slate-900 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all cursor-pointer"><Icon size={16} /></div>
-                        ))}
-                    </div>
-                    </div>
-                    <div><h4 className="text-white font-bold mb-6">Learning</h4><ul className="space-y-3 text-sm"><li><a href="course.html" className="hover:text-emerald-500 transition-colors">Our Courses</a></li><li><a href="connect.html" className="hover:text-emerald-500 transition-colors">Community</a></li></ul></div>
-                    <div><h4 className="text-white font-bold mb-6">Store</h4><ul className="space-y-3 text-sm"><li><span className="hover:text-emerald-500 cursor-pointer">Solar Solutions</span></li><li><span className="hover:text-emerald-500 cursor-pointer">Gadgets</span></li><li><span className="hover:text-emerald-500 cursor-pointer">Software</span></li></ul></div>
-                    <div>
-                        <h4 className="text-white font-bold mb-6">Support</h4>
-                        <ul className="space-y-3 text-sm">
-                            <li><a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-emerald-500 transition-colors">Contact Support</a></li>
-                            <li><button onClick={() => onLegalClick('refund')} className="hover:text-emerald-500 transition-colors text-left">Return Policy</button></li>
-                            <li><button onClick={() => onLegalClick('privacy')} className="hover:text-emerald-500 transition-colors text-left">Privacy Policy</button></li>
-                            <li><button onClick={() => onLegalClick('terms')} className="hover:text-emerald-500 transition-colors text-left">Terms of Service</button></li>
-                        </ul>
-                    </div>
-                </div>
-                <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center text-xs">
-                    <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved.</p>
-                    <div className="flex items-center gap-6 mt-4 md:mt-0">
-                        <button onClick={() => onLegalClick('privacy')} className="hover:text-white">Privacy Policy</button>
-                        <button onClick={() => onLegalClick('terms')} className="hover:text-white">Terms of Service</button>
-                    </div>
-                </div>
-                </div>
-            </footer>
         );
 
         const CartDrawer = ({ cart, cartOpen, setCartOpen, updateQty, removeFromCart, handleCheckout }) => {
@@ -577,30 +477,48 @@
             return (
                 <div className={`fixed inset-0 z-50 flex justify-end transition-all ${cartOpen ? 'visible' : 'invisible'}`}>
                     <div className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity ${cartOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setCartOpen(false)}></div>
-                    <div className={`relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col transition-transform duration-300 ${cartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                    <div className={`relative w-full sm:max-w-md bg-white dvh-screen shadow-2xl flex flex-col transition-transform duration-300 ease-out ${cartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                         <div className="p-5 border-b flex justify-between items-center bg-slate-50">
-                            <h2 className="font-bold text-lg flex items-center gap-2"><ShoppingCart className="text-emerald-600"/> Your Cart</h2>
-                            <button onClick={() => setCartOpen(false)} className="p-2 hover:bg-slate-200 rounded-full"><X size={20}/></button>
+                            <h2 className="font-bold text-lg flex items-center gap-2"><ShoppingCart className="text-emerald-600"/> Your Cart <span className="text-sm font-normal text-slate-500 bg-slate-200 px-2 py-0.5 rounded-full">{cart.length}</span></h2>
+                            <button onClick={() => setCartOpen(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X size={24} className="text-slate-600"/></button>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-                            {cart.length === 0 ? <p className="text-center text-slate-400 mt-10">Cart is empty</p> : cart.map(item => (
-                                <div key={item.id} className="flex gap-4 border-b border-slate-100 pb-4">
-                                    <img src={item.image} className="w-16 h-16 rounded object-cover bg-slate-100"/>
-                                    <div className="flex-1">
-                                        <h4 className="font-medium text-sm line-clamp-1">{item.name}</h4>
-                                        <p className="text-emerald-600 font-bold text-sm">₦{item.price.toLocaleString()}</p>
-                                        <div className="flex items-center gap-3 mt-2">
-                                            <span className="text-xs text-slate-500">Qty: {item.qty}</span>
-                                            <button onClick={() => removeFromCart(item.id)} className="text-xs text-red-500 hover:underline">Remove</button>
+                        <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-white">
+                            {cart.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-center space-y-4 text-slate-400">
+                                    <ShoppingCart size={64} className="text-slate-200" strokeWidth={1} />
+                                    <p className="text-lg">Your cart is empty</p>
+                                </div>
+                            ) : cart.map(item => (
+                                <div key={item.id} className="flex gap-4 border-b border-slate-100 pb-5">
+                                    <div className="w-20 h-20 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden shrink-0">
+                                        <img src={item.image} className="w-full h-full object-cover"/>
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <h4 className="font-bold text-sm text-slate-800 line-clamp-2 leading-tight mb-1">{item.name}</h4>
+                                            <p className="text-emerald-600 font-extrabold text-sm">₦{item.price.toLocaleString()}</p>
+                                        </div>
+                                        <div className="flex items-center justify-between mt-2">
+                                            <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-lg p-1">
+                                                <button onClick={() => updateQty(item.id, -1)} className="p-1 text-slate-500 hover:text-slate-800"><Minus size={14}/></button>
+                                                <span className="text-xs font-bold w-4 text-center">{item.qty}</span>
+                                                <button onClick={() => updateQty(item.id, 1)} className="p-1 text-slate-500 hover:text-slate-800"><Plus size={14}/></button>
+                                            </div>
+                                            <button onClick={() => removeFromCart(item.id)} className="text-xs text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded hover:bg-red-50 transition-colors">Remove</button>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                         {cart.length > 0 && (
-                            <div className="p-6 bg-slate-50 border-t">
-                                <div className="flex justify-between font-bold text-xl mb-4"><span>Total</span><span>₦{total.toLocaleString()}</span></div>
-                                <button onClick={handleCheckout} className={`w-full py-4 ${BRAND_GREEN} text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all`}>Checkout Now</button>
+                            <div className="p-6 bg-slate-50 border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+                                <div className="flex justify-between font-bold text-lg mb-4 text-slate-800">
+                                    <span>Subtotal</span>
+                                    <span className="text-xl">₦{total.toLocaleString()}</span>
+                                </div>
+                                <button onClick={handleCheckout} className={`w-full py-4 ${BRAND_GREEN} text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5 transition-all text-lg`}>
+                                    Secure Checkout
+                                </button>
                             </div>
                         )}
                     </div>
@@ -608,7 +526,6 @@
             );
         };
 
-        // --- AUTH COMPONENT ---
         const AuthModal = ({ setAuthOpen, notify }) => {
             const [isSignUp, setIsSignUp] = useState(false);
             const [loading, setLoading] = useState(false);
@@ -623,9 +540,7 @@
                 try {
                     if (isSignUp) {
                         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                        if (name) {
-                            await updateProfile(userCred.user, { displayName: name });
-                        }
+                        if (name) await updateProfile(userCred.user, { displayName: name });
                         notify("Account created successfully!");
                     } else {
                         await signInWithEmailAndPassword(auth, email, password);
@@ -633,7 +548,6 @@
                     }
                     setAuthOpen(false);
                 } catch(err) {
-                    console.error("Auth Error:", err);
                     notify(err.message.replace('Firebase: ', ''), "error");
                 } finally {
                     setLoading(false);
@@ -643,12 +557,10 @@
             const handleGoogleAuth = async () => {
                 setLoading(true);
                 try {
-                    const provider = new GoogleAuthProvider();
-                    await signInWithPopup(auth, provider);
+                    await signInWithPopup(auth, new GoogleAuthProvider());
                     notify("Signed in with Google!");
                     setAuthOpen(false);
                 } catch (err) {
-                    console.error("Google Auth Error:", err);
                     notify("Google sign-in failed", "error");
                 } finally {
                     setLoading(false);
@@ -657,33 +569,27 @@
 
             return (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-                    <div className="bg-white p-8 rounded-2xl w-full max-w-sm relative shadow-2xl">
-                        <button onClick={() => setAuthOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"><X size={20}/></button>
-                        <h2 className="text-2xl font-bold mb-2 text-center text-slate-900">{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
-                        <p className="text-sm text-center text-slate-500 mb-6">{isSignUp ? 'Join us to checkout faster' : 'Sign in to access your account'}</p>
+                    <div className="bg-white p-6 sm:p-8 rounded-[2rem] w-full max-w-sm relative shadow-2xl animate-in zoom-in-95 duration-200">
+                        <button onClick={() => setAuthOpen(false)} className="absolute top-4 right-4 p-2 bg-slate-50 text-slate-400 hover:text-slate-800 rounded-full transition-colors"><X size={20}/></button>
+                        <h2 className="text-2xl font-bold mb-2 text-center text-slate-900">{isSignUp ? 'Join Mbtech' : 'Welcome Back'}</h2>
+                        <p className="text-sm text-center text-slate-500 mb-6">{isSignUp ? 'Create an account to track orders' : 'Sign in to access your dashboard'}</p>
                         
-                        <button 
-                            onClick={handleGoogleAuth}
-                            disabled={loading}
-                            className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors font-bold text-slate-700 mb-4 disabled:opacity-50"
-                        >
+                        <button onClick={handleGoogleAuth} disabled={loading} className="w-full flex items-center justify-center gap-3 py-3.5 px-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors font-bold text-slate-700 mb-5 disabled:opacity-50">
                             <svg className="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
                             Continue with Google
                         </button>
 
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-5">
                             <div className="h-px bg-slate-200 flex-1"></div>
                             <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Or</span>
                             <div className="h-px bg-slate-200 flex-1"></div>
                         </div>
 
-                        <form onSubmit={handleEmailAuth}>
-                            {isSignUp && (
-                                <input name="name" type="text" placeholder="Full Name" className="w-full p-3 border border-slate-200 rounded-lg mb-3 focus:outline-none focus:border-emerald-500 transition-colors" required/>
-                            )}
-                            <input name="email" type="email" placeholder="Email Address" className="w-full p-3 border border-slate-200 rounded-lg mb-3 focus:outline-none focus:border-emerald-500 transition-colors" required/>
-                            <input name="password" type="password" placeholder="Password" className="w-full p-3 border border-slate-200 rounded-lg mb-4 focus:outline-none focus:border-emerald-500 transition-colors" required minLength="6"/>
-                            <button disabled={loading} className={`w-full py-3 ${BRAND_GREEN} text-white font-bold rounded-lg disabled:opacity-50 flex items-center justify-center transition-colors`}>
+                        <form onSubmit={handleEmailAuth} className="space-y-4">
+                            {isSignUp && <input name="name" type="text" placeholder="Full Name" className="w-full p-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow text-base bg-slate-50" required/>}
+                            <input name="email" type="email" placeholder="Email Address" className="w-full p-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow text-base bg-slate-50" required/>
+                            <input name="password" type="password" placeholder="Password" className="w-full p-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-shadow text-base bg-slate-50" required minLength="6"/>
+                            <button disabled={loading} className={`w-full py-4 ${BRAND_GREEN} text-white font-bold rounded-xl disabled:opacity-50 flex items-center justify-center transition-colors shadow-lg shadow-emerald-500/20`}>
                                 {loading ? <Loader2 size={20} className="animate-spin" /> : (isSignUp ? 'Create Account' : 'Sign In')}
                             </button>
                         </form>
@@ -691,166 +597,9 @@
                         <div className="mt-6 text-center text-sm text-slate-500">
                             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
                             <button onClick={() => setIsSignUp(!isSignUp)} className="text-emerald-600 font-bold hover:underline">
-                                {isSignUp ? 'Sign In' : 'Sign Up'}
+                                {isSignUp ? 'Log in here' : 'Register now'}
                             </button>
                         </div>
-                    </div>
-                </div>
-            );
-        };
-
-        // --- ADMIN PANEL ---
-        const AdminPanel = ({ setView, notify, user }) => {
-            const [tab, setTab] = useState('products');
-            const [orders, setOrders] = useState([]);
-            const [recs, setRecs] = useState([]);
-            const [products, setProducts] = useState([]);
-            const [newProd, setNewProd] = useState({name:'', price:'', category:'Gadgets', image:''});
-            const [imageSource, setImageSource] = useState('upload'); // 'upload', 'github', 'url'
-            const [uploading, setUploading] = useState(false);
-            const isAdmin = user && ADMIN_EMAILS.includes(user.email);
-
-            useEffect(() => {
-                const qP = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_products');
-                const qO = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_orders');
-                const qR = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_recommendations');
-                
-                const uP = onSnapshot(qP, s => setProducts(s.docs.map(d=>({id:d.id,...d.data()}))));
-                const uO = onSnapshot(qO, s => setOrders(s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0))));
-                const uR = onSnapshot(qR, s => setRecs(s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0))));
-                return () => { uP(); uO(); uR(); };
-            }, []);
-
-            const handleImageUpload = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                // Enforce 1024KB limit
-                if (file.size > 1024 * 1024) {
-                    notify("File too large! Max 1MB.", "error");
-                    e.target.value = null; // Reset input
-                    return;
-                }
-
-                setUploading(true);
-                try {
-                    const storageRef = ref(storage, `products-img/${file.name}`);
-                    await uploadBytes(storageRef, file);
-                    const url = await getDownloadURL(storageRef);
-                    setNewProd({...newProd, image: url});
-                    notify("Image Uploaded");
-                } catch (error) {
-                    console.error("Upload failed", error);
-                    notify("Upload Failed", "error");
-                } finally {
-                    setUploading(false);
-                }
-            };
-
-            const handleAdd = async (e) => {
-                e.preventDefault();
-                let finalImage = newProd.image;
-                if (imageSource === 'github') {
-                    finalImage = `${GITHUB_PRODUCT_IMG_BASE}${newProd.image}`;
-                }
-                
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_products'), {
-                    ...newProd, 
-                    image: finalImage, 
-                    price: Number(newProd.price), 
-                    rating: 5
-                });
-                setNewProd({name:'', price:'', category:'Gadgets', image:''});
-                notify("Product Added");
-            };
-
-            const handleDelete = async (id) => {
-                if(!isAdmin) return;
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_products', id));
-                notify("Product Deleted");
-            }
-
-            return (
-                <div className="min-h-screen bg-slate-50 pb-20">
-                    <div className="bg-slate-900 text-white p-8">
-                        <div className="max-w-7xl mx-auto flex justify-between items-center">
-                            <div><h1 className="text-2xl font-bold flex items-center gap-2"><LayoutDashboard/> Store Portal</h1><span className="text-xs text-emerald-400 uppercase tracking-widest">{isAdmin ? 'Administrator' : 'Store Manager'}</span></div>
-                            <button onClick={() => setView('home')} className="px-4 py-2 bg-white/10 rounded hover:bg-white/20">Exit</button>
-                        </div>
-                    </div>
-                    <div className="max-w-7xl mx-auto px-4 mt-8">
-                        <div className="flex gap-4 mb-6">
-                            <button onClick={() => setTab('products')} className={`px-4 py-2 rounded-lg ${tab==='products' ? 'bg-emerald-100 text-emerald-800' : 'bg-white'}`}>Products</button>
-                            <button onClick={() => setTab('orders')} className={`px-4 py-2 rounded-lg ${tab==='orders' ? 'bg-emerald-100 text-emerald-800' : 'bg-white'}`}>Orders</button>
-                            <button onClick={() => setTab('recs')} className={`px-4 py-2 rounded-lg ${tab==='recs' ? 'bg-emerald-100 text-emerald-800' : 'bg-white'}`}>Requests</button>
-                        </div>
-                        {tab === 'products' && (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="md:col-span-2 bg-white p-6 rounded-xl shadow-sm">
-                                    <table className="w-full text-left text-sm">
-                                        <thead><tr className="text-slate-500 border-b"><th className="pb-3">Name</th><th className="pb-3">Price</th><th className="pb-3">Action</th></tr></thead>
-                                        <tbody className="divide-y">{products.map(p => (
-                                            <tr key={p.id}>
-                                                <td className="py-3 flex items-center gap-3"><img src={p.image} className="w-8 h-8 rounded bg-gray-100 object-cover" onError={(e)=>{e.target.src='https://placehold.co/100?text=No+Img'}}/>{p.name}</td>
-                                                <td className="py-3">₦{p.price.toLocaleString()}</td>
-                                                <td className="py-3">{isAdmin ? <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:text-red-700 p-1"><Trash2 size={16}/></button> : <span className="text-xs text-slate-400 italic">View Only</span>}</td>
-                                            </tr>
-                                        ))}</tbody>
-                                    </table>
-                                </div>
-                                <div className="bg-white p-6 rounded-xl shadow-sm h-fit">
-                                    <h3 className="font-bold mb-4">Add Product</h3>
-                                    <form onSubmit={handleAdd} className="space-y-3">
-                                        <input placeholder="Name" className="w-full border p-2 rounded" value={newProd.name} onChange={e=>setNewProd({...newProd, name: e.target.value})} required/>
-                                        <input placeholder="Price" type="number" className="w-full border p-2 rounded" value={newProd.price} onChange={e=>setNewProd({...newProd, price: e.target.value})} required/>
-                                        <select className="w-full border p-2 rounded" value={newProd.category} onChange={e=>setNewProd({...newProd, category: e.target.value})}>{CATEGORIES.filter(c=>c.name!=='All').map(c=><option key={c.name} value={c.name}>{c.name}</option>)}</select>
-                                        
-                                        <div className="p-3 bg-slate-50 rounded border">
-                                            <label className="text-xs font-bold text-slate-600 block mb-2">Image Source</label>
-                                            <div className="flex gap-2 mb-3">
-                                                <button type="button" onClick={() => setImageSource('upload')} className={`flex-1 py-1 text-xs rounded border ${imageSource === 'upload' ? 'bg-white border-emerald-500 text-emerald-600' : 'bg-slate-100'}`}>Upload</button>
-                                                <button type="button" onClick={() => setImageSource('github')} className={`flex-1 py-1 text-xs rounded border ${imageSource === 'github' ? 'bg-white border-emerald-500 text-emerald-600' : 'bg-slate-100'}`}>GitHub</button>
-                                                <button type="button" onClick={() => setImageSource('url')} className={`flex-1 py-1 text-xs rounded border ${imageSource === 'url' ? 'bg-white border-emerald-500 text-emerald-600' : 'bg-slate-100'}`}>URL</button>
-                                            </div>
-
-                                            {imageSource === 'upload' && (
-                                                <div className="relative">
-                                                    <input 
-                                                        type="file" 
-                                                        accept="image/*"
-                                                        onChange={handleImageUpload}
-                                                        className="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
-                                                    />
-                                                    {uploading && <div className="text-xs text-emerald-600 mt-1 flex items-center gap-1"><Loader2 size={12} className="animate-spin"/> Uploading...</div>}
-                                                    {newProd.image && !uploading && <div className="text-xs text-green-600 mt-1 truncate">Ready: {newProd.image.slice(0, 20)}...</div>}
-                                                </div>
-                                            )}
-
-                                            {imageSource === 'github' && (
-                                                <div className="relative">
-                                                    <input placeholder="filename.jpg" className="w-full border p-2 rounded text-sm pl-8" value={newProd.image} onChange={e=>setNewProd({...newProd, image: e.target.value})} required={imageSource === 'github'}/>
-                                                    <Github size={14} className="absolute top-3 left-2 text-slate-400"/>
-                                                    <div className="text-[10px] text-slate-400 mt-1">Links to repo /products-img/</div>
-                                                </div>
-                                            )}
-
-                                            {imageSource === 'url' && (
-                                                <div className="relative">
-                                                    <input placeholder="https://example.com/img.jpg" className="w-full border p-2 rounded text-sm pl-8" value={newProd.image} onChange={e=>setNewProd({...newProd, image: e.target.value})} required={imageSource === 'url'}/>
-                                                    <ExternalLink size={14} className="absolute top-3 left-2 text-slate-400"/>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <button disabled={uploading} className={`w-full py-2 ${BRAND_GREEN} disabled:opacity-50 text-white rounded font-bold`}>
-                                            {uploading ? 'Wait...' : 'Add Item'}
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        )}
-                        {tab === 'orders' && <div className="bg-white p-6 rounded-xl shadow-sm text-sm"><table className="w-full text-left"><thead><tr className="bg-slate-50"><th className="p-3">ID</th><th className="p-3">Customer</th><th className="p-3">Total</th><th className="p-3">Status</th></tr></thead><tbody className="divide-y">{orders.map(o=>(<tr key={o.id}><td className="p-3 font-mono text-xs">#{o.id.slice(0,6)}</td><td className="p-3">{o.userName}</td><td className="p-3">₦{o.total.toLocaleString()}</td><td className="p-3"><span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold uppercase">{o.status}</span></td></tr>))}</tbody></table></div>}
-                        {tab === 'recs' && <div className="bg-white p-6 rounded-xl shadow-sm"><h3 className="font-bold mb-4">Requests</h3><div className="space-y-4">{recs.map(r=>(<div key={r.id} className="p-4 border rounded flex justify-between"><div><p className="font-bold">{r.description}</p><p className="text-xs text-slate-500">By {r.userName}</p></div><span className="text-xs text-slate-400">{new Date(r.createdAt?.seconds*1000).toLocaleDateString()}</span></div>))}</div></div>}
                     </div>
                 </div>
             );
@@ -860,23 +609,52 @@
             const [form, setForm] = useState({name: user?.displayName||'', phone:'', address:''});
             const [honeypot, setHoneypot] = useState('');
             return (
-                <div className="min-h-screen bg-slate-50 pt-8 pb-20">
-                    <div className="max-w-3xl mx-auto px-4">
-                        <button onClick={() => setView('shop')} className="mb-4 text-slate-500 flex items-center gap-1"><ChevronRight className="rotate-180" size={16}/> Back</button>
-                        <h1 className="text-2xl font-bold mb-8 text-slate-900">Checkout</h1>
-                        <div className="grid md:grid-cols-2 gap-8">
-                            <div className="bg-white p-6 rounded-xl shadow-sm space-y-4 h-fit">
-                                <h3 className="font-bold mb-4">Details</h3>
-                                <input type="text" className="opacity-0 absolute -z-10 h-0 w-0" tabIndex={-1} autoComplete="off" value={honeypot} onChange={e => setHoneypot(e.target.value)} />
-                                <input className="w-full border p-3 rounded mb-3" placeholder="Full Name" value={form.name} onChange={e=>setForm({...form, name:e.target.value})}/>
-                                <input className="w-full border p-3 rounded mb-3" placeholder="Phone" value={form.phone} onChange={e=>setForm({...form, phone:e.target.value})}/>
-                                <textarea className="w-full border p-3 rounded h-24" placeholder="Address" value={form.address} onChange={e=>setForm({...form, address:e.target.value})}/>
+                <div className="min-h-screen bg-slate-50 py-8 lg:py-12">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                        <button onClick={() => setView('shop')} className="mb-6 text-slate-500 hover:text-slate-800 font-medium flex items-center gap-1 transition-colors w-fit"><ChevronRight className="rotate-180" size={18}/> Back to Shopping</button>
+                        <h1 className="text-3xl font-extrabold mb-8 text-slate-900">Secure Checkout</h1>
+                        
+                        <div className="grid lg:grid-cols-5 gap-8">
+                            <div className="lg:col-span-3 space-y-6">
+                                <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100">
+                                    <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><MapPin size={20} className="text-emerald-600"/> Delivery Details</h3>
+                                    <div className="space-y-4">
+                                        <input type="text" className="opacity-0 absolute -z-10 h-0 w-0" tabIndex={-1} autoComplete="off" value={honeypot} onChange={e => setHoneypot(e.target.value)} />
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
+                                            <input className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Enter your full name" value={form.name} onChange={e=>setForm({...form, name:e.target.value})}/>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone Number</label>
+                                            <input type="tel" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. 08012345678" value={form.phone} onChange={e=>setForm({...form, phone:e.target.value})}/>
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Delivery Address</label>
+                                            <textarea className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none h-28 resize-none" placeholder="Full street address, city, state" value={form.address} onChange={e=>setForm({...form, address:e.target.value})}/>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="bg-white p-6 rounded-xl shadow-sm h-fit">
-                                <h3 className="font-bold mb-4">Payment Method</h3>
-                                <div className="space-y-3">
-                                    <button onClick={() => !honeypot && placeOrder('transfer', form)} className="w-full p-4 border rounded-xl flex items-center gap-3 hover:border-emerald-500 hover:bg-emerald-50 transition-all"><div className="p-2 bg-slate-100 rounded-full"><Banknote size={20}/></div><div className="text-left"><div className="font-bold">Bank Transfer</div><div className="text-xs text-slate-500">Manual verification</div></div></button>
-                                    <button onClick={() => !honeypot && placeOrder('whatsapp', form)} className="w-full p-4 border border-green-200 bg-green-50 rounded-xl flex items-center gap-3 hover:bg-green-100 transition-all"><div className="p-2 bg-white rounded-full text-green-600"><MessageCircle size={20}/></div><div className="text-left"><div className="font-bold text-green-900">WhatsApp Checkout</div><div className="text-xs text-green-700">Fastest option</div></div></button>
+
+                            <div className="lg:col-span-2 space-y-6">
+                                <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 sticky top-24">
+                                    <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><CreditCard size={20} className="text-emerald-600"/> Payment Method</h3>
+                                    <div className="space-y-3">
+                                        <button onClick={() => !honeypot && placeOrder('transfer', form)} className="w-full p-4 border border-slate-200 rounded-2xl flex items-center gap-4 hover:border-emerald-500 hover:bg-emerald-50 transition-all group text-left">
+                                            <div className="p-3 bg-slate-100 group-hover:bg-white rounded-full text-slate-600 group-hover:text-emerald-600 transition-colors"><Banknote size={24}/></div>
+                                            <div>
+                                                <div className="font-bold text-slate-900">Bank Transfer</div>
+                                                <div className="text-xs text-slate-500 mt-0.5">Manual payment verification</div>
+                                            </div>
+                                        </button>
+                                        <button onClick={() => !honeypot && placeOrder('whatsapp', form)} className="w-full p-4 border border-[#25D366]/30 bg-[#25D366]/5 rounded-2xl flex items-center gap-4 hover:bg-[#25D366]/10 transition-all text-left">
+                                            <div className="p-3 bg-white shadow-sm rounded-full text-[#25D366]"><MessageCircle size={24}/></div>
+                                            <div>
+                                                <div className="font-bold text-slate-900">WhatsApp Checkout</div>
+                                                <div className="text-xs text-slate-600 mt-0.5">Fastest & most direct option</div>
+                                            </div>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -892,107 +670,217 @@
             const [cartOpen, setCartOpen] = useState(false);
             const [authOpen, setAuthOpen] = useState(false);
             const [recOpen, setRecOpen] = useState(false); 
-            const [legalDoc, setLegalDoc] = useState(null); // 'privacy', 'terms', 'refund'
+            const [legalDoc, setLegalDoc] = useState(null); 
             const [user, setUser] = useState(null);
             const [filter, setFilter] = useState('All');
             const [products, setProducts] = useState([]);
             const [notification, setNotification] = useState(null);
 
             useEffect(() => {
-                const unsubAuth = onAuthStateChanged(auth, setUser);
-                const unsubProds = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_products'), (snap) => {
-                    if(snap.empty && products.length === 0) setProducts(INITIAL_PRODUCTS.map((p,i)=>({...p, id:`init-${i}`}))); 
-                    else setProducts(snap.docs.map(d => ({id: d.id, ...d.data()})));
-                });
-                return () => { unsubAuth(); unsubProds(); };
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                        else await signInAnonymously(auth);
+                    } catch (e) { console.error("Auth init error:", e); }
+                };
+                initAuth();
+                return onAuthStateChanged(auth, setUser);
             }, []);
 
-            const notify = (msg, type='success') => { setNotification({ msg, type }); setTimeout(() => setNotification(null), 3000); };
+            useEffect(() => {
+                if (!user) return; 
+                const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_products');
+                const unsubProds = onSnapshot(q, (snap) => {
+                    setProducts(snap.docs.map(d => ({id: d.id, ...d.data()})));
+                }, (error) => console.error("Snapshot connection error:", error));
+                return () => unsubProds();
+            }, [user]);
+
+            const notify = (msg, type='success') => { setNotification({ msg, type }); setTimeout(() => setNotification(null), 3500); };
             const addToCart = (p) => {
                 setCart(prev => { const ex = prev.find(i => i.id === p.id); if(ex) return prev.map(i => i.id === p.id ? {...i, qty: i.qty+1} : i); return [...prev, {...p, qty: 1}]; });
                 notify(`Added ${p.name}`); setCartOpen(true);
+            };
+            const updateQty = (id, delta) => {
+                setCart(prev => prev.map(i => {
+                    if (i.id === id) return {...i, qty: Math.max(1, i.qty + delta)};
+                    return i;
+                }));
             };
             const removeFromCart = (id) => setCart(c => c.filter(i => i.id !== id));
             
             const placeOrder = async (method, details) => {
                 if(!user) return;
+                if (!details.name || !details.phone || !details.address) { notify("Please fill all details", "error"); return; }
                 if (!checkRateLimit('lastOrderTime', 45)) { notify("Please wait before placing another order.", "error"); return; }
                 try {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_orders'), {
                         userId: user.uid, userName: user.displayName || details.name, items: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), method, status: 'pending', createdAt: serverTimestamp(), contact: details.phone, address: details.address
                     });
-                    setCart([]); notify("Order placed!"); setView('success');
-                } catch(e) { console.error(e); notify("Error", "error"); }
+                    setCart([]); setView('success');
+                } catch(e) { console.error(e); notify("Order processing failed", "error"); }
             };
-
-            const submitRecommendation = async (text) => {
-                if(!user) { setAuthOpen(true); return; }
-                if (!checkRateLimit('lastRecTime', 60)) { notify("Too fast. Wait a moment.", "error"); return; }
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_recommendations'), { userId: user.uid, userName: user.displayName, description: text, createdAt: serverTimestamp() });
-                notify("Request Sent");
-            };
-
-            const handleLegalClick = (type) => {
-                setLegalDoc(type);
-            };
-
-            if(view === 'admin') return <AdminPanel setView={setView} notify={notify} user={user} />;
 
             return (
-                <div className="min-h-screen">
+                <div className="min-h-screen flex flex-col font-sans text-slate-800">
                     <FloatingSupport />
-                    {notification && <div className={`fixed top-4 right-4 z-[70] px-6 py-3 rounded-lg shadow-xl text-white flex gap-2 animate-bounce ${notification.type==='error'?'bg-red-600':'bg-emerald-600'}`}>{notification.msg}</div>}
+                    {/* Toast Notification */}
+                    <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[70] transition-all duration-300 transform ${notification ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-8 opacity-0 scale-95 pointer-events-none'}`}>
+                        {notification && (
+                            <div className={`px-6 py-3.5 rounded-full shadow-xl shadow-black/10 text-white font-bold flex items-center gap-2 backdrop-blur-md ${notification.type==='error'?'bg-red-600/90':'bg-emerald-600/90'}`}>
+                                {notification.type === 'error' ? <ShieldAlert size={18}/> : <CheckCircle size={18}/>}
+                                {notification.msg}
+                            </div>
+                        )}
+                    </div>
+
                     {authOpen && <AuthModal setAuthOpen={setAuthOpen} notify={notify} />}
-                    {recOpen && <RecommendationForm onSubmit={submitRecommendation} onClose={() => setRecOpen(false)} />}
-                    {legalDoc && <LegalView type={legalDoc} onClose={() => setLegalDoc(null)} />}
-                    
-                    <CartDrawer cart={cart} cartOpen={cartOpen} setCartOpen={setCartOpen} removeFromCart={removeFromCart} handleCheckout={()=>{setCartOpen(false); if(!user) setAuthOpen(true); else setView('checkout');}} />
+                    <CartDrawer cart={cart} cartOpen={cartOpen} setCartOpen={setCartOpen} updateQty={updateQty} removeFromCart={removeFromCart} handleCheckout={()=>{setCartOpen(false); if(!user || user.isAnonymous) setAuthOpen(true); else setView('checkout');}} />
                     
                     <TopBar />
-                    <Navbar cartCount={cart.reduce((a,b)=>a+b.qty,0)} onCartClick={() => setCartOpen(true)} user={user} onAuthClick={() => setAuthOpen(true)} onViewChange={setView} currentView={view} />
+                    <Navbar cartCount={cart.reduce((a,b)=>a+b.qty,0)} onCartClick={() => setCartOpen(true)} user={user && !user.isAnonymous ? user : null} onAuthClick={() => setAuthOpen(true)} onViewChange={setView} currentView={view} />
 
-                    {view === 'checkout' ? <CheckoutView user={user} setView={setView} placeOrder={placeOrder} /> : 
+                    {view === 'checkout' ? <CheckoutView user={user && !user.isAnonymous ? user : null} setView={setView} placeOrder={placeOrder} /> : 
                      view === 'success' ? (
-                        <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-4">
-                            <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6"><CheckCircle size={40}/></div>
-                            <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
-                            <p className="text-slate-500 mb-8">We have received your order.</p>
-                            <button onClick={() => setView('home')} className="px-8 py-3 bg-slate-900 text-white rounded-lg font-bold">Back Home</button>
+                        <div className="flex-1 flex flex-col items-center justify-center text-center p-6 min-h-[70vh]">
+                            <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6 animate-bounce" style={{animationIterationCount: 1}}><CheckCircle size={48} strokeWidth={2.5}/></div>
+                            <h1 className="text-3xl md:text-4xl font-extrabold mb-3 text-slate-900">Order Confirmed!</h1>
+                            <p className="text-slate-500 mb-10 max-w-md text-lg">Thank you for your purchase. We have received your order and our team will contact you shortly.</p>
+                            <button onClick={() => setView('home')} className="px-10 py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-lg hover:-translate-y-1">Return to Store</button>
                         </div>
                      ) : (
-                        <div className="animate-in fade-in duration-500">
+                        <div className="flex-1 animate-in fade-in duration-500">
                             {view === 'home' && <Hero onShopNow={() => setView('shop')} />}
-                            <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
-                                <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
-                                    <div><h2 className="text-3xl font-bold text-slate-900">{view === 'home' ? 'Featured Products' : 'Store Catalog'}</h2></div>
-                                    {view === 'shop' && <div className="flex gap-2 overflow-x-auto w-full md:w-auto pb-2">{CATEGORIES.map(c => <button key={c.name} onClick={() => setFilter(c.name)} className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${filter === c.name ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{c.name}</button>)}</div>}
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-                                    {(filter === 'All' ? products : products.filter(p => p.category === filter || (filter==='Services' && p.type==='service'))).map(p => (
-                                        <div key={p.id} className="group bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 flex flex-col">
-                                            <div className="relative aspect-square overflow-hidden bg-slate-50">
-                                                <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onError={(e)=>{e.target.src='https://placehold.co/400?text=No+Image'}} />
-                                                {p.type === 'service' && <span className="absolute top-3 left-3 bg-slate-900/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide">Service</span>}
-                                            </div>
-                                            <div className="p-5 flex flex-col flex-grow">
-                                                <div className="text-xs font-bold text-emerald-600 uppercase tracking-wide mb-1">{p.category}</div>
-                                                <h3 className="font-bold text-slate-900 text-lg leading-tight mb-2 group-hover:text-emerald-700 transition-colors">{p.name}</h3>
-                                                <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-50">
-                                                    <div className="font-bold text-xl text-slate-900">₦{p.price.toLocaleString()}</div>
-                                                    <button onClick={() => addToCart(p)} className={`p-3 rounded-xl ${BRAND_GREEN} text-white shadow-lg hover:shadow-emerald-500/30 hover:scale-105 transition-all`}><ShoppingCart size={18} /></button>
-                                                </div>
+                            <section className="py-12 md:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 md:mb-12 gap-6">
+                                    <div>
+                                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+                                            {view === 'home' ? (products.filter(p => p.featured).length > 0 ? 'Featured Products' : 'Shop by Category') : 'Store Catalog'}
+                                        </h2>
+                                        {view === 'shop' && <p className="text-slate-500 mt-2">Browse our wide range of tech and solar solutions.</p>}
+                                    </div>
+                                    
+                                    {/* Mobile Swipable Category Pills */}
+                                    {view === 'shop' && (
+                                        <div className="w-full lg:w-auto -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto no-scrollbar snap-x snap-mandatory">
+                                            <div className="flex gap-2 sm:gap-3 pb-2 min-w-max">
+                                                {CATEGORIES.map(c => (
+                                                    <button key={c.name} onClick={() => setFilter(c.name)} className={`snap-start px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 border ${filter === c.name ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-500/20' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
+                                                        <span className={filter === c.name ? 'text-emerald-100' : 'text-slate-400'}>{c.icon}</span> {c.name}
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
-                                    ))}
+                                    )}
                                 </div>
-                                <div className="bg-slate-50 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-slate-100 mb-20 md:mb-0">
-                                    <div><h3 className="text-xl font-bold text-slate-900 mb-2">Can't find what you need?</h3><p className="text-slate-500">We can source specific gadgets or solar equipment for you.</p></div>
-                                    <button onClick={() => setRecOpen(true)} className="px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-100 transition-colors">Request a Product</button>
+                                
+                                {view === 'home' && products.filter(p => p.featured).length === 0 ? (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6 mb-16">
+                                        {CATEGORIES.filter(c => c.name !== 'All').map(category => (
+                                            <button key={category.name} onClick={() => { setFilter(category.name); setView('shop'); }} className="flex flex-col items-center justify-center p-6 sm:p-8 bg-white border border-slate-100 rounded-3xl hover:bg-emerald-50 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/10 transition-all group shadow-sm">
+                                                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-slate-50 rounded-full flex items-center justify-center text-emerald-600 mb-4 group-hover:scale-110 transition-transform group-hover:bg-white group-hover:shadow-md">
+                                                    <div className="scale-125 sm:scale-150">{category.icon}</div>
+                                                </div>
+                                                <span className="font-bold text-slate-700 text-sm sm:text-base text-center leading-tight">{category.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 mb-16">
+                                        {(view === 'home' 
+                                            ? products.filter(p => p.featured).slice(0, 4)
+                                            : (filter === 'All' ? products : products.filter(p => p.category === filter || (filter==='Services' && p.type==='service')))
+                                        ).map(p => (
+                                            <div key={p.id} className="group bg-white rounded-[2rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 flex flex-col shadow-sm">
+                                                <div className="relative aspect-square overflow-hidden bg-slate-50 p-4">
+                                                    <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-500" onError={(e)=>{e.target.src='https://placehold.co/400?text=No+Image'}} />
+                                                    {p.type === 'service' && <span className="absolute top-4 left-4 bg-slate-900/90 backdrop-blur text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wide">Service</span>}
+                                                    {p.featured && view === 'shop' && <span className="absolute top-4 right-4 bg-amber-400 text-amber-950 text-[10px] font-bold px-2.5 py-1.5 rounded-full flex items-center gap-1 uppercase tracking-wide shadow-sm"><Star size={12} fill="currentColor"/> Featured</span>}
+                                                </div>
+                                                <div className="p-6 flex flex-col flex-grow">
+                                                    <div className="text-[11px] font-extrabold text-emerald-600 uppercase tracking-wider mb-2">{p.category}</div>
+                                                    <h3 className="font-bold text-slate-900 text-lg leading-tight mb-4 group-hover:text-emerald-700 transition-colors line-clamp-2">{p.name}</h3>
+                                                    <div className="mt-auto pt-5 flex items-center justify-between border-t border-slate-100/60">
+                                                        <div className="font-extrabold text-xl text-slate-900 tracking-tight">₦{p.price.toLocaleString()}</div>
+                                                        <button onClick={() => addToCart(p)} className={`p-3.5 rounded-2xl ${BRAND_GREEN} text-white shadow-lg shadow-emerald-500/20 hover:scale-105 hover:bg-emerald-500 transition-all focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 outline-none`}>
+                                                            <ShoppingCart size={20} strokeWidth={2.5} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {((view === 'shop' && filter !== 'All' && products.filter(p => p.category === filter || (filter==='Services' && p.type==='service')).length === 0)) && (
+                                            <div className="col-span-full py-20 px-6 text-center bg-slate-50 rounded-[2rem] border border-slate-100 border-dashed flex flex-col items-center">
+                                                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm text-slate-300 mb-4"><Search size={32}/></div>
+                                                <h3 className="font-bold text-lg text-slate-800 mb-2">No products found</h3>
+                                                <p className="text-slate-500 max-w-md">We couldn't find any products in the "{filter}" category at the moment. Please check back later or view other categories.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2rem] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                                    <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2"></div>
+                                    
+                                    <div className="relative z-10 text-center md:text-left">
+                                        <h3 className="text-2xl md:text-3xl font-extrabold text-white mb-3">Can't find what you need?</h3>
+                                        <p className="text-slate-300 text-lg">Let us know. We can source specific gadgets or solar equipment for you.</p>
+                                    </div>
+                                    <button onClick={() => { /* setRecOpen(true) if implemented */ alert("Recommendation form coming soon!"); }} className="relative z-10 px-8 py-4 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 w-full md:w-auto flex items-center justify-center gap-2">
+                                        <Lightbulb size={20}/> Request Product
+                                    </button>
                                 </div>
                             </section>
                         </div>
                      )}
-                    <Footer onLegalClick={handleLegalClick} />
+                    
+                    <footer className="bg-slate-950 text-slate-400 pt-16 pb-24 md:pb-12 border-t border-slate-900 mt-auto">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                                <div className="col-span-1 md:col-span-2 lg:col-span-1">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <img src={FAVICON_URL} alt="Favicon" className="w-8 h-8 rounded" onError={(e)=>{e.target.style.display='none'}}/>
+                                        <span className="text-xl font-bold text-white">Mbtech Store</span>
+                                    </div>
+                                    <p className="text-sm leading-relaxed mb-6">Your trusted partner for Tech Gadgets, Laptops, Solar Energy Solutions, and Professional Installations.</p>
+                                    <div className="flex gap-3">
+                                        {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+                                            <button key={i} className="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center hover:bg-emerald-600 hover:border-emerald-600 hover:text-white transition-all"><Icon size={18} /></button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Quick Links</h4>
+                                    <ul className="space-y-4 text-sm">
+                                        <li><a href="course.html" className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Tech Courses</a></li>
+                                        <li><a href="connect.html" className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Join Community</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Store</h4>
+                                    <ul className="space-y-4 text-sm">
+                                        <li><button onClick={()=>{setView('shop'); setFilter('Solar & Energy')}} className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Solar Solutions</button></li>
+                                        <li><button onClick={()=>{setView('shop'); setFilter('Gadgets')}} className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Premium Laptops</button></li>
+                                        <li><button onClick={()=>{setView('shop'); setFilter('Services')}} className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Book Installation</button></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Legal & Help</h4>
+                                    <ul className="space-y-4 text-sm">
+                                        <li><button onClick={() => setLegalDoc('refund')} className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Return Policy</button></li>
+                                        <li><button onClick={() => setLegalDoc('privacy')} className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Privacy Policy</button></li>
+                                        <li><button onClick={() => setLegalDoc('terms')} className="hover:text-emerald-500 transition-colors flex items-center gap-2"><ChevronRight size={14}/> Terms of Service</button></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="pt-8 border-t border-slate-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
+                                <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved.</p>
+                                <div className="flex items-center gap-6">
+                                    <span>Built with <span className="text-red-500">♥</span> in Nigeria</span>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
                 </div>
             );
         }
