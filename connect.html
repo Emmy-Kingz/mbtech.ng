@@ -39,9 +39,17 @@
     <style>
         html { scroll-behavior: smooth; }
         
-        /* Mobile Bottom Nav Padding */
-        body { padding-bottom: 64px; }
+        /* Mobile Bottom Nav Padding with Safe Area (iOS support) */
+        body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
         @media (min-width: 768px) { body { padding-bottom: 0; } }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+        /* Hide scrollbar for swipable elements on mobile */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Dynamic viewport height for modals on mobile */
+        .dvh-screen { height: 100vh; height: 100dvh; }
 
         .animated-gradient-text {
             background: linear-gradient(to right, #0056b3, #f97316, #0056b3);
@@ -148,12 +156,12 @@
 
     <!-- Main Content -->
     <main class="pt-20 md:pt-24 min-h-screen">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             
-            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div class="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
                 
                 <!-- Left Content -->
-                <div class="space-y-8 text-center lg:text-left">
+                <div class="space-y-6 md:space-y-8 text-center lg:text-left">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-sm font-bold shadow-sm mx-auto lg:mx-0">
                         <span class="relative flex h-3 w-3">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
@@ -163,31 +171,31 @@
                     </div>
                     
                     <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-[1.1] tracking-tight">
-                        Launch Your Tech Career with <br />
+                        Launch Your Tech Career with <br class="hidden lg:block" />
                         <span class="animated-gradient-text">MBTECH Connect.</span>
                     </h1>
                     
-                    <p class="text-lg text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                    <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
                         Bridging the gap between talent and opportunity. Access exclusive internships, NYSC IT placements, and high-paying tech gigs tailored for developers, designers, and engineers.
                     </p>
 
-                    <!-- Feature Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start">
+                    <!-- Feature Cards (Swipeable on Mobile) -->
+                    <div class="flex overflow-x-auto sm:grid sm:grid-cols-3 gap-4 pt-2 pb-4 snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                        <div class="snap-start min-w-[80%] sm:min-w-0 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start shrink-0">
                             <div class="w-12 h-12 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center mb-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="12" cy="7" r="4"/><path d="M12 14c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
                             </div>
                             <h3 class="font-bold text-slate-900">Internships</h3>
                             <p class="text-xs text-slate-500 mt-1">Real-world experience</p>
                         </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start">
+                        <div class="snap-start min-w-[80%] sm:min-w-0 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start shrink-0">
                             <div class="w-12 h-12 bg-orange-50 text-brand-orange rounded-xl flex items-center justify-center mb-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
                             </div>
                             <h3 class="font-bold text-slate-900">Tech Gigs</h3>
                             <p class="text-xs text-slate-500 mt-1">Freelance projects</p>
                         </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start">
+                        <div class="snap-start min-w-[80%] sm:min-w-0 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start shrink-0">
                             <div class="w-12 h-12 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center mb-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
                             </div>
@@ -199,8 +207,8 @@
 
                 <!-- Right Content: The Form -->
                 <div class="relative">
-                    <div class="absolute inset-0 bg-brand-blue/5 rounded-[2.5rem] transform rotate-3 scale-105"></div>
-                    <div class="relative bg-white p-8 sm:p-10 rounded-[2rem] shadow-2xl border border-slate-100">
+                    <div class="hidden lg:block absolute inset-0 bg-brand-blue/5 rounded-[2.5rem] transform rotate-3 scale-105"></div>
+                    <div class="relative bg-white p-6 sm:p-10 rounded-[2rem] shadow-2xl border border-slate-100">
                         <h2 class="text-2xl font-extrabold text-brand-dark mb-2">Join the Waitlist</h2>
                         <p class="text-slate-500 text-sm mb-8">Register your profile to receive alerts for new tech opportunities.</p>
                         
@@ -266,7 +274,7 @@
 
     <!-- Success Modal -->
     <div id="successModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] w-full max-w-md shadow-2xl p-8 text-center animate-in zoom-in-95 duration-200">
+        <div class="bg-white rounded-[2rem] w-full max-w-md max-h-[90dvh] overflow-y-auto no-scrollbar shadow-2xl p-8 text-center animate-in zoom-in-95 duration-200">
             <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
@@ -280,7 +288,7 @@
 
     <!-- HTML Vanilla JS Legal Modal -->
     <div id="legalModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
-        <div class="bg-white rounded-[2rem] w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
+        <div class="bg-white rounded-[2rem] w-full max-w-md max-h-[90dvh] overflow-y-auto no-scrollbar shadow-2xl relative animate-in zoom-in-95 duration-200">
             <button onclick="closeLegalModal()" class="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
@@ -380,17 +388,17 @@
             privacy: { 
                 title: "Privacy Policy", 
                 text: "At MBTECH NG, we take your privacy seriously. We only collect essential information required to process your enrollments, assignment requests, and store orders securely. We do not sell your personal data to third parties. Your data is protected using industry-standard security measures and is solely used to enhance your experience with our Academy and Services.",
-                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`
             },
             terms: { 
                 title: "Terms of Service", 
                 text: "By using MBTECH NG, you agree to abide by our academy guidelines and store rules. Course fees are to be paid before the commencement of classes unless an installment plan is formally agreed upon. We reserve the right to update our curriculum to match industry standards. Any misuse of our platform or services may result in termination of access.",
-                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`
             },
             refund: {
                 title: "Refund Policy",
                 text: "Refunds for courses are only available within the first 7 days of enrollment, provided the student has not accessed more than 20% of the course materials. For our tech store, physical items can be returned within 7 days of delivery if defective. Assignment help services and software installations are non-refundable once delivered/completed.",
-                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/></svg>`
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-brand-blue"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/></svg>`
             }
         };
 
