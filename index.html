@@ -56,7 +56,7 @@
         :root {
             --brand-blue: #0056b3;
             --brand-orange: #f97316;
-            --brand-green: #059669; /* Matched to Store Emerald */
+            --brand-green: #059669; 
             --brand-dark: #0f172a;
         }
         html { scroll-behavior: smooth; }
@@ -91,7 +91,7 @@
         .faq-item.active .faq-content { max-height: 300px; }
         .faq-item.active .faq-icon { transform: rotate(180deg); }
 
-        /* Social Grid from Index.html */
+        /* Social Grid */
         .social-grid a { transition: all 0.2s ease; }
         .social-grid a:active { transform: scale(0.9); }
 
@@ -119,6 +119,21 @@
             animation: slideUp 0.3s ease-out;
         }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Animated Text Gradient */
+        .animated-gradient-text {
+            background: linear-gradient(to right, #059669, #10b981, #34d399, #059669);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
     </style>
 </head>
 <body class="text-slate-900 antialiased overflow-x-hidden">
@@ -301,7 +316,7 @@
         </div>
     </section>
 
-    <!-- Upcoming Events Section -->
+    <!-- Upcoming Events (Dynamic Firebase Section) -->
     <section class="py-20 bg-white border-t border-slate-100">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
@@ -309,75 +324,24 @@
                 <h2 class="text-3xl md:text-4xl font-black mt-4 text-slate-900">Upcoming <span class="text-gradient">Events</span></h2>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Event 1 -->
-                <div class="bg-white border border-slate-100 rounded-3xl p-2 shadow-sm hover:shadow-xl transition-all group flex flex-col">
-                    <div class="relative bg-slate-900 rounded-2xl h-48 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute top-4 right-4 bg-white text-slate-900 px-3 py-1 rounded-lg text-xs font-bold shadow-lg">Mar 15</div>
-                    </div>
-                    <div class="p-6 flex-grow flex flex-col">
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">Tech Bootcamp Cohort 5</h3>
-                        <p class="text-slate-500 text-xs mb-4 flex-grow">Join our intensive 8-week program on Full-Stack Web Development. Ideal for beginners.</p>
-                        <div class="flex items-center justify-between border-t border-slate-100 pt-4 mt-auto">
-                            <span class="text-xs text-slate-400 font-bold flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
-                                Lagos Hub
-                            </span>
-                            <button class="text-blue-600 text-xs font-black uppercase tracking-wider hover:text-blue-800">Register</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Event 2 -->
-                <div class="bg-white border border-slate-100 rounded-3xl p-2 shadow-sm hover:shadow-xl transition-all group flex flex-col">
-                    <div class="relative bg-slate-900 rounded-2xl h-48 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute top-4 right-4 bg-white text-slate-900 px-3 py-1 rounded-lg text-xs font-bold shadow-lg">Apr 10</div>
-                    </div>
-                    <div class="p-6 flex-grow flex flex-col">
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">Solar Installation Workshop</h3>
-                        <p class="text-slate-500 text-xs mb-4 flex-grow">Practical training on inverter installation and battery maintenance for technicians.</p>
-                        <div class="flex items-center justify-between border-t border-slate-100 pt-4 mt-auto">
-                            <span class="text-xs text-slate-400 font-bold flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> 
-                                Virtual
-                            </span>
-                            <button class="text-blue-600 text-xs font-black uppercase tracking-wider hover:text-blue-800">Register</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Event 3 -->
-                <div class="bg-white border border-slate-100 rounded-3xl p-2 shadow-sm hover:shadow-xl transition-all group flex flex-col">
-                    <div class="relative bg-slate-900 rounded-2xl h-48 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute top-4 right-4 bg-white text-slate-900 px-3 py-1 rounded-lg text-xs font-bold shadow-lg">May 05</div>
-                    </div>
-                    <div class="p-6 flex-grow flex flex-col">
-                        <h3 class="text-lg font-bold text-slate-900 mb-2">Digital Marketing Masterclass</h3>
-                        <p class="text-slate-500 text-xs mb-4 flex-grow">Learn how to scale your business using Facebook Ads and SEO strategies.</p>
-                        <div class="flex items-center justify-between border-t border-slate-100 pt-4 mt-auto">
-                            <span class="text-xs text-slate-400 font-bold flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> 
-                                Virtual
-                            </span>
-                            <button class="text-blue-600 text-xs font-black uppercase tracking-wider hover:text-blue-800">Register</button>
-                        </div>
-                    </div>
+            <!-- Dynamic Grid Container -->
+            <div id="events-grid" class="grid md:grid-cols-3 gap-8">
+                <!-- Loader -->
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- FAQs -->
-    <section id="faqs" class="py-20 bg-white">
+    <section id="faqs" class="py-20 bg-slate-50">
         <div class="max-w-3xl mx-auto px-6">
             <h2 class="text-3xl font-black text-center mb-12">Frequently Asked Questions</h2>
             
             <div class="space-y-4">
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-slate-50">
+                    <div class="p-6 flex justify-between items-center bg-white">
                         <h3 class="font-bold text-slate-900">Do you offer certificates?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
@@ -385,9 +349,9 @@
                         <p class="py-4 text-sm text-slate-500">Yes, all our professional courses (Tech & Digital) come with a recognized certificate of completion upon finishing the final project.</p>
                     </div>
                 </div>
-
+                
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-slate-50">
+                    <div class="p-6 flex justify-between items-center bg-white">
                         <h3 class="font-bold text-slate-900">Are classes physical or virtual?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
@@ -397,7 +361,7 @@
                 </div>
 
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-slate-50">
+                    <div class="p-6 flex justify-between items-center bg-white">
                         <h3 class="font-bold text-slate-900">How do I make payments?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
@@ -407,7 +371,7 @@
                 </div>
 
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-slate-50">
+                    <div class="p-6 flex justify-between items-center bg-white">
                         <h3 class="font-bold text-slate-900">Do you offer mentorship after courses?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
@@ -417,7 +381,7 @@
                 </div>
 
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-slate-50">
+                    <div class="p-6 flex justify-between items-center bg-white">
                         <h3 class="font-bold text-slate-900">What is your return policy for gadgets?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
@@ -441,7 +405,6 @@
             
             <!-- Stats Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-y-12 gap-x-8 text-center mb-24" id="counterSection">
-                <!-- Stat 1 -->
                 <div class="relative group fade-in-up delay-100">
                     <div class="absolute inset-0 bg-blue-50 rounded-2xl transform scale-75 group-hover:scale-100 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
                     <div class="relative z-10">
@@ -449,8 +412,6 @@
                         <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">Students Trained</p>
                     </div>
                 </div>
-                
-                <!-- Stat 2 -->
                 <div class="relative group fade-in-up delay-200">
                     <div class="absolute inset-0 bg-orange-50 rounded-2xl transform scale-75 group-hover:scale-100 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
                     <div class="relative z-10">
@@ -458,8 +419,6 @@
                         <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">Happy Clients</p>
                     </div>
                 </div>
-                
-                <!-- Stat 3 -->
                 <div class="relative group fade-in-up delay-100">
                     <div class="absolute inset-0 bg-green-50 rounded-2xl transform scale-75 group-hover:scale-100 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
                     <div class="relative z-10">
@@ -467,8 +426,6 @@
                         <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">Projects Delivered</p>
                     </div>
                 </div>
-                
-                <!-- Stat 4 -->
                 <div class="relative group fade-in-up delay-200">
                     <div class="absolute inset-0 bg-purple-50 rounded-2xl transform scale-75 group-hover:scale-100 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
                     <div class="relative z-10">
@@ -480,10 +437,7 @@
 
             <!-- Timeline -->
             <div class="max-w-4xl mx-auto relative">
-                <!-- Vertical Line -->
                 <div class="absolute left-4 md:left-1/2 h-full w-0.5 bg-slate-200 -translate-x-1/2"></div>
-
-                <!-- Milestone 1 -->
                 <div class="relative flex flex-col md:flex-row items-center justify-between mb-12 fade-in-up">
                     <div class="md:w-5/12 text-left md:text-right pl-12 md:pl-0 md:pr-12 mb-4 md:mb-0">
                         <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mb-2">April 2020</span>
@@ -493,8 +447,6 @@
                     <div class="absolute left-4 md:left-1/2 w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-lg -translate-x-1/2 z-10"></div>
                     <div class="md:w-5/12"></div>
                 </div>
-
-                <!-- Milestone 2 -->
                 <div class="relative flex flex-col md:flex-row-reverse items-center justify-between mb-12 fade-in-up delay-100">
                     <div class="md:w-5/12 text-left pl-12 md:pl-12 mb-4 md:mb-0">
                         <span class="inline-block px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full mb-2">2021</span>
@@ -504,8 +456,6 @@
                     <div class="absolute left-4 md:left-1/2 w-8 h-8 bg-orange-500 rounded-full border-4 border-white shadow-lg -translate-x-1/2 z-10"></div>
                     <div class="md:w-5/12"></div>
                 </div>
-
-                <!-- Milestone 3 -->
                 <div class="relative flex flex-col md:flex-row items-center justify-between mb-12 fade-in-up delay-200">
                     <div class="md:w-5/12 text-left md:text-right pl-12 md:pl-0 md:pr-12 mb-4 md:mb-0">
                         <span class="inline-block px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full mb-2">2022</span>
@@ -515,8 +465,6 @@
                     <div class="absolute left-4 md:left-1/2 w-8 h-8 bg-green-600 rounded-full border-4 border-white shadow-lg -translate-x-1/2 z-10"></div>
                     <div class="md:w-5/12"></div>
                 </div>
-
-                <!-- Milestone 4 -->
                 <div class="relative flex flex-col md:flex-row-reverse items-center justify-between fade-in-up delay-100">
                     <div class="md:w-5/12 text-left pl-12 md:pl-12">
                         <span class="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full mb-2">Today</span>
@@ -549,7 +497,7 @@
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </div>
                         <div>
                             <h4 class="font-bold">Email</h4>
@@ -562,7 +510,6 @@
             <form id="contactForm" class="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100 space-y-4">
                 <!-- Bot Protection: Honeypot -->
                 <input type="text" name="honeypot" class="opacity-0 absolute top-0 left-0 w-0 h-0 -z-10" tabindex="-1" autocomplete="off">
-                
                 <input type="text" name="name" required placeholder="Your Name" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors">
                 <input type="email" name="email" required placeholder="Your Email" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors">
                 <select name="subject" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 text-slate-500">
@@ -575,6 +522,12 @@
             </form>
         </div>
     </section>
+
+    <!-- Floating Support -->
+    <a href="https://wa.me/2347084672771" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#20b858] transition-transform hover:scale-110 flex items-center justify-center animate-in slide-in-from-bottom-10 md:bottom-8 md:right-8" aria-label="Chat on WhatsApp">
+        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
+        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white"></span>
+    </a>
 
     <!-- Footer -->
     <footer class="bg-slate-950 text-white pt-16 pb-24 md:pb-10">
@@ -689,37 +642,125 @@
     </footer>
 
     <!-- Legal Modals -->
-    <div id="privacyModal" class="modal" onclick="closeModal(this)">
+    <div id="privacyModal" class="modal">
         <div class="modal-content">
             <h2 class="text-2xl font-bold mb-4">Privacy Policy</h2>
             <p class="text-sm text-slate-600 leading-relaxed">
                 **Effective Date:** February 2026<br/><br/>
                 Mesobest Technology respects your privacy. We collect personal data (name, email, phone) solely for communication, course registration, and order processing. We use Google Analytics to improve our services. Your data is never sold. For concerns, contact privacy@mbtech.ng.
             </p>
-            <button onclick="closeModal(this.parentElement.parentElement)" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
+            <button onclick="closeModal('privacyModal')" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
         </div>
     </div>
 
-    <div id="termsModal" class="modal" onclick="closeModal(this)">
+    <div id="termsModal" class="modal">
         <div class="modal-content">
             <h2 class="text-2xl font-bold mb-4">Terms of Service</h2>
             <p class="text-sm text-slate-600 leading-relaxed">
                 By using this site, you agree to our terms. Courses and products are subject to availability. Payments made for services are generally non-refundable unless specified otherwise in our refund policy. We reserve the right to modify services and pricing.
             </p>
-            <button onclick="closeModal(this.parentElement.parentElement)" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
+            <button onclick="closeModal('termsModal')" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
         </div>
     </div>
 
-    <div id="refundModal" class="modal" onclick="closeModal(this)">
+    <div id="refundModal" class="modal">
         <div class="modal-content">
             <h2 class="text-2xl font-bold mb-4">Refund Policy</h2>
             <p class="text-sm text-slate-600 leading-relaxed">
                 **Products:** Returns accepted within 7 days for defective items. Items must be in original packaging.<br/>
                 **Courses:** Full refund available if requested 48 hours before classes begin. No refunds once access is granted.
             </p>
-            <button onclick="closeModal(this.parentElement.parentElement)" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
+            <button onclick="closeModal('refundModal')" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
         </div>
     </div>
+
+    <!-- MAIN APPLICATION SCRIPT FOR FIREBASE INTEGRATION -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+            authDomain: "mbtechstore-17984.firebaseapp.com",
+            projectId: "mbtechstore-17984",
+            storageBucket: "mbtechstore-17984.firebasestorage.app",
+            messagingSenderId: "1083008774596",
+            appId: "1:1083008774596:web:110b651c6426116ed43491"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'mbtech-public-store';
+
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth error:", error);
+                const eventsGrid = document.getElementById('events-grid');
+                if (eventsGrid) {
+                    eventsGrid.innerHTML = `
+                        <div class="col-span-full text-center bg-red-50 p-8 rounded-xl border border-red-200 border-dashed">
+                            <p class="text-red-600 font-bold mb-2">Authentication Failed</p>
+                            <p class="text-sm text-red-500">Please enable <b>Anonymous Sign-in</b> in your Firebase Console (Authentication > Sign-in method) to view events.</p>
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        initAuth();
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) return;
+            const eventsGrid = document.getElementById('events-grid');
+            if(eventsGrid) {
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_events'), (snapshot) => {
+                    eventsGrid.innerHTML = '';
+                    if (snapshot.empty) {
+                        eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-xl border border-slate-200 border-dashed">No upcoming events right now. Stay tuned!</p>';
+                        return;
+                    }
+                    
+                    // Sort newest first
+                    const events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    events.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+                    events.forEach((ev) => {
+                        const eventHTML = `
+                            <div class="bg-white border border-slate-100 rounded-3xl p-2 shadow-sm hover:shadow-xl transition-all group flex flex-col">
+                                <div class="relative bg-slate-900 rounded-2xl h-48 overflow-hidden">
+                                    <img src="${ev.image || 'https://placehold.co/800x400?text=Event'}" class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/800x400?text=Event'">
+                                    <div class="absolute top-4 right-4 bg-white text-slate-900 px-3 py-1 rounded-lg text-xs font-bold shadow-lg">${ev.date || 'TBA'}</div>
+                                </div>
+                                <div class="p-6 flex-grow flex flex-col">
+                                    <h3 class="text-lg font-bold text-slate-900 mb-2">${ev.title}</h3>
+                                    <p class="text-slate-500 text-xs mb-4 flex-grow line-clamp-3">${ev.description}</p>
+                                    <div class="flex items-center justify-between border-t border-slate-100 pt-4 mt-auto">
+                                        <span class="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
+                                            ${ev.location || 'Virtual'}
+                                        </span>
+                                        <a href="connect.html" class="text-blue-600 text-[10px] bg-blue-50 px-3 py-1.5 rounded-full font-black uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-colors">Register</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        eventsGrid.innerHTML += eventHTML;
+                    });
+                }, (error) => {
+                    console.error("Error fetching events", error);
+                    eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-xl border border-slate-200 border-dashed">Unable to load events at this time.</p>';
+                });
+            }
+        });
+    </script>
 
     <script>
         // Toggle Mobile Menu
@@ -737,9 +778,16 @@
         function openModal(id) {
             document.getElementById(id).style.display = "block";
         }
-        function closeModal(el) {
-            if (el.classList.contains('modal')) el.style.display = "none"; // Click outside
-            else el.style.display = "none"; // Button click
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        // Close modal when clicking outside of the white content box
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
         }
 
         // Handle Contact Form (Redirect to WhatsApp with Anti-Bot)
