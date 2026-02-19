@@ -2,12 +2,105 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MBTECH NG | Tech & Tutorials</title>
+    
+    <!-- Premium SEO Meta Tags -->
+    <meta name="description" content="Learn highly sought-after tech skills with Mbtech Academy. Enroll in practical courses for Solar Inverter Installation, Web Development, UI/UX Design, Data Analytics, and Hardware/Software Installation in Nigeria.">
+    <meta name="keywords" content="Tech Courses Nigeria, Learn Solar Installation, Web Development Training Lagos, UI/UX Design Course, CCTV Installation, Data Analytics, Mbtech Academy, Mesobest Technology">
+    <meta name="author" content="Mesobest Technology">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://emmy-kingz.github.io/mbtech.ng/course.html">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://emmy-kingz.github.io/mbtech.ng/course.html">
+    <meta property="og:title" content="MBTECH NG | Tech & Tutorials">
+    <meta property="og:description" content="Join Mbtech Academy to learn Web Development, UI/UX Design, and Engineering skills like Solar & CCTV Installation with hands-on practicals.">
+    <meta property="og:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MBTECH NG | Tech & Engineering Courses">
+    <meta name="twitter:description" content="Enroll in practical tech courses for Web Development, UI/UX Design, and Solar/CCTV Installation.">
+    <meta name="twitter:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
+
+    <!-- JSON-LD Structured Data for Google Courses -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "Course",
+            "name": "Solar & Hybrid Inverter Installation",
+            "description": "Master the complete process of sizing, installing, and maintaining solar energy systems and hybrid inverters.",
+            "provider": {
+              "@type": "Organization",
+              "name": "Mbtech Academy",
+              "sameAs": "https://emmy-kingz.github.io/mbtech.ng/"
+            }
+          }
+        }
+      ]
+    }
+    </script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.294.0"
+        }
+    }
+    </script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind Config matching index.html colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0056b3',
+                            blueHover: '#004494',
+                            orange: '#f97316',
+                            dark: '#0f172a'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --brand-blue: #0056b3;
@@ -15,827 +108,674 @@
             --brand-dark: #0f172a;
         }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; padding-bottom: 80px; }
+        
+        /* Mobile Bottom Nav Padding matching index.html */
+        body { padding-bottom: 64px; }
         @media (min-width: 768px) { body { padding-bottom: 0; } }
+
+        /* Hide scrollbar for swipable elements on mobile */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Dynamic viewport height for modals on mobile */
+        .dvh-screen { height: 100vh; height: 100dvh; }
 
-        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        
-        /* Form Inputs */
-        .form-input {
-            width: 100%;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            outline: none;
-            transition: all 0.2s;
-            font-size: 16px;
+        .animated-gradient-text {
+            background: linear-gradient(to right, #0056b3, #f97316, #0056b3);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
         }
-        .form-input:focus {
-            border-color: var(--brand-blue);
-            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
-            background-color: white;
-        }
-        
-        /* Checkbox & Radio Styling */
-        .checkbox-card:checked + label {
-            border-color: var(--brand-orange);
-            background-color: #fff7ed;
-            color: var(--brand-orange);
-        }
-        .track-checkbox:checked + label {
-            border-color: #3b82f6;
-            background-color: rgba(59, 130, 246, 0.1);
-        }
-
-        /* Modals */
-        .modal-overlay { 
-            display: none; 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(15, 23, 42, 0.9); 
-            backdrop-filter: blur(8px); 
-            z-index: 100; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 1rem; 
-        }
-        .modal-overlay.active { display: flex; }
-
-        /* Social Grid */
-        .social-grid a { transition: all 0.2s ease; }
-        .social-grid a:active { transform: scale(0.9); }
-
-        /* Bottom Nav Active State */
-        .mobile-nav-btn.active { color: var(--brand-blue); }
-        .mobile-nav-btn.active svg { fill: currentColor; }
-
-        /* Loading Spinner */
-        #loadingOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.9);
-            z-index: 200;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-        #loadingOverlay.active { display: flex; }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #e2e8f0;
-            border-top: 5px solid var(--brand-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes shine { to { background-position: 200% center; } }
     </style>
 </head>
-<body class="text-slate-900 antialiased overflow-x-hidden flex flex-col min-h-screen">
+<body class="bg-[#f8fafc] font-sans text-slate-900 selection:bg-brand-blue selection:text-white">
+    <div id="root"></div>
 
-    <!-- Loading Screen -->
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
-        <p class="font-bold text-slate-600 animate-pulse">Processing Request...</p>
-    </div>
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Menu, X, ChevronRight, Zap, Monitor, Code, 
+            Wrench, GraduationCap, CheckCircle, ArrowRight, 
+            Phone, Mail, BookOpen, Users, Store as StoreIcon, 
+            Home, ShieldAlert, Clock, Calendar, Star, FileText,
+            Award, UserCheck, PlayCircle, Palette, Database, Shield, Video, Megaphone,
+            Facebook, Twitter, Instagram, Linkedin, HelpCircle, Loader2, Settings, MapPin,
+            FileKey, ShieldCheck, RefreshCcw
+        } from 'lucide-react';
 
-    <!-- Header Navigation -->
-    <nav class="fixed top-0 w-full z-50 glass-nav h-20">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 h-full flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.href='index.html'">
-                <img src="logo.png" alt="MBTECH Logo" class="w-10 h-10 object-contain rounded-lg shadow-sm" onerror="this.src='https://placehold.co/100x100?text=MB'">
-                <div class="leading-none">
-                    <h1 class="text-lg font-black tracking-tight">MBTECH <span class="text-orange-500">NG</span></h1>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest hidden sm:block">Global Tech & Tutors</p>
-                </div>
-            </div>
+        // ==========================================
+        // CONFIGURATION: GOOGLE SCRIPT URL
+        // ==========================================
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzQ2aQj2n4s3W_NfJ1Ua2_o_v5z/exec"; 
+        
+        const WHATSAPP_NUMBER = "2347084672771";
+        
+        const CATEGORIES = ["All Courses", "Tech", "Design", "Engineering"];
+
+        // PRICING & DURATIONS: Design = 50k (6wks), Tech = 100k (8wks), Engineering = 150k (10wks)
+        const COURSES = [
+            // --- DESIGN COURSES (50k, 6 Weeks) ---
+            {
+                id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Palette size={24} />,
+                image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800",
+                description: "Learn how to design intuitive, beautiful, and user-friendly digital products using Figma. Transform complex problems into elegant user interfaces.",
+                curriculum: ["Design Thinking & User Research", "Wireframing & Prototyping", "Figma Mastery", "Color Theory & Typography", "Building a Professional Case Study"]
+            },
+            {
+                id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Monitor size={24} />,
+                image: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800", 
+                description: "Master Adobe Photoshop, Illustrator, and CorelDraw to create stunning visual identities, flyers, and branding materials.",
+                curriculum: ["Principles of Visual Design", "Adobe Photoshop Mastery", "Vector Graphics in Illustrator", "Logo Design & Branding", "Print vs Digital Design Setup"]
+            },
+            {
+                id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Video size={24} />,
+                image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800",
+                description: "Learn professional video editing using Premiere Pro, After Effects, and CapCut. Create engaging content for YouTube, Social Media, and corporate clients.",
+                curriculum: ["Timeline & Sequence Management", "Color Grading & Correction", "Audio Mixing & Sound Design", "Motion Graphics & Text Animation", "Exporting for Various Platforms"]
+            },
+            {
+                id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Megaphone size={24} />,
+                image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&q=80&w=800",
+                description: "Master SEO, Social Media Marketing, and Paid Advertising (Facebook/Google Ads) to drive sales and grow brands online.",
+                curriculum: ["Search Engine Optimization (SEO)", "Social Media Strategy & Management", "Running Profitable Ad Campaigns", "Email Marketing Fundamentals", "Analytics & Conversion Tracking"]
+            },
+
+            // --- TECH COURSES (100k, 8 Weeks) ---
+            {
+                id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, icon: <Code size={24} />,
+                image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800",
+                description: "Learn to build responsive, modern, and interactive websites from scratch. Master the tools used by top tech companies globally.",
+                curriculum: ["HTML5, CSS3 & Responsive Design", "JavaScript Essentials & DOM", "Version Control with Git & GitHub", "React.js Framework", "Tailwind CSS & APIs"]
+            },
+            {
+                id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", level: "Intermediate", price: 100000, icon: <Database size={24} />,
+                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
+                description: "Master server-side programming. Learn to build robust APIs, manage databases, and handle user authentication securely.",
+                curriculum: ["Node.js & Express Framework", "RESTful API Development", "Database Management (MongoDB/SQL)", "User Authentication (JWT)", "Server Deployment & Hosting"]
+            },
+            {
+                id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, icon: <FileText size={24} />,
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
+                description: "Extract actionable insights from raw data. Learn to clean data, perform complex analysis, and create stunning visual dashboards.",
+                curriculum: ["Excel for Data Analytics", "SQL Database Querying", "Python Programming for Data", "Data Visualization with PowerBI/Tableau", "Predictive Modeling Basics"]
+            },
+            {
+                id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, icon: <Shield size={24} />,
+                image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800",
+                description: "Protect systems and networks from digital attacks. Learn how hackers think so you can secure infrastructures effectively.",
+                curriculum: ["Networking Fundamentals", "Linux Essentials & Command Line", "Vulnerability Assessment", "Penetration Testing (Ethical Hacking)", "Incident Response & Mitigation"]
+            },
+
+            // --- ENGINEERING COURSES (150k, 10 Weeks) ---
+            {
+                id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, icon: <Zap size={24} />,
+                image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=800",
+                description: "Master the complete process of sizing, installing, and maintaining solar energy systems and hybrid inverters. 100% practical field training.",
+                curriculum: ["Introduction to Renewable Energy & Safety", "Load Calculation & Solar Panel Sizing", "Battery Technologies (Lithium/Tubular)", "Inverter Configurations & Wiring", "Live Practical Installation Projects"]
+            },
+            {
+                id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, icon: <ShieldAlert size={24} />,
+                image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=800",
+                description: "Become a security systems engineer. Learn to design, wire, configure, and troubleshoot modern surveillance and intercom systems.",
+                curriculum: ["Types of Cameras (IP vs Analog)", "DVR/NVR Setup & Configuration", "Cabling, Crimping & Power Supply", "Network Setup for Mobile Viewing", "Intercom & Access Control Basics"]
+            },
+            {
+                id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, icon: <Settings size={24} />,
+                image: "https://images.unsplash.com/photo-1629654291663-b91ad427698f?auto=format&fit=crop&q=80&w=800", 
+                description: "Master full PC diagnostics, component replacements, OS installations, and advanced driver management. Become a certified computer technician.",
+                curriculum: ["PC Architecture & Disassembly", "Motherboard Diagnostics & Repair", "OS Installation (Windows/macOS)", "Driver Management & Software Troubleshooting", "Data Backup, Recovery & Optimization"]
+            }
+        ];
+
+        // --- UTILS: Submit to Google Sheets via pure FormData ---
+        const submitToGoogleSheets = async (data) => {
+            const formData = new FormData();
+            for (const key in data) {
+                formData.append(key, data[key]);
+            }
             
-            <!-- Desktop Nav Pills (Hidden on Mobile) -->
-            <div class="hidden md:flex gap-1 bg-slate-100 p-1 rounded-full">
-                <a href="index.html" class="px-6 py-2.5 rounded-full text-xs font-bold text-slate-900 hover:bg-white hover:shadow-sm transition-all">Home</a>
-                <button onclick="switchView('digital')" id="nav-digital" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Digital School</button>
-                <button onclick="switchView('tech')" id="nav-tech" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Tech Academy</button>
-                <button onclick="switchView('tutorials')" id="nav-tutorials" class="nav-btn px-6 py-2.5 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 transition-all">Tutorials</button>
-            </div>
+            try {
+                // Classic Form submission logic that naturally avoids CORS checks
+                await fetch(GOOGLE_SHEETS_URL, { 
+                    method: 'POST', 
+                    body: formData 
+                });
+                return true;
+            } catch (error) {
+                console.error("Sheets sync error:", error);
+                return true; // We return true anyway so the user's flow to WhatsApp isn't interrupted
+            }
+        };
 
-            <!-- Contact Button -->
-            <a href="https://wa.me/2347084672771" target="_blank" class="bg-blue-600 text-white p-2.5 rounded-full md:rounded-xl md:px-5 md:py-2.5 text-xs font-bold flex items-center gap-2 shadow-lg shadow-blue-200 active:scale-95 transition-transform">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
-                <span class="hidden md:inline">Contact Us</span>
-            </a>
-        </div>
-    </nav>
+        // --- COMPONENTS ---
 
-    <main class="flex-grow pt-20">
-        <!-- HUB VIEW (Default) -->
-        <div id="view-home" class="view-section active">
-            <header class="pt-12 md:pt-24 pb-20 px-4 text-center">
-                <div class="inline-flex items-center gap-2 bg-orange-50 text-orange-600 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-orange-100">
-                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
-                    Registration Open - 2026 Session
-                </div>
-                <h1 class="text-4xl md:text-7xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tighter">
-                    One Platform.<br/>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500">Endless Possibilities.</span>
-                </h1>
-                <p class="text-slate-500 text-base md:text-xl font-medium max-w-2xl mx-auto mb-12 px-4">
-                    Choose your path: Launch a high-paying tech career or smash your academic exams with expert tutoring.
-                </p>
+        const Navbar = ({ onOpenAssignment }) => {
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [scrolled, setScrolled] = useState(false);
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto px-4">
-                    <!-- Digital Card -->
-                    <div onclick="switchView('digital')" class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl text-left hover:border-blue-200 transition-all cursor-pointer group active:scale-[0.98]">
-                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            useEffect(() => {
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <>
+                    {/* Main Top Navbar */}
+                    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-gray-100' : 'bg-white border-b border-gray-100'}`}>
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between items-center h-20">
+                                {/* Logo (Matches Homepage) */}
+                                <div className="flex-shrink-0 flex items-center gap-3">
+                                    <a href="index.html" className="flex items-center gap-3 cursor-pointer group">
+                                        <img src="logo.png" alt="MBTECH NG" className="h-10 w-auto" onError={(e) => {e.target.style.display='none'}} />
+                                        <div className="flex flex-col">
+                                            <span className="text-xl font-extrabold text-brand-dark tracking-tight leading-none uppercase">
+                                                MBTECH <span className="text-brand-blue">NG</span>
+                                            </span>
+                                            <span className="text-[10px] text-brand-orange font-bold tracking-widest uppercase">Innovating Africa</span>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                {/* Desktop Nav */}
+                                <div className="hidden md:flex items-center space-x-8">
+                                    <a href="index.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><Home size={16}/> Home</a>
+                                    <a href="course.html" className="text-sm font-bold text-brand-blue transition-colors flex items-center gap-1.5"><BookOpen size={16}/> Courses</a>
+                                    <a href="store.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><StoreIcon size={16}/> Store</a>
+                                </div>
+
+                                {/* Desktop CTA */}
+                                <div className="hidden md:flex items-center gap-4">
+                                    <button onClick={onOpenAssignment} className="text-sm font-bold text-slate-600 hover:text-brand-orange transition-colors flex items-center gap-1.5">
+                                        <HelpCircle size={16}/> Assignment Help
+                                    </button>
+                                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="bg-brand-blue hover:bg-brand-blueHover text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-blue-500/30">
+                                        Get in Touch
+                                    </a>
+                                </div>
+
+                                {/* Mobile Hamburger (For secondary actions) */}
+                                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-brand-dark hover:text-brand-blue transition-colors">
+                                    {mobileMenuOpen ? <X size={28}/> : <Menu size={28}/>}
+                                </button>
+                            </div>
+
+                            {/* Mobile Hamburger Dropdown (Secondary Actions) */}
+                            {mobileMenuOpen && (
+                                <div className="md:hidden absolute w-full left-0 top-20 bg-white shadow-xl border-t border-gray-100 animate-in slide-in-from-top-4 duration-200 z-50 rounded-b-2xl">
+                                    <div className="p-4 flex flex-col gap-2 pb-6">
+                                        <button onClick={() => { setMobileMenuOpen(false); onOpenAssignment(); }} className="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-slate-700 hover:bg-slate-50 border border-slate-100">
+                                            <HelpCircle size={18} className="text-brand-orange"/> Request Assignment Help
+                                        </button>
+                                        <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="w-full mt-2 py-4 bg-brand-blue text-white rounded-xl flex items-center justify-center font-bold shadow-md">
+                                            Get in Touch
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        <h2 class="text-xl font-black mb-2">Digital Skills</h2>
-                        <p class="text-slate-500 text-sm font-medium mb-6">Marketing, Content Creation & Social Media Mastery.</p>
-                        <span class="text-blue-600 font-bold text-xs group-hover:underline">View Courses →</span>
-                    </div>
+                    </nav>
 
-                    <!-- Tech Card -->
-                    <div onclick="switchView('tech')" class="bg-slate-900 p-8 rounded-[2rem] shadow-xl text-left cursor-pointer group active:scale-[0.98]">
-                        <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center mb-6">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    {/* Mobile Bottom Nav (App-like experience matching homepage) */}
+                    <div className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-safe">
+                        <div className="flex justify-around items-center h-16 pb-1">
+                            <a href="index.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                                <Home size={20} />
+                                <span className="text-[10px] font-bold">Home</span>
+                            </a>
+                            <a href="course.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-brand-blue transition-colors">
+                                <BookOpen size={20} />
+                                <span className="text-[10px] font-bold">Courses</span>
+                            </a>
+                            <a href="store.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                                <StoreIcon size={20} />
+                                <span className="text-[10px] font-bold">Store</span>
+                            </a>
+                            <a href="connect.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                                <Users size={20} />
+                                <span className="text-[10px] font-bold">Connect</span>
+                            </a>
                         </div>
-                        <h2 class="text-xl font-black mb-2 text-white">Tech Academy</h2>
-                        <p class="text-slate-400 text-sm font-medium mb-6">Coding, Cyber Security, Data Science & Design.</p>
-                        <span class="text-orange-500 font-bold text-xs group-hover:underline">Start Coding →</span>
                     </div>
+                </>
+            );
+        };
 
-                    <!-- Tutorials Card -->
-                    <div onclick="switchView('tutorials')" class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl text-left hover:border-green-200 transition-all cursor-pointer group active:scale-[0.98]">
-                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                        </div>
-                        <h2 class="text-xl font-black mb-2">Academic Tutorials</h2>
-                        <p class="text-slate-500 text-sm font-medium mb-6">WAEC, JAMB, JSS/SSS Classes & Homework Help.</p>
-                        <span class="text-green-600 font-bold text-xs group-hover:underline">Book a Tutor →</span>
-                    </div>
-                </div>
-            </header>
-        </div>
-
-        <!-- DIGITAL VIEW -->
-        <div id="view-digital" class="view-section">
-            <div class="max-w-7xl mx-auto px-4 py-10">
-                <div class="mb-10">
-                    <h2 class="text-3xl md:text-5xl font-black mb-4">Digital <span class="text-blue-600">Bootcamp</span></h2>
-                    <p class="text-slate-500 font-medium">Become a digital creator or marketing expert.</p>
-                </div>
+        const Hero = ({ onOpenAssignment }) => (
+            <div className="relative bg-brand-dark text-white overflow-hidden sm:mb-0 mb-6 pt-20">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-orange/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
                 
-                <div class="grid lg:grid-cols-2 gap-8 items-start">
-                    <div class="bg-slate-950 p-6 md:p-10 rounded-[2.5rem] text-white shadow-2xl order-2 lg:order-1">
-                        <form id="digitalForm" class="space-y-4">
-                            <input type="text" name="name" required placeholder="Full Name" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-blue-500">
-                            <input type="email" name="email" required placeholder="Email Address" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-blue-500">
-                            <input type="tel" name="phone" required placeholder="WhatsApp Number" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-blue-500">
-                            
-                            <div class="bg-white/5 p-4 md:p-6 rounded-2xl border border-white/10 mt-4">
-                                <label class="text-[10px] font-black uppercase text-blue-400 mb-4 block">Select Courses (Click 'i' for info)</label>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="digital-checkboxes"></div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center py-4">
-                                <span class="font-bold text-sm">Total:</span>
-                                <span class="text-2xl font-black text-orange-500">₦<span id="digital-total">0</span></span>
-                            </div>
-                            
-                            <button type="submit" class="w-full bg-blue-600 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all">RESERVE MY SPOT</button>
-                        </form>
-                    </div>
-
-                    <div class="lg:sticky lg:top-28 space-y-6 order-1 lg:order-2">
-                        <!-- Chart Card -->
-                        <div class="bg-white border border-slate-100 p-6 md:p-8 rounded-[2rem] shadow-xl">
-                             <div class="flex items-center justify-between mb-6">
-                                <div>
-                                    <h3 class="font-black text-xl text-slate-900">Skill Insights</h3>
-                                    <p class="text-xs text-slate-500 font-medium">Market relevance & growth</p>
-                                </div>
-                                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                                </div>
-                             </div>
-                             <div class="w-full h-64"><canvas id="digitalChart"></canvas></div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 flex flex-col md:flex-row items-center gap-12">
+                    <div className="md:w-1/2 text-center md:text-left">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/30 text-blue-300 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                            <GraduationCap size={14} /> Transform Your Career
                         </div>
-
-                        <!-- Promo Card -->
-                        <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
-                            <div class="relative z-10">
-                                <h4 class="font-black text-2xl mb-3">Why Digital?</h4>
-                                <p class="text-sm text-blue-100 font-medium leading-relaxed">Digital skills are the currency of the future. 85% of global businesses require a digital presence to survive and scale.</p>
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+                            Master Skills That <br className="hidden sm:block"/>
+                            <span className="text-brand-orange">Matter Today.</span>
+                        </h1>
+                        <p className="text-lg text-slate-300 mb-8 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                            100% Practical-based training in Tech, Design, and Hardware Engineering. Plus, get expert help for your academic & technical assignments.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <a href="#courses" className="px-8 py-4 bg-brand-blue hover:bg-brand-blueHover text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                                Explore Courses <ArrowRight size={18} />
+                            </a>
+                            <button onClick={onOpenAssignment} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white font-bold rounded-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                                Get Assignment Help
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="md:w-1/2 relative w-full hidden md:block">
+                        <div className="grid grid-cols-2 gap-4 animate-float">
+                            <div className="space-y-4 mt-8">
+                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-48 w-full" alt="Students" />
+                                <div className="bg-slate-800/80 backdrop-blur p-5 rounded-2xl border border-slate-700/50 shadow-xl border-l-4 border-l-brand-orange">
+                                    <h3 className="text-brand-orange font-extrabold text-2xl mb-1">95%</h3>
+                                    <p className="text-xs text-slate-300 font-bold uppercase tracking-wider">Completion Rate</p>
+                                </div>
                             </div>
-                            <svg class="absolute -right-4 -bottom-4 w-32 h-32 text-white/5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22c-5.523 0-10-4.477-10-10S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                            <div className="space-y-4">
+                                <div className="bg-brand-blue/20 backdrop-blur p-5 rounded-2xl border border-brand-blue/30 shadow-xl flex flex-col items-center justify-center h-32 text-center border-b-4 border-b-brand-blue">
+                                    <UserCheck size={32} className="text-blue-300 mb-2"/>
+                                    <p className="text-xs text-blue-100 font-bold uppercase tracking-wider">Expert Mentors</p>
+                                </div>
+                                <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-56 w-full" alt="Solar Practical" />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        );
 
-        <!-- TECH VIEW -->
-        <div id="view-tech" class="view-section">
-            <div class="max-w-7xl mx-auto px-4 py-10">
-                <div class="flex flex-col lg:flex-row gap-10">
-                    <div class="lg:w-1/3 order-1">
-                        <div class="lg:sticky lg:top-28 space-y-6">
-                            <h2 class="text-3xl md:text-5xl font-black leading-tight">Newbie to<br class="hidden md:block"/><span class="text-orange-500">Pro Classes</span></h2>
-                            <p class="text-slate-500 font-medium">8 weeks of intensive training. 100% practical. Click on tracks for full syllabus.</p>
+        const EnrollModal = ({ course, isOpen, onClose }) => {
+            const [loading, setLoading] = useState(false);
+
+            if (!isOpen || !course) return null;
+
+            const handleEnroll = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                
+                const formElement = e.target;
+                
+                // 1. Post to Google Sheets using classic FormData exactly as in old HTML
+                try {
+                    await fetch(GOOGLE_SHEETS_URL, { 
+                        method: 'POST', 
+                        body: new FormData(formElement) 
+                    });
+                } catch (error) {
+                    console.error("Sheets sync error:", error);
+                }
+                
+                // 2. Redirect to WhatsApp
+                const name = formElement.Name.value;
+                const email = formElement.Email.value;
+                const phone = formElement.Phone.value;
+                
+                const text = `Hello Mbtech Academy, I want to enroll in the *${course.title}* course.%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Fee:* ₦${course.price.toLocaleString()}%0A%0APlease provide me with the registration and payment details.`;
+                const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+                window.open(url, '_blank', 'noopener,noreferrer');
+                
+                setLoading(false);
+                onClose();
+            };
+
+            return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] w-full max-w-4xl max-h-[90dvh] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-200">
+                        
+                        {/* Course Details Side */}
+                        <div className="bg-slate-50 md:w-5/12 p-6 md:p-8 border-b md:border-b-0 md:border-r border-slate-200 overflow-y-auto no-scrollbar">
+                            <button onClick={onClose} className="md:hidden absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm text-slate-500"><X size={20}/></button>
                             
-                            <div class="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-lg hidden md:block">
-                                <div class="w-full h-48 mb-6"><canvas id="techRadar"></canvas></div>
-                                <div id="tech-active-info">
-                                    <h4 class="font-black text-lg mb-1" id="tech-t">Select a track</h4>
-                                    <p class="text-xs text-slate-400" id="tech-d">Click on a course below to see details.</p>
+                            <div className="w-12 h-12 bg-blue-100 text-brand-blue rounded-2xl flex items-center justify-center mb-6">
+                                {course.icon}
+                            </div>
+                            <h2 className="text-2xl font-extrabold text-brand-dark mb-2 leading-tight">{course.title}</h2>
+                            <p className="text-slate-500 text-sm mb-6 leading-relaxed">{course.description}</p>
+                            
+                            <div className="space-y-4 mb-8">
+                                <div className="flex items-center gap-3 text-sm text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                                    <Clock size={18} className="text-brand-blue"/> 
+                                    <div><span className="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Duration</span> <span className="font-bold">{course.duration}</span></div>
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                                    <Calendar size={18} className="text-brand-blue"/> 
+                                    <div><span className="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Level</span> <span className="font-bold">{course.level}</span></div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="lg:w-2/3 space-y-8 order-2">
-                        <div class="bg-white border border-slate-100 rounded-[2.5rem] p-6 md:p-10 shadow-xl">
-                            <form id="techForm" class="space-y-6">
-                                <h3 class="text-2xl font-black">Application Entry</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div class="space-y-4">
-                                        <input type="text" name="name" required placeholder="Legal Name" class="form-input">
-                                        <input type="email" name="email" required placeholder="Email Address" class="form-input">
-                                        <input type="tel" name="phone" required placeholder="WhatsApp Number" class="form-input">
+                            <div className="border-t border-slate-200 pt-6">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">What you will learn</h4>
+                                <ul className="space-y-3">
+                                    {course.curriculum.map((item, idx) => (
+                                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
+                                            <CheckCircle size={16} className="text-brand-orange shrink-0 mt-0.5"/>
+                                            <span className="leading-tight">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Form Side */}
+                        <div className="md:w-7/12 p-6 md:p-10 bg-white relative overflow-y-auto no-scrollbar">
+                            <button onClick={onClose} className="hidden md:block absolute top-6 right-6 p-2 text-slate-400 hover:text-brand-dark bg-slate-50 rounded-full transition-colors"><X size={20}/></button>
+                            
+                            <h3 className="text-xl font-bold text-brand-dark mb-2">Secure Your Spot</h3>
+                            <p className="text-slate-500 text-sm mb-8">Fill the form below to initiate enrollment via WhatsApp. Our admission team will guide you through the rest.</p>
+                            
+                            <div className="bg-blue-50 text-brand-dark p-4 rounded-2xl border border-blue-100 mb-8 flex items-center justify-between border-l-4 border-l-brand-blue">
+                                <div>
+                                    <p className="text-xs font-bold uppercase tracking-wider text-brand-blue mb-1">Tuition Fee</p>
+                                    <p className="text-2xl font-extrabold">₦{course.price.toLocaleString()}</p>
+                                </div>
+                                <ShieldAlert size={24} className="text-brand-blue/30"/>
+                            </div>
+
+                            <form onSubmit={handleEnroll} className="space-y-5">
+                                <input type="hidden" name="FormType" value="Course Enrollment" />
+                                <input type="hidden" name="Course" value={course.title} />
+                                <input type="hidden" name="Price" value={course.price} />
+                                <input type="hidden" name="Timestamp" value={new Date().toLocaleString()} />
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
+                                    <input required type="text" name="Name" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="e.g. John Doe"/>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email</label>
+                                        <input required type="email" name="Email" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="john@example.com"/>
                                     </div>
-                                    <div class="bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-100">
-                                        <label class="text-[10px] font-black text-slate-400 uppercase mb-4 block">Tracks (₦100,000 each)</label>
-                                        <div class="grid grid-cols-1 gap-2" id="tech-checkboxes"></div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone (WhatsApp)</label>
+                                        <input required type="tel" name="Phone" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="08012345678"/>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-between pt-4 border-t">
-                                    <div class="text-2xl font-black">₦<span id="tech-total">0</span></div>
-                                    <button type="submit" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-black hover:bg-orange-600 transition-all">SUBMIT</button>
-                                </div>
+                                
+                                <button type="submit" disabled={loading} className="w-full py-4 mt-4 bg-brand-blue disabled:opacity-70 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:bg-brand-blueHover hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 text-lg">
+                                    {loading ? <Loader2 size={20} className="animate-spin" /> : <><ArrowRight size={18}/> Proceed to WhatsApp</>}
+                                </button>
+                                <p className="text-xs text-center text-slate-400 mt-4">By proceeding, you agree to our Terms of Service.</p>
                             </form>
                         </div>
-                        
-                        <h4 class="text-xl font-black pt-4">Available Tech Specializations (Click to View)</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="tech-track-cards"></div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- TUTORIALS VIEW -->
-        <div id="view-tutorials" class="view-section">
-            <div class="max-w-4xl mx-auto px-4 py-10">
-                <div class="text-center mb-10">
-                    <h2 class="text-3xl md:text-5xl font-black mb-4">Academic <span class="text-green-600">Excellence</span></h2>
-                    <p class="text-slate-500 font-medium mb-8">Virtual classes for WAEC, JAMB, JSS & SSS.</p>
-                    
-                    <!-- Feature Tabs -->
-                    <div class="inline-flex bg-white p-1.5 rounded-2xl shadow-sm border border-slate-100">
-                        <button onclick="toggleTutorialTab('booking')" id="tab-booking" class="px-6 py-3 rounded-xl text-xs font-black bg-slate-900 text-white transition-all shadow-md">Book a Class</button>
-                        <button onclick="toggleTutorialTab('homework')" id="tab-homework" class="px-6 py-3 rounded-xl text-xs font-black text-slate-500 hover:text-slate-900 transition-all">Homework Help</button>
-                    </div>
-                </div>
-
-                <!-- Booking Form -->
-                <form id="tutorialForm" class="bg-white p-6 md:p-10 rounded-[2rem] shadow-xl border border-slate-100 space-y-8 animate-fade">
-                    <div class="space-y-4">
-                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Student Information</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="text" name="studentName" required placeholder="Student's Name" class="form-input">
-                            <input type="number" name="studentAge" id="ageInput" required placeholder="Age (e.g. 15)" class="form-input">
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="email" name="studentEmail" placeholder="Student Email" class="form-input">
-                            <input type="tel" name="studentPhone" required placeholder="Student Phone" class="form-input">
-                        </div>
-                    </div>
-
-                    <div id="guardianSection" class="hidden space-y-4 bg-orange-50 p-6 rounded-2xl border border-orange-100">
-                        <h3 class="text-xs font-black uppercase text-orange-600 tracking-widest">Parent/Guardian Required (< 16 yrs)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="text" id="parentName" name="parentName" placeholder="Parent Name" class="form-input border-orange-200">
-                            <input type="tel" id="parentPhone" name="parentPhone" placeholder="Parent Phone" class="form-input border-orange-200">
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Academic Goals</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <select name="level" id="levelSelect" class="form-input" onchange="updateSubjects()">
-                                <option value="JSS">JSS 1-3</option>
-                                <option value="SSS">SSS 1-3</option>
-                                <option value="WAEC">WAEC/NECO</option>
-                                <option value="JAMB">JAMB UTME</option>
-                                <option value="IGCSE">British (IGCSE)</option>
-                            </select>
-                            <select name="curriculum" class="form-input">
-                                <option value="West African">West African</option>
-                                <option value="British">British</option>
-                                <option value="American">American</option>
-                                <option value="Canadian">Canadian</option>
-                                <option value="Hybrid">Hybrid (Combined)</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                            <label class="text-xs font-bold text-slate-600 mb-3 block">Focus Subjects</label>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="subjectContainer"></div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest border-b pb-2">Platform</h3>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div class="relative"><input type="radio" name="platform" value="whatsapp" id="pf_wa" class="hidden checkbox-card" checked><label for="pf_wa" class="block p-3 border rounded-xl text-center cursor-pointer text-xs font-bold transition-all hover:bg-slate-50">WhatsApp</label></div>
-                            <div class="relative"><input type="radio" name="platform" value="telegram" id="pf_tg" class="hidden checkbox-card"><label for="pf_tg" class="block p-3 border rounded-xl text-center cursor-pointer text-xs font-bold transition-all hover:bg-slate-50">Telegram</label></div>
-                            <div class="relative"><input type="radio" name="platform" value="gmeet" id="pf_gm" class="hidden checkbox-card"><label for="pf_gm" class="block p-3 border rounded-xl text-center cursor-pointer text-xs font-bold transition-all hover:bg-slate-50">G-Meet</label></div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-slate-900 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all shadow-lg hover:bg-slate-800">COMPLETE REGISTRATION</button>
-                </form>
-
-                <!-- Homework Form (Hidden by default) -->
-                <form id="homeworkForm" class="hidden bg-white p-6 md:p-10 rounded-[2rem] shadow-xl border border-slate-100 space-y-6 animate-fade">
-                    <div class="text-left border-b pb-4 mb-4">
-                         <h3 class="text-xl font-black text-slate-900">Get Homework Help</h3>
-                         <p class="text-sm text-slate-500">Stuck on an assignment? We'll guide you through it.</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" name="hw_name" required placeholder="Your Name" class="form-input">
-                        <input type="tel" name="hw_phone" required placeholder="WhatsApp Number" class="form-input">
-                    </div>
-                    <select name="hw_subject" class="form-input">
-                        <option>Mathematics</option><option>Physics</option><option>Chemistry</option>
-                        <option>English Language</option><option>Literature</option><option>Programming</option><option>Other</option>
-                    </select>
-                    <textarea name="hw_details" rows="5" placeholder="Describe the assignment or paste the question here..." class="form-input"></textarea>
-                    
-                    <div class="bg-blue-50 p-5 rounded-xl flex gap-4 items-start">
-                        <div class="bg-white p-2 rounded-full shadow-sm text-blue-600">
-                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-blue-900 mb-1">Upload File via WhatsApp</p>
-                            <p class="text-[11px] text-blue-700 leading-relaxed">Due to security, file uploads are handled in our secure WhatsApp channel. After clicking submit, you will be redirected to attach your PDF or Image.</p>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="w-full bg-orange-600 py-4 rounded-xl font-black text-white active:scale-[0.98] transition-all shadow-lg hover:bg-orange-700">SUBMIT REQUEST</button>
-                </form>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-slate-950 text-white pt-16 pb-24 md:pb-10">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-                <!-- Brand & Location -->
-                <div class="col-span-1 md:col-span-1">
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="logo.png" alt="Logo" class="w-8 h-8 rounded bg-white p-0.5 object-contain" onerror="this.src='https://placehold.co/100x100?text=MB'">
-                        <span class="font-black text-xl">MBTECH NG</span>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <p class="text-slate-400 text-sm leading-relaxed">Lagos, Nigeria | Worldwide <br/><span class="text-[10px] text-slate-500">Virtual & Physical Learning</span></p>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            <p class="text-slate-400 text-sm break-all">mesobest.technology.org@gmail.com</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation -->
-                <div>
-                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest">Navigation</h4>
-                    <ul class="text-sm space-y-3 font-bold text-slate-300">
-                        <li><a href="index.html" class="hover:text-white transition-colors">Home</a></li>
-                        <li><button onclick="switchView('digital')" class="hover:text-white transition-colors">Digital School</button></li>
-                        <li><button onclick="switchView('tech')" class="hover:text-white transition-colors">Tech Academy</button></li>
-                        <li><button onclick="switchView('tutorials')" class="hover:text-white transition-colors">Tutorials</button></li>
-                        <li><button onclick="openPolicy('terms')" class="hover:text-white transition-colors text-slate-400">Terms</button></li>
-                        <li><button onclick="openPolicy('refund')" class="hover:text-white transition-colors text-slate-400">Refunds</button></li>
-                    </ul>
-                </div>
-
-                <!-- Social Presence -->
-                <div class="col-span-1 md:col-span-2">
-                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest text-center md:text-left">Connect with Us</h4>
-                    <div class="social-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                        <a href="https://facebook.com/mbtech.ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-blue-600 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.378 14.792 5 15.536 5H18V0h-3.977C10.038 0 9 2.292 9 4.833V8z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">FB</span>
-                        </a>
-                        <a href="https://instagram.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-pink-600 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.981 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.981-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.352-2.612-6.78-6.981-6.981C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">IG</span>
-                        </a>
-                        <a href="https://tiktok.com/@mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-slate-100 hover:text-black transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.28-2.26.74-4.63 2.58-5.91 1.18-.87 2.63-1.35 4.13-1.35.24 0 .48.02.72.05v4.02c-.77-.17-1.6-.13-2.32.17-1.01.41-1.84 1.32-2.14 2.34-.35 1.19-.03 2.51.77 3.48.71.88 1.77 1.39 2.89 1.44 1.08.02 2.13-.39 2.9-1.15.8-.75 1.25-1.79 1.31-2.89.04-2.89.01-5.78.02-8.67z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">TikTok</span>
-                        </a>
-                        <a href="https://x.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white hover:text-black transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">X</span>
-                        </a>
-                        <a href="https://www.linkedin.com/company/mbtech-ng/" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-blue-700 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">In</span>
-                        </a>
-                        <a href="https://t.me/mbtech_connect" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-sky-500 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zM17.89 8.16l-1.99 9.37c-.15.68-.55.85-1.12.53l-3.04-2.24-1.46 1.41c-.16.16-.3.3-.61.3l.22-3.09 5.63-5.08c.24-.22-.05-.34-.37-.13l-6.96 4.38-2.99-.93c-.65-.2-.66-.65.14-.96l11.66-4.5c.54-.2.94.1.75 1.25z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">TG</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest text-center md:text-left">© 2026 Mesobest Technology Ng. ALL RIGHTS RESERVED.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Mobile Bottom Navigation (Visible on Mobile) -->
-    <nav class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-100 pb-safe z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <div class="grid grid-cols-4 h-16">
-            <button onclick="window.location.href='index.html'" id="mobile-home" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span class="text-[10px] font-bold">Home</span>
-            </button>
-            <button onclick="switchView('digital')" id="mobile-digital" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                <span class="text-[10px] font-bold">Digital</span>
-            </button>
-            <button onclick="switchView('tech')" id="mobile-tech" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <span class="text-[10px] font-bold">Tech</span>
-            </button>
-            <button onclick="switchView('tutorials')" id="mobile-tutorials" class="mobile-nav-btn flex flex-col items-center justify-center gap-1 text-slate-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                <span class="text-[10px] font-bold">Tutors</span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="modal-overlay">
-        <div class="bg-white rounded-[2rem] p-10 text-center max-w-sm w-full">
-            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">✓</div>
-            <h3 class="text-xl font-black">Success!</h3>
-            <p class="text-slate-500 text-sm mt-2 mb-6">Your data has been saved securely. Redirecting to WhatsApp...</p>
-        </div>
-    </div>
-    
-    <!-- Info/Policy Modal -->
-    <div id="policyModal" class="modal-overlay" onclick="closeModal()">
-        <div class="bg-white w-full max-w-lg rounded-[2rem] p-8 relative shadow-2xl m-4 max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 bg-slate-50 p-2 rounded-full">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-            <h3 id="policyTitle" class="text-2xl font-black text-slate-900 mb-4 pr-8"></h3>
-            <div id="policyContent" class="text-sm text-slate-600 space-y-4 leading-relaxed"></div>
-        </div>
-    </div>
-
-    <script>
-        // --- CONFIGURATION ---
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsmvy6QEKZY3jtHpeduxBxWBiPkxnU5YXNwaQ8veFq6fFM4nAOm9VEnTKqD0o7I-W6/exec";
-        const WA_NUM_TECH = "2347084672771"; // For Tech/Digital
-        const WA_NUM_TUTOR = "2348109006065"; // For Tutorials
-
-        // --- DATA ---
-        const digitalData = [
-            { id: 'content', title: 'Content Creation', price: 50000, d: 'Video Editing & Storytelling', details: 'Master video editing tools (CapCut, Premiere Rush), storytelling techniques, scriptwriting, and lighting fundamentals for TikTok & Reels.', stats: [85, 90, 75] },
-            { id: 'marketing', title: 'Digital Marketing', price: 50000, d: 'SEO, Ads & Funnels', details: 'Learn Search Engine Optimization (SEO), Google Ads, Facebook/Instagram Ads, and how to build high-converting sales funnels.', stats: [95, 80, 85] },
-            { id: 'social', title: 'Social Media Mgt', price: 50000, d: 'Growth & Branding', details: 'Community management strategies, content calendars, analytics interpretation, and brand voice development for businesses.', stats: [90, 70, 95] },
-            { id: 'videography', title: 'Smartphone Videography', price: 50000, d: 'Pro Mobile Shooting', details: 'Cinematic camera movements, composition rules, mobile editing apps, and color grading on smartphones.', stats: [80, 85, 60] }
-        ];
-
-        const techData = [
-            { id: 'fullstack', title: 'Full-Stack Web Dev', price: 100000, s:[9,8,4,6], d: 'MERN Stack & APIs', details: '<b>Modules:</b><br>1. HTML5 & CSS3 Mastery<br>2. JavaScript ES6+ & DOM<br>3. React.js & Tailwind CSS<br>4. Node.js & Express<br>5. MongoDB Database<br>6. REST API Architecture' },
-            { id: 'uiux', title: 'Product Design', price: 100000, s:[3,10,10,5], d: 'Figma & Systems', details: '<b>Modules:</b><br>1. User Research & Personas<br>2. Wireframing & Prototyping<br>3. Visual Design Principles<br>4. Figma Advanced Features<br>5. Design Systems<br>6. Usability Testing' },
-            { id: 'data', title: 'Data Science', price: 100000, s:[10,3,5,8], d: 'Python & ML', details: '<b>Modules:</b><br>1. Python Programming<br>2. NumPy & Pandas<br>3. Data Visualization (Matplotlib)<br>4. Statistical Analysis<br>5. Intro to Machine Learning<br>6. Capstone Project' },
-            { id: 'cyber', title: 'Cyber Security', price: 100000, s:[7,2,6,10], d: 'Ethical Hacking', details: '<b>Modules:</b><br>1. Networking Fundamentals<br>2. Linux Administration<br>3. Threat Intelligence<br>4. Vulnerability Assessment<br>5. Penetration Testing Tools<br>6. Security Protocols' }
-        ];
-
-        const subjects = {
-            JSS: ['Math', 'English', 'Basic Sci', 'Basic Tech', 'ICT', 'Business'],
-            SSS: ['Math', 'English', 'Physics', 'Chemistry', 'Biology', 'Econs'],
-            WAEC: ['Math', 'English', 'Physics', 'Chem', 'Bio', 'Econs', 'Geog', 'Civic'],
-            JAMB: ['Use of English', 'Math', 'Physics', 'Chem', 'Bio', 'Govt', 'Lit'],
-            IGCSE: ['Math (0580)', 'English', 'Physics', 'Chem', 'Bio', 'ICT']
+            );
         };
 
-        const policies = {
-            terms: `
-                <p><strong>1. Enrollment:</strong> By registering, you agree to attend classes punctually and respect instructors/peers.</p>
-                <p><strong>2. Certification:</strong> Certificates are awarded only upon 80% attendance and completion of final projects.</p>
-                <p><strong>3. Intellectual Property:</strong> Course materials are for personal use only and may not be redistributed.</p>
-            `,
-            privacy: `
-                <p><strong>Data Collection:</strong> We collect your name, email, and phone number solely for enrollment and communication purposes.</p>
-                <p><strong>Security:</strong> Your data is stored securely and never sold to third parties.</p>
-                <p><strong>Consent:</strong> By submitting forms, you consent to receiving course updates via WhatsApp/Email.</p>
-            `,
-            refund: `
-                <p><strong>1. Tech/Digital:</strong> 50% refund available if requested 1 week before classes start. No refunds after classes begin.</p>
-                <p><strong>2. Tutorials:</strong> If unsatisfied with the first session, report within 24 hours for a tutor change or refund.</p>
-                <p><strong>3. Cancellations:</strong> Classes missed by students without 24h notice are forfeited.</p>
-            `
-        };
+        const AssignmentModal = ({ isOpen, onClose, notify }) => {
+            const [loading, setLoading] = useState(false);
 
-        // --- NAVIGATION LOGIC ---
-        function switchView(view) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(`view-${view === 'home' ? 'home' : view}`).classList.add('active');
-            
-            // Desktop Nav Updates
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
-                b.classList.add('text-slate-500');
-            });
-            const dNav = document.getElementById(`nav-${view}`);
-            if(dNav) {
-                dNav.classList.remove('text-slate-500');
-                dNav.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
-            }
+            if (!isOpen) return null;
 
-            // Mobile Nav Updates
-            document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
-            const mNav = document.getElementById(`mobile-${view}`);
-            if(mNav) mNav.classList.add('active');
-            
-            if(view === 'tech') setTimeout(initTechChart, 100);
-            if(view === 'digital') setTimeout(initDigitalChart, 100);
-            
-            // Update URL without reload if not home
-            if(view !== 'home') {
-                 try {
-                     const newUrl = window.location.pathname + '?view=' + view;
-                     window.history.pushState({path:newUrl},'',newUrl);
-                 } catch (e) {
-                     console.warn('History API not supported in this environment');
-                 }
-            }
-            
-            window.scrollTo(0,0);
-        }
-
-        function toggleTutorialTab(tab) {
-            const formBooking = document.getElementById('tutorialForm');
-            const formHomework = document.getElementById('homeworkForm');
-            const btnBooking = document.getElementById('tab-booking');
-            const btnHomework = document.getElementById('tab-homework');
-
-            if(tab === 'booking') {
-                formBooking.classList.remove('hidden');
-                formHomework.classList.add('hidden');
-                btnBooking.classList.add('bg-slate-900', 'text-white', 'shadow-md'); btnBooking.classList.remove('text-slate-500');
-                btnHomework.classList.remove('bg-slate-900', 'text-white', 'shadow-md'); btnHomework.classList.add('text-slate-500');
-            } else {
-                formBooking.classList.add('hidden');
-                formHomework.classList.remove('hidden');
-                btnHomework.classList.add('bg-slate-900', 'text-white', 'shadow-md'); btnHomework.classList.remove('text-slate-500');
-                btnBooking.classList.remove('bg-slate-900', 'text-white', 'shadow-md'); btnBooking.classList.add('text-slate-500');
-            }
-        }
-
-        // --- MODAL LOGIC ---
-        function openPolicy(type) {
-            const titleMap = { terms: 'Terms of Use', privacy: 'Privacy Policy', refund: 'Refund Policy' };
-            document.getElementById('policyTitle').innerText = titleMap[type];
-            document.getElementById('policyContent').innerHTML = policies[type];
-            document.getElementById('policyModal').classList.add('active');
-        }
-
-        function showCourseDetails(type, id) {
-            const data = type === 'digital' ? digitalData : techData;
-            const course = data.find(c => c.id === id || c.title === id); // Handle title for tech checkboxes
-            if(course) {
-                document.getElementById('policyTitle').innerText = course.title;
-                document.getElementById('policyContent').innerHTML = course.details;
-                document.getElementById('policyModal').classList.add('active');
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('policyModal').classList.remove('active');
-        }
-
-        // --- INITIALIZATION ---
-        function initForms() {
-            // Digital Checkboxes
-            const dContainer = document.getElementById('digital-checkboxes');
-            digitalData.forEach(c => {
-                dContainer.innerHTML += `
-                <div class="relative group">
-                    <input type="checkbox" id="d-${c.id}" name="courses" value="${c.title}" onchange="calcTotal('digital')" class="hidden track-checkbox">
-                    <label for="d-${c.id}" class="flex flex-col p-3 border border-white/10 rounded-xl cursor-pointer hover:bg-white/5 transition-all text-white relative pr-8">
-                        <span class="text-[11px] font-black">${c.title}</span>
-                        <span class="text-[9px] text-blue-400">₦${c.price.toLocaleString()}</span>
-                    </label>
-                    <button type="button" onclick="showCourseDetails('digital', '${c.id}')" class="absolute top-2 right-2 text-slate-400 hover:text-white bg-white/10 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold z-10">i</button>
-                </div>`;
-            });
-
-            // Tech Checkboxes
-            const tContainer = document.getElementById('tech-checkboxes');
-            const tCards = document.getElementById('tech-track-cards');
-            techData.forEach((c, idx) => {
-                tContainer.innerHTML += `
-                <label class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl cursor-pointer active:bg-orange-50">
-                    <div class="flex items-center gap-3">
-                        <input type="checkbox" name="courses" value="${c.title}" onchange="calcTotal('tech')" class="w-4 h-4 accent-orange-600">
-                        <span class="text-[11px] font-bold text-slate-700">${c.title}</span>
-                    </div>
-                </label>`;
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
                 
-                tCards.innerHTML += `
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 hover:border-orange-500 transition-all cursor-pointer shadow-sm group" onclick="showCourseDetails('tech', '${c.title}')">
-                    <div class="flex justify-between items-start">
-                        <h4 class="font-black text-slate-900 group-hover:text-orange-600 transition-colors">${c.title}</h4>
-                        <span class="bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-full">DETAILS</span>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-2">${c.d}</p>
-                </div>`;
-            });
-
-            // Tutorial Subjects
-            updateSubjects();
-        }
-
-        function updateSubjects() {
-            const level = document.getElementById('levelSelect').value;
-            const container = document.getElementById('subjectContainer');
-            const list = subjects[level] || subjects['WAEC'];
-            container.innerHTML = list.map(sub => `
-                <div class="relative">
-                    <input type="checkbox" id="sub-${sub.replace(/\s/g,'')}" name="subjects" value="${sub}" class="hidden checkbox-card">
-                    <label for="sub-${sub.replace(/\s/g,'')}" class="block text-[11px] font-bold p-2 border rounded-lg text-center cursor-pointer hover:border-blue-400 text-slate-600 select-none transition-colors">${sub}</label>
-                </div>
-            `).join('');
-        }
-
-        // --- CALCULATIONS ---
-        function calcTotal(view) {
-            const form = document.getElementById(`${view}Form`);
-            const checked = form.querySelectorAll('input[name="courses"]:checked');
-            let total = 0;
-            const data = view === 'digital' ? digitalData : techData;
-            checked.forEach(cb => {
-                const item = data.find(x => x.title === cb.value);
-                if(item) total += item.price;
-            });
-            document.getElementById(`${view}-total`).innerText = total.toLocaleString();
-        }
-
-        // --- SUBMISSION HANDLER ---
-        async function handleSubmit(e, type) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            formData.append('formType', type);
-
-            // Additional logic for checkboxes
-            if(type === 'Digital' || type === 'Tech') {
-                const courses = Array.from(form.querySelectorAll('input[name="courses"]:checked')).map(cb => cb.value).join(', ');
-                formData.set('courses', courses);
-            } else if (type === 'Tutorials') {
-                const subs = Array.from(form.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value).join(', ');
-                formData.set('subjects', subs);
-            }
-
-            // Show Loading
-            document.getElementById('loadingOverlay').classList.add('active');
-
-            // Send to Google Sheets
-            try {
-                await fetch(SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' });
-            } catch (err) { console.error(err); }
-
-            // WhatsApp Redirection
-            let msg = "", waNum = "";
-            
-            if(type === 'Digital' || type === 'Tech') {
-                waNum = WA_NUM_TECH;
-                msg = `Hello MBTECH! I applied for ${type} School.\nName: ${formData.get('name')}\nCourses: ${formData.get('courses')}`;
-            } else if (type === 'Tutorials') {
-                waNum = WA_NUM_TUTOR;
-                msg = `Hello Tutor! New Booking.\nStudent: ${formData.get('studentName')} (${formData.get('studentAge')})\nLevel: ${formData.get('level')}\nSubjects: ${formData.get('subjects')}\nPlatform: ${formData.get('platform')}`;
-            } else if (type === 'Homework') {
-                waNum = WA_NUM_TUTOR;
-                msg = `Homework Help Request\nName: ${formData.get('hw_name')}\nSubject: ${formData.get('hw_subject')}\nDetails: ${formData.get('hw_details')}`;
-            }
-
-            // Success & Redirect
-            document.getElementById('loadingOverlay').classList.remove('active');
-            document.getElementById('successModal').classList.add('active');
-            
-            setTimeout(() => {
-                window.location.href = `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}`;
-            }, 1500);
-        }
-
-        // --- EVENT LISTENERS ---
-        document.getElementById('digitalForm').onsubmit = (e) => handleSubmit(e, 'Digital');
-        document.getElementById('techForm').onsubmit = (e) => handleSubmit(e, 'Tech');
-        document.getElementById('tutorialForm').onsubmit = (e) => handleSubmit(e, 'Tutorials');
-        document.getElementById('homeworkForm').onsubmit = (e) => handleSubmit(e, 'Homework');
-
-        document.getElementById('ageInput').addEventListener('input', function(e) {
-            const sec = document.getElementById('guardianSection');
-            if(parseInt(e.target.value) < 16) sec.classList.remove('hidden');
-            else sec.classList.add('hidden');
-        });
-
-        // Chart.js for Tech
-        let techChart = null;
-        let digitalChart = null;
-
-        function initTechChart() {
-            if(techChart) return;
-            const ctx = document.getElementById('techRadar');
-            if(!ctx) return;
-            techChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['Logic', 'Design', 'UX', 'Secure'],
-                    datasets: [{
-                        data: [8, 8, 6, 7],
-                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                        borderColor: '#f97316',
-                        borderWidth: 2,
-                        pointRadius: 0
-                    }]
-                },
-                options: { scales: { r: { min: 0, max: 10, ticks: { display: false } } }, plugins: { legend: { display: false } }, maintainAspectRatio: false }
-            });
-        }
-
-        function initDigitalChart() {
-            if(digitalChart) return;
-            const ctx = document.getElementById('digitalChart');
-            if(!ctx) return;
-            
-            // Average stats or specific view
-            const labels = digitalData.map(d => d.title.split(' ')[0]); // Short names
-            const dataPoints = [85, 92, 88, 78]; // Hardcoded Demand/Growth metric for visual appeal
-
-            digitalChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Growth Potential (%)',
-                        data: dataPoints,
-                        backgroundColor: [
-                            'rgba(37, 99, 235, 0.8)', // Blue
-                            'rgba(37, 99, 235, 0.6)',
-                            'rgba(37, 99, 235, 0.4)',
-                            'rgba(37, 99, 235, 0.2)'
-                        ],
-                        borderRadius: 8,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, max: 100, grid: { display: false }, ticks: { display: false } },
-                        x: { grid: { display: false }, ticks: { font: { size: 9, family: 'Plus Jakarta Sans' } } }
-                    }
+                const formElement = e.target;
+                
+                // 1. Post to Google Sheets
+                try {
+                    await fetch(GOOGLE_SHEETS_URL, { 
+                        method: 'POST', 
+                        body: new FormData(formElement)
+                    });
+                } catch (error) {
+                    console.error("Sheets sync error:", error);
                 }
-            });
+                
+                // 2. Alert and redirect to WhatsApp for immediate assistance
+                const name = formElement.Name.value;
+                const course = formElement.Course.value;
+                const details = formElement.Details.value;
+
+                const text = `Hello Mbtech, I need help with an assignment.%0A%0A*Name:* ${name}%0A*Subject/Course:* ${course}%0A*Details:* ${details}%0A%0APlease let me know the cost and process.`;
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+                
+                notify("Request logged successfully!");
+                setLoading(false);
+                onClose();
+            };
+
+            return (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200 max-h-[90dvh] overflow-y-auto no-scrollbar">
+                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><X size={20}/></button>
+                        
+                        <div className="p-6 md:p-8">
+                            <div className="w-12 h-12 bg-orange-100 text-brand-orange rounded-2xl flex items-center justify-center mb-4">
+                                <HelpCircle size={24} />
+                            </div>
+                            <h2 className="text-2xl font-extrabold text-brand-dark mb-2">Assignment Help</h2>
+                            <p className="text-slate-500 text-sm mb-6">Stuck on a project or assignment? Provide the details below and our expert tutors will assist you.</p>
+
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <input type="hidden" name="FormType" value="Assignment Help" />
+                                <input type="hidden" name="Timestamp" value={new Date().toLocaleString()} />
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
+                                    <input required type="text" name="Name" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow" placeholder="Your Name" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email Address</label>
+                                    <input required type="email" name="Email" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow" placeholder="you@example.com" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Course / Topic</label>
+                                    <input required type="text" name="Course" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow" placeholder="e.g. JavaScript, Solar Wiring" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Assignment Details</label>
+                                    <textarea required name="Details" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow h-28 resize-none" placeholder="Describe what you need help with..."></textarea>
+                                </div>
+                                
+                                <button type="submit" disabled={loading} className="w-full py-4 mt-2 bg-brand-orange text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:bg-[#e06612] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                                    {loading ? <Loader2 size={20} className="animate-spin" /> : 'Request Help via WhatsApp'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const LegalModal = ({ docType, onClose }) => {
+            if (!docType) return null;
+            
+            const content = {
+                privacy: { 
+                    title: "Privacy Policy", 
+                    text: "At MBTECH NG, we take your privacy seriously. We only collect essential information required to process your enrollments, assignment requests, and store orders securely. We do not sell your personal data to third parties. Your data is protected using industry-standard security measures and is solely used to enhance your experience with our Academy and Services." 
+                },
+                terms: { 
+                    title: "Terms of Service", 
+                    text: "By using MBTECH NG, you agree to abide by our academy guidelines and store rules. Course fees are to be paid before the commencement of classes unless an installment plan is formally agreed upon. We reserve the right to update our curriculum to match industry standards. Any misuse of our platform or services may result in termination of access." 
+                },
+                refund: {
+                    title: "Refund Policy",
+                    text: "Refunds for courses are only available within the first 7 days of enrollment, provided the student has not accessed more than 20% of the course materials. For our tech store, physical items can be returned within 7 days of delivery if defective. Assignment help services and software installations are non-refundable once delivered/completed."
+                }
+            }[docType];
+
+            return (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
+                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><X size={20}/></button>
+                        <div className="p-6 md:p-8">
+                            <div className="w-12 h-12 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-4">
+                                {docType === 'privacy' ? <ShieldCheck size={24}/> : docType === 'terms' ? <FileKey size={24}/> : <RefreshCcw size={24}/>}
+                            </div>
+                            <h2 className="text-2xl font-extrabold text-brand-dark mb-4">{content.title}</h2>
+                            <p className="text-slate-600 text-sm leading-relaxed">{content.text}</p>
+                            <button onClick={onClose} className="w-full py-3.5 mt-8 bg-brand-blue text-white font-bold rounded-xl shadow-md shadow-blue-500/20 hover:bg-brand-blueHover transition-colors">I Understand</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        function App() {
+            const [filter, setFilter] = useState('All Courses');
+            const [selectedCourse, setSelectedCourse] = useState(null);
+            const [assignmentOpen, setAssignmentOpen] = useState(false);
+            const [notification, setNotification] = useState(null);
+            const [legalDoc, setLegalDoc] = useState(null);
+
+            const notify = (msg, type='success') => { setNotification({ msg, type }); setTimeout(() => setNotification(null), 3500); };
+
+            const filteredCourses = filter === 'All Courses' 
+                ? COURSES 
+                : COURSES.filter(c => c.category === filter);
+
+            return (
+                <div className="min-h-screen flex flex-col font-sans text-slate-800 bg-[#f8fafc]">
+                    <Navbar onOpenAssignment={() => setAssignmentOpen(true)} />
+                    <Hero onOpenAssignment={() => setAssignmentOpen(true)} />
+
+                    {/* Toast Notification */}
+                    <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[70] transition-all duration-300 transform ${notification ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-8 opacity-0 scale-95 pointer-events-none'}`}>
+                        {notification && (
+                            <div className={`px-6 py-3.5 rounded-full shadow-xl shadow-black/10 text-white font-bold flex items-center gap-2 backdrop-blur-md ${notification.type==='error'?'bg-red-600/90':'bg-brand-blue/90'}`}>
+                                {notification.type === 'error' ? <ShieldAlert size={18}/> : <CheckCircle size={18}/>}
+                                {notification.msg}
+                            </div>
+                        )}
+                    </div>
+
+                    <section id="courses" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1">
+                        <div className="text-center mb-12 md:mb-16">
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-brand-dark mb-4">Our Training Programs</h2>
+                            <p className="text-slate-500 max-w-2xl mx-auto">Choose from our intensive, project-based training programs designed to make you industry-ready. Select a category below to filter.</p>
+                        </div>
+
+                        {/* Filters */}
+                        <div className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory gap-2 sm:gap-4 justify-start md:justify-center mb-12 pb-2">
+                            {CATEGORIES.map(c => (
+                                <button key={c} onClick={() => setFilter(c)} className={`snap-start px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all border ${filter === c ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-blue-500/20' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
+                                    {c}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Course Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {filteredCourses.map(course => (
+                                <div key={course.id} className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col">
+                                    <div className="relative h-56 overflow-hidden bg-slate-100">
+                                        <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+                                        <div className="absolute top-4 right-4">
+                                            <span className="bg-white/90 backdrop-blur text-brand-dark text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
+                                                ₦{course.price.toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                                            <span className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${course.category === 'Design' ? 'bg-pink-500' : course.category === 'Tech' ? 'bg-brand-blue' : 'bg-brand-orange'}`}>
+                                                {course.category}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="p-6 md:p-8 flex flex-col flex-grow">
+                                        <h3 className="font-extrabold text-brand-dark text-xl leading-tight mb-3 group-hover:text-brand-blue transition-colors">{course.title}</h3>
+                                        <p className="text-slate-500 text-sm mb-6 line-clamp-2 leading-relaxed">{course.description}</p>
+                                        
+                                        <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-slate-100">
+                                            <div>
+                                                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-0.5">Duration</span>
+                                                <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5"><Clock size={14} className="text-brand-orange"/>{course.duration}</span>
+                                            </div>
+                                            <div>
+                                                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-0.5">Level</span>
+                                                <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5"><Calendar size={14} className="text-brand-orange"/>{course.level}</span>
+                                            </div>
+                                        </div>
+
+                                        <button onClick={() => setSelectedCourse(course)} className="mt-auto w-full py-3.5 bg-slate-50 text-brand-dark font-bold rounded-xl hover:bg-brand-blue hover:text-white transition-colors border border-slate-200 hover:border-brand-blue flex items-center justify-center gap-2 group/btn">
+                                            View Curriculum <ArrowRight size={16} className="text-brand-orange group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    <EnrollModal course={selectedCourse} isOpen={!!selectedCourse} onClose={() => setSelectedCourse(null)} />
+                    <AssignmentModal isOpen={assignmentOpen} onClose={() => setAssignmentOpen(false)} notify={notify} />
+                    <LegalModal docType={legalDoc} onClose={() => setLegalDoc(null)} />
+
+                    {/* Corporate Footer matching Homepage with Icon+Text Design */}
+                    <footer className="bg-brand-dark text-slate-400 pt-16 pb-12 border-t-4 border-brand-blue mt-auto">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-slate-800 pb-12 mb-8">
+                                <div className="md:col-span-2">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <img src="logo.png" alt="Mbtech Logo" className="h-10 w-auto object-contain" onError={(e)=>{e.target.style.display='none'}}/>
+                                        <div>
+                                            <h4 className="text-xl font-extrabold text-white tracking-tight uppercase">MBTECH <span className="text-brand-blue">NG</span></h4>
+                                            <p className="text-xs text-brand-orange font-bold uppercase tracking-widest">Innovating Africa</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm leading-relaxed max-w-sm mb-6 text-slate-400">
+                                        MBTECH NG is Africa's premier hub for digital skills training, software development, and tech consultancy. We offer expert courses, solar solutions, and premium gadgets.
+                                    </p>
+                                    <div className="flex gap-3">
+                                        {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+                                            <a key={i} href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><Icon size={18} /></a>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Quick Links</h4>
+                                    <ul className="space-y-4 text-sm">
+                                        <li><a href="index.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><Home size={16}/> Home</a></li>
+                                        <li><a href="course.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><BookOpen size={16}/> Courses</a></li>
+                                        <li><a href="store.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><StoreIcon size={16}/> Tech Store</a></li>
+                                        <li><a href="connect.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><Users size={16}/> Community</a></li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contact Us</h4>
+                                    <ul className="space-y-4 text-sm">
+                                        <li className="flex items-center gap-3"><Phone size={16} className="text-brand-blue"/> +234 708 467 2771</li>
+                                        <li className="flex items-center gap-3"><Mail size={16} className="text-brand-blue"/> info@mbtech.ng</li>
+                                        <li className="flex items-start gap-3"><MapPin size={16} className="text-brand-blue mt-1"/> Ikorodu, Lagos, Nigeria</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
+                                <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved.</p>
+                                <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+                                    <button onClick={() => setLegalDoc('privacy')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><ShieldCheck size={14}/> Privacy Policy</button>
+                                    <button onClick={() => setLegalDoc('terms')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><FileKey size={14}/> Terms of Service</button>
+                                    <button onClick={() => setLegalDoc('refund')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><RefreshCcw size={14}/> Refund Policy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
         }
 
-        // Initialize and Check URL for specific view
-        window.onload = function() {
-            initForms();
-            const urlParams = new URLSearchParams(window.location.search);
-            const view = urlParams.get('view');
-            
-            if (view && ['digital', 'tech', 'tutorials'].includes(view)) {
-                switchView(view);
-            } else {
-                switchView('home'); 
-            }
-        };
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
