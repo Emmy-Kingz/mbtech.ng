@@ -154,6 +154,23 @@
         
         const WHATSAPP_NUMBER = "2347084672771";
         
+        const NAV_ITEMS = [
+            { name: 'Home', url: 'index.html', icon: <Home size={18} /> },
+            { name: 'Courses', url: 'course.html', icon: <BookOpen size={18} /> },
+            { name: 'Store', url: 'store.html', icon: <StoreIcon size={18} /> },
+            { name: 'Connect', url: 'connect.html', icon: <Users size={18} /> }
+        ];
+
+        // ==========================================
+        // SOCIAL MEDIA LINKS (Update URLs here)
+        // ==========================================
+        const SOCIAL_LINKS = [
+            { name: 'Facebook', icon: Facebook, url: 'https://facebook.com/mbtech.ng' },
+            { name: 'Twitter', icon: Twitter, url: 'https://x.com/mbtech_ng' },
+            { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/mbtech_ng' },
+            { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/company/mbtech-ng' }
+        ];
+
         const CATEGORIES = ["All Courses", "Tech", "Design", "Engineering"];
 
         // PRICING & DURATIONS: Design = 50k (6wks), Tech = 100k (8wks), Engineering = 150k (10wks)
@@ -740,8 +757,10 @@
                                         MBTECH NG is Africa's premier hub for digital skills training, software development, and tech consultancy. We offer expert courses, solar solutions, and premium gadgets.
                                     </p>
                                     <div className="flex gap-3">
-                                        {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                                            <a key={i} href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><Icon size={18} /></a>
+                                        {SOCIAL_LINKS.map((link, i) => (
+                                            <a key={i} href={link.url} target={link.url !== '#' ? "_blank" : "_self"} rel="noopener noreferrer" aria-label={link.name} className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors">
+                                                <link.icon size={18} />
+                                            </a>
                                         ))}
                                     </div>
                                 </div>
