@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MBTECH NG | Latest Updates & News</title>
+    
+    <!-- Premium SEO Meta Tags -->
+    <meta name="description" content="Stay updated with the latest news, tech insights, and announcements from MBTECH NG. Read our mini-blog for tips on solar, web development, and more.">
+    <meta name="keywords" content="Mbtech News, Tech Blog Nigeria, Solar Updates, Web Development Insights, Mesobest Technology News">
+    <meta name="author" content="Mesobest Technology">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://emmy-kingz.github.io/mbtech.ng/info.html">
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://emmy-kingz.github.io/mbtech.ng/info.html">
+    <meta property="og:title" content="MBTECH NG | Latest Updates & News">
+    <meta property="og:description" content="Stay updated with the latest news, tech insights, and announcements from MBTECH NG.">
+    <meta property="og:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://emmy-kingz.github.io/mbtech.ng/info.html">
+    <meta name="twitter:title" content="MBTECH NG | Latest Updates & News">
+    <meta name="twitter:description" content="Stay updated with the latest news, tech insights, and announcements from MBTECH NG. Read our mini-blog for tips on solar, web development, and more.">
+    <meta name="twitter:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
+
+    <!-- JSON-LD Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "MBTECH NG Insights",
+      "url": "https://emmy-kingz.github.io/mbtech.ng/info.html",
+      "description": "Stay updated with the latest news, tech insights, and announcements from MBTECH NG.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Mesobest Technology",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://emmy-kingz.github.io/mbtech.ng/logo.png"
+        }
+      }
+    }
+    </script>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.294.0",
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+        }
+    }
+    </script>
+
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind Config for Core Brand Colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0056b3',
+                            blueHover: '#004494',
+                            orange: '#f97316',
+                            dark: '#0f172a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        html { scroll-behavior: smooth; }
+        
+        /* Mobile Bottom Nav Padding with Safe Area (iOS support) */
+        body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+        @media (min-width: 768px) { body { padding-bottom: 0; } }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .dvh-screen { height: 100vh; height: 100dvh; }
+
+        .animated-gradient-text {
+            background: linear-gradient(to right, #0056b3, #f97316, #0056b3);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+    </style>
+</head>
+<body class="bg-[#f8fafc] font-sans text-slate-900 selection:bg-brand-blue selection:text-white">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Menu, X, ChevronRight, ArrowRight, Home, BookOpen, Users, 
+            Store as StoreIcon, Newspaper, Calendar, MapPin, Mail, Phone,
+            Facebook, Twitter, Instagram, Linkedin, ShieldCheck, FileKey, RefreshCcw, Loader2
+        } from 'lucide-react';
+
+        // --- FIREBASE IMPORTS ---
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+        import { getFirestore, collection, onSnapshot } from 'firebase/firestore';
+
+        // --- CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+            authDomain: "mbtechstore-17984.firebaseapp.com",
+            projectId: "mbtechstore-17984",
+            storageBucket: "mbtechstore-17984.firebasestorage.app",
+            messagingSenderId: "1083008774596",
+            appId: "1:1083008774596:web:110b651c6426116ed43491"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'mbtech-public-store'; // Matches Store/Admin
+
+        const WHATSAPP_NUMBER = "2347084672771";
+        
+        const SOCIAL_LINKS = [
+            { name: 'Facebook', icon: Facebook, url: 'https://facebook.com/mbtech.ng' },
+            { name: 'Twitter', icon: Twitter, url: 'https://x.com/mbtech_ng' },
+            { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/mbtech_ng' },
+            { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/company/mbtech-ng' }
+        ];
+
+        // Fallback Dummy Posts to show while empty/loading
+        const DUMMY_POSTS = [
+            {
+                id: "d1", title: "Why Every Nigerian Business Needs a Solar Backup in 2026",
+                excerpt: "Grid instability is costing businesses millions. Learn how an inverter system guarantees zero downtime.",
+                content: "With grid instability continuing to affect businesses, transitioning to a solar and inverter backup system is no longer a luxury but a necessity. A properly sized 5KVA or 10KVA system can run essential office equipment, servers, and cooling systems seamlessly during an outage.\n\nAt MBTECH NG, we've seen a 300% increase in productivity for our clients who switched to hybrid solar solutions. The initial ROI usually completes within 18 months when factoring in fuel and generator maintenance costs. Contact our engineering team today for a free load assessment.",
+                category: "Solar Tech", image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=800", date: "Feb 18, 2026", published: true
+            },
+            {
+                id: "d2", title: "MBTECH Academy Launches Advanced UI/UX Cohort",
+                excerpt: "Registration is officially open for our intensive 6-week Product Design bootcamp.",
+                content: "We are thrilled to announce our next UI/UX Design cohort! This 6-week intensive bootcamp is designed to take you from absolute beginner to industry-ready product designer.\n\nStudents will master Figma, user research, wireframing, and build a complete case study for their portfolio. The best students will be integrated into the MBTECH Connect talent pool for gig placements. Visit the Courses page to enroll now!",
+                category: "Academy News", image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800", date: "Feb 15, 2026", published: true
+            },
+            {
+                id: "d3", title: "Protecting Your Gadgets from Power Surges",
+                excerpt: "Simple, highly effective tips to ensure your laptops and TVs survive high voltage fluctuations.",
+                content: "Power surges are the silent killers of expensive tech. When power is restored abruptly, the voltage spike can fry laptop motherboards and TV panels instantly.\n\nAlways use a high-quality Surge Protector (not just an extension box). For desktops and TVs, an AVR (Automatic Voltage Regulator) or a pure sine wave UPS is highly recommended. At the Mbtech Store, we stock certified protective gear to safeguard your investments.",
+                category: "Tech Tips", image: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800", date: "Feb 10, 2026", published: true
+            }
+        ];
+
+        // --- COMPONENTS ---
+
+        const Navbar = () => {
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            return (
+                <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-gray-100' : 'bg-white border-b border-gray-100'}`}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-16 md:h-20">
+                            {/* Logo */}
+                            <div className="flex-shrink-0 flex items-center gap-3">
+                                <a href="index.html" className="flex items-center gap-3 cursor-pointer group">
+                                    <img src="logo.png" alt="MBTECH NG" className="h-8 md:h-10 w-auto" onError={(e) => {e.target.style.display='none'}} />
+                                    <div className="flex flex-col">
+                                        <span className="text-xl font-extrabold text-brand-dark tracking-tight leading-none uppercase">
+                                            MBTECH <span className="text-brand-blue">NG</span>
+                                        </span>
+                                        <span className="text-[10px] text-brand-orange font-bold tracking-widest uppercase">Innovating Africa</span>
+                                    </div>
+                                </a>
+                            </div>
+
+                            {/* Desktop Nav */}
+                            <div className="hidden md:flex items-center space-x-8">
+                                <a href="index.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><Home size={16}/> Home</a>
+                                <a href="course.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><BookOpen size={16}/> Courses</a>
+                                <a href="store.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><StoreIcon size={16}/> Store</a>
+                                <a href="info.html" className="text-sm font-bold text-brand-blue transition-colors flex items-center gap-1.5 border-b-2 border-brand-blue py-1"><Newspaper size={16}/> Updates</a>
+                            </div>
+
+                            {/* Desktop CTA */}
+                            <div className="hidden md:flex items-center gap-4">
+                                <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="bg-brand-blue hover:bg-brand-blueHover text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-blue-500/30">
+                                    Contact Us
+                                </a>
+                            </div>
+
+                            {/* Mobile Hamburger */}
+                            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-brand-dark hover:text-brand-blue transition-colors">
+                                {mobileMenuOpen ? <X size={28}/> : <Menu size={28}/>}
+                            </button>
+                        </div>
+
+                        {/* Mobile Dropdown */}
+                        {mobileMenuOpen && (
+                            <div className="md:hidden absolute w-full left-0 top-[65px] bg-white shadow-xl border-t border-gray-100 animate-in slide-in-from-top-4 duration-200 z-50 rounded-b-2xl">
+                                <div className="p-4 flex flex-col gap-2 pb-6">
+                                    <a href="index.html" className="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-slate-700 hover:bg-slate-50"><Home size={18} className="text-slate-400"/> Home</a>
+                                    <a href="course.html" className="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-slate-700 hover:bg-slate-50"><BookOpen size={18} className="text-slate-400"/> Courses</a>
+                                    <a href="store.html" className="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-slate-700 hover:bg-slate-50"><StoreIcon size={18} className="text-slate-400"/> Store</a>
+                                    <a href="connect.html" className="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-slate-700 hover:bg-slate-50"><Users size={18} className="text-slate-400"/> Connect</a>
+                                    <a href="info.html" className="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-brand-blue bg-blue-50"><Newspaper size={18}/> Updates & News</a>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </nav>
+            );
+        };
+
+        const BottomNav = () => (
+            <div className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-safe">
+                <div className="flex justify-between items-center h-16 px-2">
+                    <a href="index.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                        <Home size={20} />
+                        <span className="text-[9px] font-bold uppercase tracking-wider">Home</span>
+                    </a>
+                    <a href="course.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                        <BookOpen size={20} />
+                        <span className="text-[9px] font-bold uppercase tracking-wider">Courses</span>
+                    </a>
+                    <a href="store.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                        <StoreIcon size={20} />
+                        <span className="text-[9px] font-bold uppercase tracking-wider">Store</span>
+                    </a>
+                    <a href="connect.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                        <Users size={20} />
+                        <span className="text-[9px] font-bold uppercase tracking-wider">Connect</span>
+                    </a>
+                    <a href="info.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-brand-blue transition-colors">
+                        <Newspaper size={20} />
+                        <span className="text-[9px] font-bold uppercase tracking-wider">Updates</span>
+                    </a>
+                </div>
+            </div>
+        );
+
+        const ReadModal = ({ post, onClose }) => {
+            if (!post) return null;
+            return (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] w-full max-w-3xl max-h-[90dvh] overflow-y-auto no-scrollbar shadow-2xl relative animate-in zoom-in-95 duration-200">
+                        <button onClick={onClose} className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur rounded-full text-slate-700 shadow-sm hover:bg-white transition-colors"><X size={20}/></button>
+                        
+                        <div className="w-full h-48 sm:h-72 bg-slate-100 relative">
+                            <img src={post.image} alt={post.title} className="w-full h-full object-cover" onError={(e)=>{e.target.src='https://placehold.co/800x400?text=News'}}/>
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+                            <div className="absolute bottom-4 left-6 flex items-center gap-3">
+                                <span className="px-3 py-1 bg-brand-orange text-white text-[10px] font-bold uppercase tracking-widest rounded-full">{post.category}</span>
+                                <span className="text-white text-xs font-medium flex items-center gap-1 shadow-sm"><Calendar size={12}/> {post.date}</span>
+                            </div>
+                        </div>
+
+                        <div className="p-6 sm:p-10">
+                            <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-dark mb-6 leading-tight">{post.title}</h2>
+                            <div className="text-slate-600 text-base leading-relaxed space-y-4 whitespace-pre-line">
+                                {post.content}
+                            </div>
+
+                            <div className="mt-10 pt-6 border-t border-slate-100 flex justify-between items-center">
+                                <p className="text-sm font-bold text-slate-400">Share this update</p>
+                                <div className="flex gap-2">
+                                    <button className="w-8 h-8 rounded-full bg-slate-100 text-brand-blue flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><Facebook size={14}/></button>
+                                    <button className="w-8 h-8 rounded-full bg-slate-100 text-brand-blue flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><Twitter size={14}/></button>
+                                    <button className="w-8 h-8 rounded-full bg-slate-100 text-brand-blue flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><Linkedin size={14}/></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const LegalModal = ({ docType, onClose }) => {
+            if (!docType) return null;
+            
+            const content = {
+                privacy: { 
+                    title: "Privacy Policy", 
+                    text: "At MBTECH NG, we take your privacy seriously. We only collect essential information required to process your enrollments, assignment requests, and store orders securely. We do not sell your personal data to third parties. Your data is protected using industry-standard security measures and is solely used to enhance your experience with our Academy and Services." 
+                },
+                terms: { 
+                    title: "Terms of Service", 
+                    text: "By using MBTECH NG, you agree to abide by our academy guidelines and store rules. Course fees are to be paid before the commencement of classes unless an installment plan is formally agreed upon. We reserve the right to update our curriculum to match industry standards. Any misuse of our platform or services may result in termination of access." 
+                },
+                refund: {
+                    title: "Refund Policy",
+                    text: "Refunds for courses are only available within the first 7 days of enrollment, provided the student has not accessed more than 20% of the course materials. For our tech store, physical items can be returned within 7 days of delivery if defective. Assignment help services and software installations are non-refundable once delivered/completed."
+                }
+            }[docType];
+
+            return (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2rem] w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
+                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><X size={20}/></button>
+                        <div className="p-6 md:p-8">
+                            <div className="w-12 h-12 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-4">
+                                {docType === 'privacy' ? <ShieldCheck size={24}/> : docType === 'terms' ? <FileKey size={24}/> : <RefreshCcw size={24}/>}
+                            </div>
+                            <h2 className="text-2xl font-extrabold text-brand-dark mb-4">{content.title}</h2>
+                            <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{content.text}</p>
+                            <button onClick={onClose} className="w-full py-3.5 mt-8 bg-brand-blue text-white font-bold rounded-xl shadow-md shadow-blue-500/20 hover:bg-brand-blueHover transition-colors">I Understand</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        function App() {
+            const [posts, setPosts] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [selectedPost, setSelectedPost] = useState(null);
+            const [legalDoc, setLegalDoc] = useState(null);
+            const [user, setUser] = useState(null);
+
+            useEffect(() => {
+                const initAuth = async () => {
+                    try {
+                        if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
+                            try { await signInWithCustomToken(auth, window.__initial_auth_token); } 
+                            catch (e) { await signInAnonymously(auth); }
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (e) { console.error("Auth init error:", e); }
+                };
+                initAuth();
+                return onAuthStateChanged(auth, setUser);
+            }, []);
+
+            useEffect(() => {
+                if (!user) return;
+                // Listen to the mbtech_updates collection for background admin sync
+                const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates');
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const fetchedPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    // If the backend has no posts yet (admin hasn't published), use DUMMY posts for design presentation
+                    if (fetchedPosts.length === 0) {
+                        setPosts(DUMMY_POSTS);
+                    } else {
+                        // Filter to only show published ones and sort by date
+                        let validPosts = fetchedPosts.filter(p => p.published !== false);
+                        validPosts.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                        
+                        // Format the date string if it came from Firestore timestamp
+                        validPosts = validPosts.map(p => ({
+                            ...p,
+                            date: p.createdAt?.seconds ? new Date(p.createdAt.seconds * 1000).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) : p.date || 'Recent'
+                        }));
+                        setPosts(validPosts.length > 0 ? validPosts : DUMMY_POSTS);
+                    }
+                    setLoading(false);
+                }, (error) => {
+                    console.error("Firestore Error:", error);
+                    setPosts(DUMMY_POSTS); // Fallback on error
+                    setLoading(false);
+                });
+
+                return () => unsubscribe();
+            }, [user]);
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <Navbar />
+                    <BottomNav />
+                    
+                    <ReadModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+                    <LegalModal docType={legalDoc} onClose={() => setLegalDoc(null)} />
+
+                    <main className="flex-1 pt-20 pb-12">
+                        {/* Hero Section */}
+                        <div className="bg-brand-dark relative overflow-hidden py-16 sm:py-24 px-4">
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-brand-blue/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+                            
+                            <div className="relative z-10 max-w-3xl mx-auto text-center">
+                                <div className="w-16 h-16 bg-brand-orange/20 text-brand-orange rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur">
+                                    <Newspaper size={32}/>
+                                </div>
+                                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 tracking-tight">
+                                    MBTECH <span className="text-brand-orange">Insights</span>
+                                </h1>
+                                <p className="text-lg text-slate-300 leading-relaxed max-w-xl mx-auto">
+                                    Stay up to date with the latest news, technological shifts, and exclusive announcements directly from our academy and store.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Blog Grid */}
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+                            {loading ? (
+                                <div className="flex justify-center items-center py-20">
+                                    <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    {posts.map((post) => (
+                                        <article key={post.id} className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col group cursor-pointer" onClick={() => setSelectedPost(post)}>
+                                            <div className="relative h-56 overflow-hidden bg-slate-100">
+                                                <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onError={(e)=>{e.target.src='https://placehold.co/600x400?text=Update'}} />
+                                                <div className="absolute top-4 left-4">
+                                                    <span className="bg-white/90 backdrop-blur text-brand-dark text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm uppercase tracking-widest">
+                                                        {post.category}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="p-6 md:p-8 flex flex-col flex-grow">
+                                                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mb-3">
+                                                    <Calendar size={14} className="text-brand-orange"/> {post.date}
+                                                </div>
+                                                <h3 className="font-extrabold text-brand-dark text-xl leading-tight mb-3 group-hover:text-brand-blue transition-colors line-clamp-2">{post.title}</h3>
+                                                <p className="text-slate-500 text-sm mb-6 line-clamp-3 leading-relaxed">{post.excerpt}</p>
+                                                
+                                                <div className="mt-auto pt-4 border-t border-slate-100">
+                                                    <span className="text-sm font-bold text-brand-blue flex items-center gap-2 group-hover:translate-x-1 transition-transform">
+                                                        Read Full Article <ArrowRight size={16}/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-brand-dark text-slate-400 pt-16 pb-24 md:pb-12 border-t-4 border-brand-blue mt-auto">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-slate-800 pb-12 mb-8">
+                                <div className="md:col-span-2">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <img src="logo.png" alt="Mbtech Logo" className="h-10 w-auto object-contain" onError={(e)=>{e.target.style.display='none'}}/>
+                                        <div>
+                                            <h4 className="text-xl font-extrabold text-white tracking-tight uppercase">MBTECH <span className="text-brand-blue">NG</span></h4>
+                                            <p className="text-xs text-brand-orange font-bold uppercase tracking-widest">Innovating Africa</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm leading-relaxed max-w-sm mb-6 text-slate-400">
+                                        MBTECH NG is Africa's premier hub for digital skills training, software development, and tech consultancy. We offer expert courses, solar solutions, and premium gadgets.
+                                    </p>
+                                    <div className="flex gap-3">
+                                        {SOCIAL_LINKS.map((link, i) => (
+                                            <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" aria-label={link.name} className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors">
+                                                <link.icon size={18} />
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Quick Links</h4>
+                                    <ul className="space-y-4 text-sm">
+                                        <li><a href="index.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><Home size={16}/> Home</a></li>
+                                        <li><a href="course.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><BookOpen size={16}/> Courses</a></li>
+                                        <li><a href="store.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><StoreIcon size={16}/> Tech Store</a></li>
+                                        <li><a href="connect.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><Users size={16}/> Community</a></li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contact Us</h4>
+                                    <ul className="space-y-4 text-sm">
+                                        <li className="flex items-center gap-3"><Phone size={16} className="text-brand-blue"/> +234 708 467 2771</li>
+                                        <li className="flex items-center gap-3"><Mail size={16} className="text-brand-blue"/> info@mbtech.ng</li>
+                                        <li className="flex items-start gap-3"><MapPin size={16} className="text-brand-blue mt-1"/> Ikorodu, Lagos, Nigeria</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
+                                <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved.</p>
+                                <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+                                    <button onClick={() => setLegalDoc('privacy')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><ShieldCheck size={14}/> Privacy Policy</button>
+                                    <button onClick={() => setLegalDoc('terms')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><FileKey size={14}/> Terms of Service</button>
+                                    <button onClick={() => setLegalDoc('refund')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><RefreshCcw size={14}/> Refund Policy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
