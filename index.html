@@ -20,11 +20,11 @@
     <meta property="og:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://emmy-kingz.github.io/mbtech.ng/">
-    <meta property="twitter:title" content="MBTECH NG - Building Africa's Digital Future">
-    <meta property="twitter:description" content="Join top-tier tech courses, buy premium gadgets, and get professional solar installations. Your one-stop tech hub.">
-    <meta property="twitter:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://emmy-kingz.github.io/mbtech.ng/">
+    <meta name="twitter:title" content="MBTECH NG - Building Africa's Digital Future">
+    <meta name="twitter:description" content="Join top-tier tech courses, buy premium gadgets, and get professional solar installations. Your one-stop tech hub.">
+    <meta name="twitter:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
@@ -41,7 +41,7 @@
       },
       "sameAs": [
         "https://facebook.com/mbtech.ng",
-        "https://twitter.com/mbtech_ng",
+        "https://x.com/mbtech_ng",
         "https://instagram.com/mbtech_ng",
         "https://linkedin.com/company/mbtech-ng"
       ]
@@ -97,30 +97,9 @@
         .social-grid a { transition: all 0.2s ease; }
         .social-grid a:active { transform: scale(0.9); }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 800px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: slideUp 0.3s ease-out;
-        }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Hide scrollbar for mobile elements */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* Animated Text Gradient */
         .animated-gradient-text {
@@ -132,9 +111,14 @@
             animation: shine 3s linear infinite;
         }
         @keyframes shine {
-            to {
-                background-position: 200% center;
-            }
+            to { background-position: 200% center; }
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
     </style>
 </head>
@@ -154,7 +138,7 @@
             
             <!-- Desktop Nav Pills (Icon + Text) -->
             <div class="hidden md:flex gap-2 bg-slate-50 p-1.5 rounded-full items-center">
-                <a href="#home" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-slate-900 bg-white shadow-sm transition-all hover:text-blue-600">
+                <a href="index.html" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-slate-900 bg-white shadow-sm transition-all hover:text-blue-600">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Home
                 </a>
@@ -169,6 +153,10 @@
                 <a href="store.html" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition-all">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                     Store
+                </a>
+                <a href="info.html" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-slate-500 hover:text-slate-900 hover:bg-white hover:shadow-sm transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                    Info
                 </a>
             </div>
 
@@ -189,7 +177,7 @@
 
     <!-- Mobile Menu Overlay (With Icons) -->
     <div id="mobileMenu" class="fixed inset-0 bg-white z-40 transform translate-x-full transition-transform duration-300 md:hidden flex flex-col pt-24 px-6 gap-4 text-lg font-bold text-slate-800 overflow-y-auto">
-        <a href="#home" onclick="toggleMenu()" class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+        <a href="index.html" onclick="toggleMenu()" class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             Home
         </a>
@@ -204,6 +192,10 @@
         <a href="store.html" onclick="toggleMenu()" class="flex items-center gap-3 p-3 bg-emerald-50 text-emerald-700 rounded-xl">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
             Store
+        </a>
+        <a href="info.html" onclick="toggleMenu()" class="flex items-center gap-3 p-3 bg-orange-50 text-orange-700 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+            News & Updates
         </a>
         <a href="#contact" onclick="toggleMenu()" class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
             <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -319,8 +311,29 @@
         </div>
     </section>
 
-    <!-- Upcoming Events (Dynamic Firebase Section) -->
+    <!-- Latest News & Info (Dynamic Firebase Section) -->
     <section class="py-20 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <div>
+                    <span class="text-orange-600 font-bold tracking-[0.2em] text-xs uppercase border border-orange-100 bg-orange-50 px-3 py-1 rounded-full">Newsroom</span>
+                    <h2 class="text-3xl md:text-4xl font-black mt-4 text-slate-900">Latest <span class="text-gradient">Insights</span></h2>
+                </div>
+                <a href="info.html" class="text-blue-600 font-bold hover:underline flex items-center gap-1">Read All News <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+            </div>
+
+            <!-- Dynamic Grid Container -->
+            <div id="info-grid" class="grid md:grid-cols-3 gap-8">
+                <!-- Loader -->
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Events (Dynamic Firebase Section) -->
+    <section class="py-20 bg-slate-50 border-t border-slate-100">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
                 <span class="text-purple-600 font-bold tracking-[0.2em] text-xs uppercase border border-purple-100 bg-purple-50 px-3 py-1 rounded-full">Don't Miss Out</span>
@@ -338,58 +351,58 @@
     </section>
 
     <!-- FAQs -->
-    <section id="faqs" class="py-20 bg-slate-50">
+    <section id="faqs" class="py-20 bg-white">
         <div class="max-w-3xl mx-auto px-6">
             <h2 class="text-3xl font-black text-center mb-12">Frequently Asked Questions</h2>
             
             <div class="space-y-4">
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-white">
+                    <div class="p-6 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
                         <h3 class="font-bold text-slate-900">Do you offer certificates?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
                     <div class="faq-content bg-white px-6">
-                        <p class="py-4 text-sm text-slate-500">Yes, all our professional courses (Tech & Digital) come with a recognized certificate of completion upon finishing the final project.</p>
+                        <p class="py-4 text-sm text-slate-500 border-t border-slate-100">Yes, all our professional courses (Tech & Digital) come with a recognized certificate of completion upon finishing the final project.</p>
                     </div>
                 </div>
                 
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-white">
+                    <div class="p-6 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
                         <h3 class="font-bold text-slate-900">Are classes physical or virtual?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
                     <div class="faq-content bg-white px-6">
-                        <p class="py-4 text-sm text-slate-500">We offer both! Our virtual classes utilize Google Meet and WhatsApp, while we have physical hubs in select locations for hands-on training.</p>
+                        <p class="py-4 text-sm text-slate-500 border-t border-slate-100">We offer both! Our virtual classes utilize Google Meet and WhatsApp, while we have physical hubs in select locations for hands-on training.</p>
                     </div>
                 </div>
 
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-white">
+                    <div class="p-6 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
                         <h3 class="font-bold text-slate-900">How do I make payments?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
                     <div class="faq-content bg-white px-6">
-                        <p class="py-4 text-sm text-slate-500">We accept secure bank transfers for both courses and store items. For the Mbtech Store, we also support WhatsApp Checkout for faster processing.</p>
+                        <p class="py-4 text-sm text-slate-500 border-t border-slate-100">We accept secure bank transfers for both courses and store items. For the Mbtech Store, we also support WhatsApp Checkout for faster processing.</p>
                     </div>
                 </div>
 
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-white">
+                    <div class="p-6 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
                         <h3 class="font-bold text-slate-900">Do you offer mentorship after courses?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
                     <div class="faq-content bg-white px-6">
-                        <p class="py-4 text-sm text-slate-500">Yes! All our students get lifetime access to the 'Connect Pool' community for ongoing mentorship, job updates, and networking opportunities.</p>
+                        <p class="py-4 text-sm text-slate-500 border-t border-slate-100">Yes! All our students get lifetime access to the 'Connect Pool' community for ongoing mentorship, job updates, and networking opportunities.</p>
                     </div>
                 </div>
 
                 <div class="faq-item border border-slate-200 rounded-2xl overflow-hidden cursor-pointer" onclick="toggleFaq(this)">
-                    <div class="p-6 flex justify-between items-center bg-white">
+                    <div class="p-6 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
                         <h3 class="font-bold text-slate-900">What is your return policy for gadgets?</h3>
                         <svg class="faq-icon w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
                     <div class="faq-content bg-white px-6">
-                        <p class="py-4 text-sm text-slate-500">Eligible items can be returned within 7 days if defective. Items must be in original packaging with all accessories. Please check our legal section for full details.</p>
+                        <p class="py-4 text-sm text-slate-500 border-t border-slate-100">Eligible items can be returned within 7 days if defective. Items must be in original packaging with all accessories. Please check our legal section for full details.</p>
                     </div>
                 </div>
             </div>
@@ -397,7 +410,7 @@
     </section>
 
     <!-- Journey Section -->
-    <section class="py-24 bg-white relative overflow-hidden">
+    <section class="py-24 bg-slate-50 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-20 fade-in-up">
                 <span class="text-blue-600 font-bold tracking-[0.2em] text-xs uppercase border border-blue-100 bg-blue-50 px-3 py-1 rounded-full">Est. April 2020</span>
@@ -482,7 +495,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-20 bg-slate-50">
+    <section id="contact" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12">
             <div>
                 <h2 class="text-3xl font-black mb-6">Get in Touch</h2>
@@ -510,171 +523,102 @@
                 </div>
             </div>
 
-            <form id="contactForm" class="bg-white p-8 rounded-[2rem] shadow-lg border border-slate-100 space-y-4">
+            <form id="contactForm" class="bg-slate-50 p-8 rounded-[2rem] shadow-sm border border-slate-100 space-y-4">
                 <!-- Bot Protection: Honeypot -->
                 <input type="text" name="honeypot" class="opacity-0 absolute top-0 left-0 w-0 h-0 -z-10" tabindex="-1" autocomplete="off">
-                <input type="text" name="name" required placeholder="Your Name" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors">
-                <input type="email" name="email" required placeholder="Your Email" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors">
-                <select name="subject" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 text-slate-500">
+                <input type="text" name="name" required placeholder="Your Name" class="w-full bg-white border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors shadow-sm">
+                <input type="email" name="email" required placeholder="Your Email" class="w-full bg-white border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors shadow-sm">
+                <select name="subject" class="w-full bg-white border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 text-slate-500 shadow-sm">
                     <option>General Inquiry</option>
                     <option>Business Partnership</option>
                     <option>Store/Product Support</option>
                 </select>
-                <textarea name="message" rows="4" required placeholder="How can we help you?" class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors"></textarea>
-                <button type="submit" class="w-full bg-gradient-brand text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all">Send Message</button>
+                <textarea name="message" rows="4" required placeholder="How can we help you?" class="w-full bg-white border border-slate-200 p-4 rounded-xl outline-none focus:border-blue-500 transition-colors shadow-sm resize-none"></textarea>
+                <button type="submit" class="w-full bg-gradient-brand text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all active:scale-[0.98]">Send Message</button>
             </form>
         </div>
     </section>
 
-    <!-- Floating Support -->
-    <a href="https://wa.me/2347084672771" target="_blank" rel="noopener noreferrer" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#20b858] transition-transform hover:scale-110 flex items-center justify-center animate-in slide-in-from-bottom-10 md:bottom-8 md:right-8" aria-label="Chat on WhatsApp">
-        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.747-2.874-2.512-2.96-2.626-.087-.115-.708-.941-.708-1.797 0-.855.448-1.274.607-1.446.159-.172.346-.215.462-.215.115 0 .231.001.332.006.106.005.249-.04.391.297.144.346.491 1.197.534 1.284.043.087.072.188.014.303-.058.115-.087.188-.173.289-.087.1-.181.223-.26.324-.087.101-.178.211-.077.385.101.173.449.741.964 1.201.662.592 1.221.777 1.394.863.173.088.274.072.376-.043.101-.115.433-.505.548-.678.115-.173.231-.144.39-.087.158.058 1.011.477 1.184.563.173.087.289.129.332.202.043.073.043.419-.101.824z"/></svg>
-        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white"></span>
-    </a>
-
     <!-- Footer -->
-    <footer class="bg-slate-950 text-white pt-16 pb-24 md:pb-10">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+    <footer class="bg-slate-950 text-slate-400 pt-16 pb-24 md:pb-12 border-t-4 border-blue-600 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-slate-800 pb-12 mb-8">
                 <!-- Brand & Location -->
-                <div class="col-span-1 md:col-span-1">
+                <div class="md:col-span-2">
                     <div class="flex items-center gap-3 mb-6">
                         <!-- Local Logo -->
-                        <img src="logo.png" alt="Logo" class="w-8 h-8 rounded bg-white p-0.5 object-contain" onerror="this.src='https://placehold.co/100x100?text=MB'">
-                        <span class="font-black text-xl">MBTECH NG</span>
+                        <img src="logo.png" alt="Mbtech Logo" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/100x100?text=MB'">
+                        <div>
+                            <h4 class="text-xl font-extrabold text-white tracking-tight uppercase">MBTECH <span class="text-blue-500">NG</span></h4>
+                            <p class="text-xs text-orange-500 font-bold uppercase tracking-widest">Innovating Africa</p>
+                        </div>
                     </div>
-                    <div class="space-y-4">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <p class="text-slate-400 text-sm leading-relaxed">Lagos, Nigeria | Worldwide <br/><span class="text-[10px] text-slate-500">Virtual & Physical Learning</span></p>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            <a href="mailto:mesobest.technology.org@gmail.com" class="text-slate-400 text-sm hover:text-white transition-colors">support@mbtech.ng</a>
-                        </div>
+                    <p class="text-sm leading-relaxed max-w-sm mb-6 text-slate-400">
+                        MBTECH NG is Africa's premier hub for digital skills training, software development, and tech consultancy. We offer expert courses, solar solutions, and premium gadgets.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="https://facebook.com/mbtech.ng" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        </a>
+                        <a href="https://x.com/mbtech_ng" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-100 hover:text-black transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/mbtech_ng" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://www.linkedin.com/company/mbtech-ng" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-700 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Navigation (Rich Icons) -->
+                <!-- Navigation -->
                 <div>
-                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest">Navigation</h4>
-                    <ul class="space-y-4">
-                        <li>
-                            <a href="#home" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-white transition-all group hover:translate-x-1">
-                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-blue-600 transition-colors shadow-inner">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                                </div>
-                                <span>Home</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#about" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-white transition-all group hover:translate-x-1">
-                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-orange-500 transition-colors shadow-inner">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                                <span>About</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="course.html" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-white transition-all group hover:translate-x-1">
-                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-blue-500 transition-colors shadow-inner">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                                </div>
-                                <span>Academy</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="connect.html" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-white transition-all group hover:translate-x-1">
-                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-green-500 transition-colors shadow-inner">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                </div>
-                                <span>Connect</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="store.html" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-white transition-all group hover:translate-x-1">
-                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-emerald-500 transition-colors shadow-inner">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                                </div>
-                                <span>Store</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#contact" class="flex items-center gap-3 text-sm font-bold text-slate-400 hover:text-white transition-all group hover:translate-x-1">
-                                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-purple-500 transition-colors shadow-inner">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                </div>
-                                <span>Contact</span>
-                            </a>
-                        </li>
+                    <h4 class="text-white font-bold mb-6 tracking-wide uppercase text-sm">Quick Links</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="index.html" class="hover:text-orange-500 transition-colors flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Home</a></li>
+                        <li><a href="course.html" class="hover:text-orange-500 transition-colors flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Academy</a></li>
+                        <li><a href="store.html" class="hover:text-orange-500 transition-colors flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7"/></svg> Tech Store</a></li>
+                        <li><a href="connect.html" class="hover:text-orange-500 transition-colors flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg> Connect</a></li>
+                        <li><a href="info.html" class="hover:text-orange-500 transition-colors flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg> News & Updates</a></li>
                     </ul>
                 </div>
 
-                <!-- Social Presence -->
-                <div class="col-span-1 md:col-span-2">
-                    <h4 class="font-black text-[10px] uppercase text-slate-500 mb-6 tracking-widest text-center md:text-left">Connect with Us</h4>
-                    <div class="social-grid grid grid-cols-4 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                        <a href="https://facebook.com/mbtech.ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-blue-600 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.378 14.792 5 15.536 5H18V0h-3.977C10.038 0 9 2.292 9 4.833V8z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">FB</span>
-                        </a>
-                        <a href="https://instagram.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-pink-600 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.981 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.351-.2 6.78-2.618 6.981-6.98.058-1.281.072-1.689.072-4.948s-.014-3.667-.072-4.947c-.2-4.352-2.612-6.78-6.981-6.981C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">IG</span>
-                        </a>
-                        <a href="https://twitter.com/mbtech_ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-white hover:text-black transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">X</span>
-                        </a>
-                        <a href="https://linkedin.com/company/mbtech-ng" target="_blank" class="flex flex-col items-center gap-2 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-blue-700 transition-all group">
-                            <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
-                            <span class="text-[8px] font-bold uppercase tracking-tight opacity-50 group-hover:opacity-100">In</span>
-                        </a>
-                    </div>
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contact Us</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +234 708 467 2771</li>
+                        <li class="flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> support@mbtech.ng</li>
+                        <li class="flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500 mt-1"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Ikorodu, Lagos, Nigeria</li>
+                    </ul>
                 </div>
             </div>
             
-            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-slate-500">
-                <p>© 2026 Mesobest Technology NG. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <button onclick="openModal('privacyModal')" class="hover:text-white transition-colors">Privacy Policy</button>
-                    <button onclick="openModal('termsModal')" class="hover:text-white transition-colors">Terms of Service</button>
-                    <button onclick="openModal('refundModal')" class="hover:text-white transition-colors">Refund Policy</button>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium border-t border-slate-800 pt-8">
+                <p>&copy; 2026 Mesobest Technology NG. All rights reserved.</p>
+                <div class="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+                    <button onclick="openLegalModal('privacy')" class="hover:text-orange-500 transition-colors flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg> Privacy Policy</button>
+                    <button onclick="openLegalModal('terms')" class="hover:text-orange-500 transition-colors flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> Terms of Service</button>
+                    <button onclick="openLegalModal('refund')" class="hover:text-orange-500 transition-colors flex items-center gap-1.5"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/></svg> Refund Policy</button>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Legal Modals -->
-    <div id="privacyModal" class="modal">
-        <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-4">Privacy Policy</h2>
-            <p class="text-sm text-slate-600 leading-relaxed">
-                **Effective Date:** February 2026<br/><br/>
-                Mesobest Technology respects your privacy. We collect personal data (name, email, phone) solely for communication, course registration, and order processing. We use Google Analytics to improve our services. Your data is never sold. For concerns, contact privacy@mbtech.ng.
-            </p>
-            <button onclick="closeModal('privacyModal')" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
-        </div>
-    </div>
-
-    <div id="termsModal" class="modal">
-        <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-4">Terms of Service</h2>
-            <p class="text-sm text-slate-600 leading-relaxed">
-                By using this site, you agree to our terms. Courses and products are subject to availability. Payments made for services are generally non-refundable unless specified otherwise in our refund policy. We reserve the right to modify services and pricing.
-            </p>
-            <button onclick="closeModal('termsModal')" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
-        </div>
-    </div>
-
-    <div id="refundModal" class="modal">
-        <div class="modal-content">
-            <h2 class="text-2xl font-bold mb-4">Refund Policy</h2>
-            <p class="text-sm text-slate-600 leading-relaxed">
-                **Products:** Returns accepted within 7 days for defective items. Items must be in original packaging.<br/>
-                **Courses:** Full refund available if requested 48 hours before classes begin. No refunds once access is granted.
-            </p>
-            <button onclick="closeModal('refundModal')" class="mt-6 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm">Close</button>
+    <!-- Universal Legal Modal (Vanilla JS) -->
+    <div id="legalModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
+        <div class="bg-white rounded-[2rem] w-full max-w-md max-h-[90dvh] overflow-y-auto no-scrollbar shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <button onclick="closeLegalModal()" class="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <div class="p-6 md:p-8">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4" id="legalModalIcon">
+                </div>
+                <h2 id="legalModalTitle" class="text-2xl font-extrabold text-slate-900 mb-4">Title</h2>
+                <p id="legalModalText" class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">Content</p>
+                <button onclick="closeLegalModal()" class="w-full py-3.5 mt-8 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition-colors">I Understand</button>
+            </div>
         </div>
     </div>
 
@@ -700,8 +644,13 @@
 
         const initAuth = async () => {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, window.__initial_auth_token);
+                    } catch (customTokenError) {
+                        console.error("Custom token failed, trying anonymous:", customTokenError);
+                        await signInAnonymously(auth);
+                    }
                 } else {
                     await signInAnonymously(auth);
                 }
@@ -712,7 +661,7 @@
                     eventsGrid.innerHTML = `
                         <div class="col-span-full text-center bg-red-50 p-8 rounded-xl border border-red-200 border-dashed">
                             <p class="text-red-600 font-bold mb-2">Authentication Failed</p>
-                            <p class="text-sm text-red-500">Please enable <b>Anonymous Sign-in</b> in your Firebase Console (Authentication > Sign-in method) to view events.</p>
+                            <p class="text-sm text-red-500">Please check your network connection or enable <b>Anonymous Sign-in</b> in Firebase.</p>
                         </div>
                     `;
                 }
@@ -723,12 +672,64 @@
 
         onAuthStateChanged(auth, (user) => {
             if (!user) return;
+            
+            // --- LOAD NEWS / INSIGHTS ---
+            const infoGrid = document.getElementById('info-grid');
+            if(infoGrid) {
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates'), (snapshot) => {
+                    infoGrid.innerHTML = '';
+                    let posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    // Filter published and sort by newest
+                    posts = posts.filter(p => p.published !== false);
+                    posts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                    
+                    // Take only the top 3 for the homepage
+                    posts = posts.slice(0, 3);
+
+                    if (posts.length === 0) {
+                        infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">No recent updates published. Check back soon!</p>';
+                        return;
+                    }
+
+                    posts.forEach(post => {
+                        const dateStr = post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) : post.date || 'Recent';
+                        const postHTML = `
+                            <a href="info.html" class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:border-orange-200 transition-all group flex flex-col cursor-pointer block">
+                                <div class="relative h-48 bg-slate-100 overflow-hidden">
+                                    <img src="${post.image || 'https://placehold.co/600x400?text=Update'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://placehold.co/600x400?text=Update'">
+                                    <div class="absolute top-4 left-4">
+                                        <span class="bg-white/90 backdrop-blur text-slate-900 text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm uppercase tracking-widest">${post.category || 'Update'}</span>
+                                    </div>
+                                </div>
+                                <div class="p-6 md:p-8 flex-grow flex flex-col">
+                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-400 mb-3">
+                                        <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> 
+                                        ${dateStr}
+                                    </div>
+                                    <h3 class="font-extrabold text-slate-900 text-lg leading-tight mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">${post.title}</h3>
+                                    <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-6 flex-grow">${post.excerpt || post.content}</p>
+                                    <div class="mt-auto pt-4 border-t border-slate-100">
+                                        <span class="text-xs font-bold text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">Read Article <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></span>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                        infoGrid.innerHTML += postHTML;
+                    });
+                }, (error) => {
+                    console.error("Error fetching updates", error);
+                    infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load updates at this time.</p>';
+                });
+            }
+
+            // --- LOAD EVENTS ---
             const eventsGrid = document.getElementById('events-grid');
             if(eventsGrid) {
                 onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_events'), (snapshot) => {
                     eventsGrid.innerHTML = '';
                     if (snapshot.empty) {
-                        eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-xl border border-slate-200 border-dashed">No upcoming events right now. Stay tuned!</p>';
+                        eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-white p-8 rounded-[2rem] border border-slate-200 border-dashed">No upcoming events right now. Stay tuned!</p>';
                         return;
                     }
                     
@@ -738,20 +739,20 @@
 
                     events.forEach((ev) => {
                         const eventHTML = `
-                            <div class="bg-white border border-slate-100 rounded-3xl p-2 shadow-sm hover:shadow-xl transition-all group flex flex-col">
-                                <div class="relative bg-slate-900 rounded-2xl h-48 overflow-hidden">
-                                    <img src="${ev.image || 'https://placehold.co/800x400?text=Event'}" class="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/800x400?text=Event'">
-                                    <div class="absolute top-4 right-4 bg-white text-slate-900 px-3 py-1 rounded-lg text-xs font-bold shadow-lg">${ev.date || 'TBA'}</div>
+                            <div class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col">
+                                <div class="relative bg-slate-900 h-48 overflow-hidden">
+                                    <img src="${ev.image || 'https://placehold.co/800x400?text=Event'}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x400?text=Event'">
+                                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur text-slate-900 px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-extrabold shadow-sm">${ev.date || 'TBA'}</div>
                                 </div>
-                                <div class="p-6 flex-grow flex flex-col">
-                                    <h3 class="text-lg font-bold text-slate-900 mb-2">${ev.title}</h3>
-                                    <p class="text-slate-500 text-xs mb-4 flex-grow line-clamp-3">${ev.description}</p>
-                                    <div class="flex items-center justify-between border-t border-slate-100 pt-4 mt-auto">
-                                        <span class="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
-                                            ${ev.location || 'Virtual'}
+                                <div class="p-6 md:p-8 flex-grow flex flex-col">
+                                    <h3 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight">${ev.title}</h3>
+                                    <p class="text-slate-500 text-sm mb-6 flex-grow line-clamp-3 leading-relaxed">${ev.description}</p>
+                                    <div class="flex items-center justify-between border-t border-slate-100 pt-5 mt-auto">
+                                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                            <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
+                                            <span class="truncate max-w-[100px]">${ev.location || 'Virtual'}</span>
                                         </span>
-                                        <a href="connect.html" class="text-blue-600 text-[10px] bg-blue-50 px-3 py-1.5 rounded-full font-black uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-colors">Register</a>
+                                        <a href="connect.html" class="text-purple-600 text-[10px] bg-purple-50 px-4 py-2 rounded-full font-black uppercase tracking-wider hover:bg-purple-600 hover:text-white transition-colors">Register</a>
                                     </div>
                                 </div>
                             </div>
@@ -760,7 +761,7 @@
                     });
                 }, (error) => {
                     console.error("Error fetching events", error);
-                    eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-xl border border-slate-200 border-dashed">Unable to load events at this time.</p>';
+                    eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-white p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load events at this time.</p>';
                 });
             }
         });
@@ -778,20 +779,34 @@
             el.classList.toggle('active');
         }
 
-        // Modal Logic
-        function openModal(id) {
-            document.getElementById(id).style.display = "block";
-        }
-        
-        function closeModal(id) {
-            document.getElementById(id).style.display = "none";
+        // --- NEW LEGAL MODAL LOGIC (Matches Store/Connect) ---
+        const legalContent = {
+            privacy: { 
+                title: "Privacy Policy", 
+                text: "At MBTECH NG, we take your privacy seriously. We only collect essential information required to process your enrollments, assignment requests, and store orders securely. We do not sell your personal data to third parties. Your data is protected using industry-standard security measures and is solely used to enhance your experience with our Academy and Services.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`
+            },
+            terms: { 
+                title: "Terms of Service", 
+                text: "By using MBTECH NG, you agree to abide by our academy guidelines and store rules. Course fees are to be paid before the commencement of classes unless an installment plan is formally agreed upon. We reserve the right to update our curriculum to match industry standards. Any misuse of our platform or services may result in termination of access.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>`
+            },
+            refund: {
+                title: "Refund Policy",
+                text: "Refunds for courses are only available within the first 7 days of enrollment, provided the student has not accessed more than 20% of the course materials. For our tech store, physical items can be returned within 7 days of delivery if defective. Assignment help services and software installations are non-refundable once delivered/completed.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/></svg>`
+            }
+        };
+
+        function openLegalModal(type) {
+            document.getElementById('legalModalTitle').innerText = legalContent[type].title;
+            document.getElementById('legalModalText').innerText = legalContent[type].text;
+            document.getElementById('legalModalIcon').innerHTML = legalContent[type].icon;
+            document.getElementById('legalModal').classList.remove('hidden');
         }
 
-        // Close modal when clicking outside of the white content box
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
+        function closeLegalModal() {
+            document.getElementById('legalModal').classList.add('hidden');
         }
 
         // Handle Contact Form (Redirect to WhatsApp with Anti-Bot)
