@@ -51,6 +51,14 @@
             }
         }
     </script>
+    <style>
+        /* Mobile-friendly scrolling & layout */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Add padding to the bottom of the main content area for the mobile nav */
+        main { padding-bottom: 80px; }
+        @media (min-width: 768px) { main { padding-bottom: 0; } }
+    </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-900">
     <div id="root"></div>
@@ -62,7 +70,7 @@
             LayoutDashboard, Package, ShoppingCart, Users, Settings, 
             LogOut, Plus, Search, Trash2, Edit, CheckCircle, Clock, 
             AlertTriangle, Truck, Eye, X, Image as ImageIcon, Loader2,
-            DollarSign, TrendingUp, Archive, Star, Calendar, MapPin, ListChecks
+            DollarSign, TrendingUp, Archive, Star, Calendar, MapPin, ListChecks, Newspaper, ToggleLeft, ToggleRight, Menu
         } from 'lucide-react';
 
         // --- FIREBASE IMPORTS & SETUP ---
@@ -218,6 +226,67 @@
             );
         };
 
+        // Modal for Adding Blog Posts / Updates
+        const PostModal = ({ isOpen, onClose, onSave }) => {
+            const [form, setForm] = useState({ title: '', excerpt: '', content: '', category: 'General', image: '', published: true });
+
+            if (!isOpen) return null;
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                // Date is generated automatically or by serverTimestamp on save
+                onSave({ 
+                    ...form, 
+                    date: new Date().toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) 
+                });
+                setForm({ title: '', excerpt: '', content: '', category: 'General', image: '', published: true });
+            };
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20}/></button>
+                        <h2 className="text-xl font-bold mb-6">Add New Update / Post</h2>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Title</label>
+                                <input required type="text" className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 outline-none" value={form.title} onChange={e=>setForm({...form, title: e.target.value})} placeholder="Post Title" />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1">Category</label>
+                                    <select className="w-full border rounded-lg p-2.5 outline-none" value={form.category} onChange={e=>setForm({...form, category: e.target.value})}>
+                                        <option value="General">General</option>
+                                        <option value="Solar Tech">Solar Tech</option>
+                                        <option value="Academy News">Academy News</option>
+                                        <option value="Tech Tips">Tech Tips</option>
+                                        <option value="Store Updates">Store Updates</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1">Featured Image URL</label>
+                                    <input required type="url" className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 outline-none" value={form.image} onChange={e=>setForm({...form, image: e.target.value})} placeholder="https://..." />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Short Excerpt (Shows on Card)</label>
+                                <textarea required className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 outline-none resize-none h-16" value={form.excerpt} onChange={e=>setForm({...form, excerpt: e.target.value})} placeholder="A brief summary..." />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Full Content</label>
+                                <textarea required className="w-full border rounded-lg p-2.5 focus:ring-2 focus:ring-emerald-500 outline-none resize-none h-40" value={form.content} onChange={e=>setForm({...form, content: e.target.value})} placeholder="Main article content..." />
+                            </div>
+                            <div className="flex items-center gap-2 mt-4 p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+                                <input type="checkbox" id="published" checked={form.published} onChange={e=>setForm({...form, published: e.target.checked})} className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer" />
+                                <label htmlFor="published" className="text-sm font-bold text-slate-700 cursor-pointer">Publish Immediately</label>
+                            </div>
+                            <button type="submit" className="w-full py-3 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 transition-colors mt-4">Save Post</button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
         // Event Registrations Modal
         const RegistrationsModal = ({ event, registrations, isOpen, onClose }) => {
             if (!isOpen || !event) return null;
@@ -234,27 +303,29 @@
                         </div>
                         
                         <div className="overflow-y-auto p-6 flex-1">
-                            <table className="w-full text-left text-sm">
-                                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
-                                    <tr>
-                                        <th className="p-3 font-bold">Name</th>
-                                        <th className="p-3 font-bold">Email</th>
-                                        <th className="p-3 font-bold">Phone</th>
-                                        <th className="p-3 font-bold">Date Registered</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {eventRegs.map(r => (
-                                        <tr key={r.id} className="hover:bg-slate-50">
-                                            <td className="p-3 font-medium text-slate-800">{r.name}</td>
-                                            <td className="p-3 text-slate-600">{r.email}</td>
-                                            <td className="p-3 text-slate-600">{r.phone}</td>
-                                            <td className="p-3 text-slate-500">{r.createdAt?.seconds ? new Date(r.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</td>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-sm whitespace-nowrap">
+                                    <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                        <tr>
+                                            <th className="p-3 font-bold">Name</th>
+                                            <th className="p-3 font-bold">Email</th>
+                                            <th className="p-3 font-bold">Phone</th>
+                                            <th className="p-3 font-bold">Date Registered</th>
                                         </tr>
-                                    ))}
-                                    {eventRegs.length === 0 && <tr><td colSpan="4" className="p-8 text-center text-slate-500">No participants registered yet.</td></tr>}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {eventRegs.map(r => (
+                                            <tr key={r.id} className="hover:bg-slate-50">
+                                                <td className="p-3 font-medium text-slate-800">{r.name}</td>
+                                                <td className="p-3 text-slate-600">{r.email}</td>
+                                                <td className="p-3 text-slate-600">{r.phone}</td>
+                                                <td className="p-3 text-slate-500">{r.createdAt?.seconds ? new Date(r.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</td>
+                                            </tr>
+                                        ))}
+                                        {eventRegs.length === 0 && <tr><td colSpan="4" className="p-8 text-center text-slate-500">No participants registered yet.</td></tr>}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -273,13 +344,13 @@
                     <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl relative">
                         <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><X size={20}/></button>
                         
-                        <div className="flex justify-between items-start mb-6 border-b pb-4">
+                        <div className="flex flex-col sm:flex-row justify-between items-start mb-6 border-b pb-4 gap-4">
                             <div>
-                                <h2 className="text-xl font-bold text-slate-900">Order #{order.id.slice(0,8).toUpperCase()}</h2>
+                                <h2 className="text-xl font-bold text-slate-900 break-all">Order #{order.id.slice(0,8).toUpperCase()}</h2>
                                 <p className="text-sm text-slate-500">{new Date(order.createdAt?.seconds * 1000).toLocaleString()}</p>
                             </div>
-                            <div className="text-right">
-                                <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+                            <div className="text-left sm:text-right">
+                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
                                     ${order.status === 'delivered' ? 'bg-green-100 text-green-700' : 
                                       order.status === 'shipped' ? 'bg-purple-100 text-purple-700' : 
                                       order.status === 'processing' ? 'bg-blue-100 text-blue-700' : 
@@ -318,21 +389,21 @@
                             <h3 className="font-bold text-slate-800 mb-3 border-b pb-2">Order Items</h3>
                             <div className="space-y-3 mb-6">
                                 {(order.items || []).map((item, idx) => (
-                                    <div key={idx} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg">
+                                    <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-50 p-3 rounded-lg gap-3">
                                         <div className="flex items-center gap-3">
-                                            <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded bg-white border"/>
+                                            <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded bg-white border shrink-0"/>
                                             <div>
-                                                <p className="text-sm font-bold">{item.name}</p>
+                                                <p className="text-sm font-bold line-clamp-1">{item.name}</p>
                                                 <p className="text-xs text-slate-500">₦{item.price?.toLocaleString()} x {item.qty}</p>
                                             </div>
                                         </div>
-                                        <div className="font-bold text-sm">
+                                        <div className="font-bold text-sm sm:self-center self-end">
                                             ₦{(item.price * item.qty).toLocaleString()}
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="flex justify-between items-center text-xl font-bold bg-emerald-50 text-emerald-900 p-4 rounded-xl">
+                            <div className="flex justify-between items-center text-lg sm:text-xl font-bold bg-emerald-50 text-emerald-900 p-4 rounded-xl">
                                 <span>Total Amount:</span>
                                 <span>₦{total.toLocaleString()}</span>
                             </div>
@@ -347,6 +418,7 @@
             const [user, setUser] = useState(null);
             const [loading, setLoading] = useState(true);
             const [view, setView] = useState('dashboard');
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             
             // Core Data
             const [products, setProducts] = useState([]);
@@ -354,10 +426,12 @@
             const [recs, setRecs] = useState([]);
             const [events, setEvents] = useState([]);
             const [registrations, setRegistrations] = useState([]);
+            const [posts, setPosts] = useState([]);
             
             // Modal States
             const [isProductModalOpen, setProductModalOpen] = useState(false);
             const [isEventModalOpen, setEventModalOpen] = useState(false);
+            const [isPostModalOpen, setPostModalOpen] = useState(false);
             const [selectedOrder, setSelectedOrder] = useState(null);
             const [selectedEventForRegs, setSelectedEventForRegs] = useState(null);
 
@@ -387,6 +461,7 @@
                 const qR = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_recommendations');
                 const qE = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_events');
                 const qReg = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_event_registrations');
+                const qPosts = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates');
                 
                 const uP = onSnapshot(qP, s => {
                     setProducts(s.docs.map(d=>({id:d.id,...d.data()})));
@@ -407,8 +482,14 @@
                 const uReg = onSnapshot(qReg, s => {
                     setRegistrations(s.docs.map(d=>({id:d.id,...d.data()})));
                 });
+
+                const uPosts = onSnapshot(qPosts, s => {
+                    const data = s.docs.map(d=>({id:d.id,...d.data()}));
+                    data.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                    setPosts(data);
+                });
                 
-                return () => { uP(); uO(); uR(); uE(); uReg(); };
+                return () => { uP(); uO(); uR(); uE(); uReg(); uPosts(); };
             }, [user]);
 
             const handleLogin = async (e) => {
@@ -475,14 +556,43 @@
                 } catch (e) { alert("Failed to update event status."); }
             };
 
+            // Content Functions
+            const handleAddPost = async (postData) => {
+                try {
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates'), {
+                        ...postData,
+                        createdAt: serverTimestamp()
+                    });
+                    setPostModalOpen(false);
+                } catch (e) { alert("Error adding post"); }
+            };
+
+            const handleDeletePost = async (id) => {
+                if(confirm("Are you sure you want to delete this update? It will be permanently removed from the Info page.")) {
+                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates', id));
+                }
+            };
+
+            const togglePostPublish = async (id, currentStatus) => {
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates', id), { published: !currentStatus });
+                } catch (e) { alert("Failed to update post status."); }
+            };
+
             // Calculated Stats
             const stats = useMemo(() => {
                 const totalRevenue = orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (o.total || 0), 0);
                 const pendingOrders = orders.filter(o => o.status === 'pending').length;
                 const lowStockItems = products.filter(p => p.type !== 'service' && p.stock < 5).length;
                 const activeEvents = events.filter(e => e.status !== 'completed').length;
-                return { totalRevenue, pendingOrders, lowStockItems, totalProducts: products.length, activeEvents };
-            }, [orders, products, events]);
+                const publishedPosts = posts.filter(p => p.published).length;
+                return { totalRevenue, pendingOrders, lowStockItems, totalProducts: products.length, activeEvents, publishedPosts };
+            }, [orders, products, events, posts]);
+
+            const handleNavClick = (newView) => {
+                setView(newView);
+                setMobileMenuOpen(false);
+            }
 
             if (loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 size={40} className="animate-spin text-emerald-600"/></div>;
 
@@ -493,7 +603,7 @@
                             <div className="text-center mb-8">
                                 <img src="logo.png" alt="Mbtech Logo" className="h-12 w-auto mx-auto mb-4 object-contain" onError={(e)=>{e.target.onerror=null; e.target.src='https://placehold.co/100x40/059669/ffffff?text=MBTech'}}/>
                                 <h1 className="text-2xl font-bold text-slate-900">Admin Portal</h1>
-                                <p className="text-sm text-slate-500">Store & Event Management</p>
+                                <p className="text-sm text-slate-500">Official Management Page</p>
                             </div>
                             <form onSubmit={handleLogin} className="space-y-4">
                                 {loginError && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">{loginError}</div>}
@@ -516,16 +626,65 @@
             }
 
             return (
-                <div className="flex h-screen bg-slate-50 overflow-hidden">
-                    {/* Sidebar */}
-                    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
+                <div className="flex h-screen bg-slate-50 overflow-hidden relative">
+                    {/* Mobile Navigation Bar (Bottom) */}
+                    <div className="md:hidden fixed bottom-0 w-full bg-slate-900 border-t border-slate-800 z-40 pb-safe">
+                        <div className="flex justify-around items-center h-16 px-2">
+                            <button onClick={() => handleNavClick('dashboard')} className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${view === 'dashboard' ? 'text-emerald-400' : 'text-slate-400 hover:text-emerald-400'}`}>
+                                <TrendingUp size={20} />
+                                <span className="text-[9px] font-bold uppercase tracking-wider">Dash</span>
+                            </button>
+                            <button onClick={() => handleNavClick('products')} className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${view === 'products' ? 'text-emerald-400' : 'text-slate-400 hover:text-emerald-400'}`}>
+                                <Package size={20} />
+                                <span className="text-[9px] font-bold uppercase tracking-wider">Store</span>
+                            </button>
+                            <button onClick={() => handleNavClick('events')} className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${view === 'events' ? 'text-emerald-400' : 'text-slate-400 hover:text-emerald-400'}`}>
+                                <Calendar size={20} />
+                                <span className="text-[9px] font-bold uppercase tracking-wider">Events</span>
+                            </button>
+                            <button onClick={() => handleNavClick('posts')} className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${view === 'posts' ? 'text-emerald-400' : 'text-slate-400 hover:text-emerald-400'}`}>
+                                <Newspaper size={20} />
+                                <span className="text-[9px] font-bold uppercase tracking-wider">News</span>
+                            </button>
+                            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className={`flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors ${mobileMenuOpen ? 'text-emerald-400' : 'text-slate-400 hover:text-emerald-400'}`}>
+                                <Menu size={20} />
+                                <span className="text-[9px] font-bold uppercase tracking-wider">More</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile More Menu Overlay */}
+                    {mobileMenuOpen && (
+                        <div className="md:hidden fixed inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-end justify-center" onClick={() => setMobileMenuOpen(false)}>
+                            <div className="bg-slate-900 w-full rounded-t-3xl p-6 pb-24 space-y-4 shadow-2xl animate-in slide-in-from-bottom" onClick={e => e.stopPropagation()}>
+                                <div className="flex justify-between items-center border-b border-slate-800 pb-4 mb-2 text-white">
+                                    <h3 className="font-bold">More Options</h3>
+                                    <button onClick={() => setMobileMenuOpen(false)}><X size={24}/></button>
+                                </div>
+                                <button onClick={()=>handleNavClick('orders')} className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-colors ${view==='orders'?'bg-emerald-600 text-white':'text-slate-300 hover:bg-slate-800'}`}>
+                                    <ShoppingCart size={20}/> Orders 
+                                    {stats.pendingOrders > 0 && <span className="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">{stats.pendingOrders}</span>}
+                                </button>
+                                <button onClick={()=>handleNavClick('requests')} className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-colors ${view==='requests'?'bg-emerald-600 text-white':'text-slate-300 hover:bg-slate-800'}`}>
+                                    <Users size={20}/> Customer Requests
+                                </button>
+                                <div className="border-t border-slate-800 pt-4 mt-2">
+                                    <div className="text-xs mb-3 text-slate-500 px-2">Logged in as: <br/><span className="text-white truncate block">{user.email}</span></div>
+                                    <button onClick={()=>signOut(auth)} className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800 hover:bg-red-500 text-slate-300 hover:text-white rounded-xl transition-colors"><LogOut size={18}/> Sign Out</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Sidebar (Desktop) */}
+                    <aside className="w-64 bg-slate-900 text-slate-300 flex-col hidden md:flex">
                         <div className="p-6 border-b border-slate-800">
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
                                 <div className="p-1.5 bg-emerald-500 rounded text-white"><LayoutDashboard size={18}/></div>
                                 Mbtech Admin
                             </h2>
                         </div>
-                        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+                        <nav className="flex-1 p-4 space-y-2 overflow-y-auto no-scrollbar">
                             <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 mt-4 ml-2">Store</p>
                             <button onClick={()=>setView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${view==='dashboard'?'bg-emerald-600 text-white':'hover:bg-slate-800'}`}><TrendingUp size={18}/> Dashboard</button>
                             <button onClick={()=>setView('products')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${view==='products'?'bg-emerald-600 text-white':'hover:bg-slate-800'}`}><Package size={18}/> Products & Stock</button>
@@ -537,6 +696,9 @@
                             
                             <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 mt-6 ml-2">Academy & Events</p>
                             <button onClick={()=>setView('events')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${view==='events'?'bg-emerald-600 text-white':'hover:bg-slate-800'}`}><Calendar size={18}/> Events & Classes</button>
+
+                            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 mt-6 ml-2">Content & Media</p>
+                            <button onClick={()=>setView('posts')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${view==='posts'?'bg-emerald-600 text-white':'hover:bg-slate-800'}`}><Newspaper size={18}/> News & Updates</button>
                         </nav>
                         <div className="p-4 border-t border-slate-800">
                             <div className="text-xs mb-3 text-slate-500">Logged in as: <br/><span className="text-white truncate block">{user.email}</span></div>
@@ -545,79 +707,86 @@
                     </aside>
 
                     {/* Main Content */}
-                    <main className="flex-1 flex flex-col h-screen overflow-y-auto">
-                        <header className="bg-white border-b px-8 py-4 flex justify-between items-center sticky top-0 z-30">
-                            <h1 className="text-2xl font-bold text-slate-800 capitalize">{view === 'dashboard' ? 'Overview Dashboard' : view}</h1>
-                            <div className="flex gap-4">
+                    <main className="flex-1 flex flex-col h-screen overflow-y-auto no-scrollbar">
+                        <header className="bg-white border-b px-4 md:px-8 py-4 flex justify-between items-center sticky top-0 z-20">
+                            <h1 className="text-xl md:text-2xl font-bold text-slate-800 capitalize truncate pr-2">{view === 'dashboard' ? 'Overview' : view}</h1>
+                            <div className="flex gap-4 shrink-0">
                                 <a href="store.html" target="_blank" className="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1">View Store <Eye size={16}/></a>
                             </div>
                         </header>
 
-                        <div className="p-8">
+                        <div className="p-4 md:p-8">
                             {/* DASHBOARD VIEW */}
                             {view === 'dashboard' && (
                                 <div className="space-y-8 animate-in fade-in">
                                     <h3 className="font-bold text-lg text-slate-800 border-b pb-2">Store Performance</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                                            <div className="p-4 bg-emerald-50 text-emerald-600 rounded-xl"><DollarSign size={24}/></div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                                            <div className="p-3 md:p-4 bg-emerald-50 text-emerald-600 rounded-xl"><DollarSign size={24}/></div>
                                             <div>
-                                                <p className="text-sm text-slate-500 font-medium">Delivered Revenue</p>
-                                                <p className="text-xl font-bold text-slate-900">₦{stats.totalRevenue.toLocaleString()}</p>
+                                                <p className="text-xs md:text-sm text-slate-500 font-medium">Delivered Revenue</p>
+                                                <p className="text-lg md:text-xl font-bold text-slate-900">₦{stats.totalRevenue.toLocaleString()}</p>
                                             </div>
                                         </div>
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                                            <div className="p-4 bg-yellow-50 text-yellow-600 rounded-xl"><Clock size={24}/></div>
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                                            <div className="p-3 md:p-4 bg-yellow-50 text-yellow-600 rounded-xl"><Clock size={24}/></div>
                                             <div>
-                                                <p className="text-sm text-slate-500 font-medium">Pending Orders</p>
-                                                <p className="text-2xl font-bold text-slate-900">{stats.pendingOrders}</p>
+                                                <p className="text-xs md:text-sm text-slate-500 font-medium">Pending Orders</p>
+                                                <p className="text-xl md:text-2xl font-bold text-slate-900">{stats.pendingOrders}</p>
                                             </div>
                                         </div>
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                                            <div className="p-4 bg-red-50 text-red-600 rounded-xl"><AlertTriangle size={24}/></div>
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                                            <div className="p-3 md:p-4 bg-red-50 text-red-600 rounded-xl"><AlertTriangle size={24}/></div>
                                             <div>
-                                                <p className="text-sm text-slate-500 font-medium">Low Stock Items</p>
-                                                <p className="text-2xl font-bold text-slate-900">{stats.lowStockItems}</p>
+                                                <p className="text-xs md:text-sm text-slate-500 font-medium">Low Stock Items</p>
+                                                <p className="text-xl md:text-2xl font-bold text-slate-900">{stats.lowStockItems}</p>
                                             </div>
                                         </div>
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                                            <div className="p-4 bg-blue-50 text-blue-600 rounded-xl"><Archive size={24}/></div>
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                                            <div className="p-3 md:p-4 bg-blue-50 text-blue-600 rounded-xl"><Archive size={24}/></div>
                                             <div>
-                                                <p className="text-sm text-slate-500 font-medium">Total Catalog</p>
-                                                <p className="text-2xl font-bold text-slate-900">{stats.totalProducts}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <h3 className="font-bold text-lg text-slate-800 border-b pb-2 pt-4">Events Overview</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                                            <div className="p-4 bg-purple-50 text-purple-600 rounded-xl"><Calendar size={24}/></div>
-                                            <div>
-                                                <p className="text-sm text-slate-500 font-medium">Active Events</p>
-                                                <p className="text-2xl font-bold text-slate-900">{stats.activeEvents}</p>
-                                            </div>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                                            <div className="p-4 bg-indigo-50 text-indigo-600 rounded-xl"><Users size={24}/></div>
-                                            <div>
-                                                <p className="text-sm text-slate-500 font-medium">Total Event Registrations</p>
-                                                <p className="text-2xl font-bold text-slate-900">{registrations.length}</p>
+                                                <p className="text-xs md:text-sm text-slate-500 font-medium">Total Catalog</p>
+                                                <p className="text-xl md:text-2xl font-bold text-slate-900">{stats.totalProducts}</p>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                                    <h3 className="font-bold text-lg text-slate-800 border-b pb-2 pt-4">Events & Content Overview</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                                            <div className="p-3 md:p-4 bg-purple-50 text-purple-600 rounded-xl"><Calendar size={24}/></div>
+                                            <div>
+                                                <p className="text-xs md:text-sm text-slate-500 font-medium">Active Events</p>
+                                                <p className="text-xl md:text-2xl font-bold text-slate-900">{stats.activeEvents}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                                            <div className="p-3 md:p-4 bg-indigo-50 text-indigo-600 rounded-xl"><Users size={24}/></div>
+                                            <div>
+                                                <p className="text-xs md:text-sm text-slate-500 font-medium">Event Registrations</p>
+                                                <p className="text-xl md:text-2xl font-bold text-slate-900">{registrations.length}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                                            <div className="p-3 md:p-4 bg-orange-50 text-orange-600 rounded-xl"><Newspaper size={24}/></div>
+                                            <div>
+                                                <p className="text-xs md:text-sm text-slate-500 font-medium">Published Articles</p>
+                                                <p className="text-xl md:text-2xl font-bold text-slate-900">{stats.publishedPosts}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 pt-4">
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100">
                                             <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Clock className="text-slate-400"/> Recent Store Orders</h3>
                                             <div className="space-y-3">
                                                 {orders.slice(0, 5).map(o => (
                                                     <div key={o.id} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-lg cursor-pointer border border-transparent hover:border-slate-100 transition-colors" onClick={() => { setSelectedOrder(o); setView('orders'); }}>
                                                         <div>
-                                                            <p className="font-bold text-sm">{o.userName}</p>
+                                                            <p className="font-bold text-sm line-clamp-1">{o.userName}</p>
                                                             <p className="text-xs text-slate-500">#{o.id.slice(0,6)} • {new Date(o.createdAt?.seconds*1000).toLocaleDateString()}</p>
                                                         </div>
-                                                        <div className="text-right">
+                                                        <div className="text-right shrink-0">
                                                             <p className="font-bold text-sm">₦{o.total?.toLocaleString()}</p>
                                                             <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 uppercase font-bold text-slate-600">{o.status}</span>
                                                         </div>
@@ -627,20 +796,20 @@
                                             </div>
                                         </div>
                                         
-                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                                        <div className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100">
                                             <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-red-600"><AlertTriangle /> Low Stock Alerts</h3>
                                             <div className="space-y-3">
                                                 {products.filter(p => p.type !== 'service' && p.stock < 5).map(p => (
-                                                    <div key={p.id} className="flex justify-between items-center p-3 bg-red-50/50 rounded-lg border border-red-100">
+                                                    <div key={p.id} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-3 bg-red-50/50 rounded-lg border border-red-100 gap-2">
                                                         <div className="flex items-center gap-3">
-                                                            <img src={p.image} className="w-10 h-10 rounded bg-white object-cover border"/>
+                                                            <img src={p.image} className="w-10 h-10 rounded bg-white object-cover border shrink-0"/>
                                                             <div>
-                                                                <p className="font-bold text-sm text-slate-800">{p.name}</p>
+                                                                <p className="font-bold text-sm text-slate-800 line-clamp-1">{p.name}</p>
                                                                 <p className="text-xs text-slate-500">{p.category}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="text-right">
-                                                            <span className="text-xs font-bold px-2 py-1 bg-red-100 text-red-700 rounded text-center block mb-1">Stock: {p.stock || 0}</span>
+                                                        <div className="sm:text-right self-start sm:self-auto">
+                                                            <span className="text-xs font-bold px-2 py-1 bg-red-100 text-red-700 rounded text-center inline-block">Stock: {p.stock || 0}</span>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -654,16 +823,16 @@
                             {/* PRODUCTS VIEW */}
                             {view === 'products' && (
                                 <div className="animate-in fade-in">
-                                    <div className="flex justify-between items-center mb-6">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
                                         <h2 className="text-lg text-slate-500">Manage Inventory & Catalog</h2>
-                                        <button onClick={() => setProductModalOpen(true)} className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 font-bold shadow-sm transition-colors"><Plus size={18}/> Add Product</button>
+                                        <button onClick={() => setProductModalOpen(true)} className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 font-bold shadow-sm transition-colors w-full sm:w-auto"><Plus size={18}/> Add Product</button>
                                     </div>
-                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <table className="w-full text-left text-sm">
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
+                                        <table className="w-full text-left text-sm whitespace-nowrap">
                                             <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                                                 <tr>
                                                     <th className="p-4 font-bold">Product</th>
-                                                    <th className="p-4 font-bold">Category & Type</th>
+                                                    <th className="p-4 font-bold hidden sm:table-cell">Category</th>
                                                     <th className="p-4 font-bold">Price</th>
                                                     <th className="p-4 font-bold">Stock</th>
                                                     <th className="p-4 font-bold text-right">Actions</th>
@@ -673,10 +842,13 @@
                                                 {products.map(p => (
                                                     <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                                                         <td className="p-4 flex items-center gap-3">
-                                                            <img src={p.image} className="w-12 h-12 rounded-lg object-cover bg-slate-100 border"/>
-                                                            <span className="font-bold text-slate-800">{p.name}</span>
+                                                            <img src={p.image} className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover bg-slate-100 border shrink-0"/>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-slate-800 truncate max-w-[150px] md:max-w-xs">{p.name}</span>
+                                                                <span className="text-[10px] text-slate-500 sm:hidden mt-0.5">{p.category}</span>
+                                                            </div>
                                                         </td>
-                                                        <td className="p-4">
+                                                        <td className="p-4 hidden sm:table-cell">
                                                             <span className="block">{p.category}</span>
                                                             <span className="text-[10px] uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded">{p.type}</span>
                                                         </td>
@@ -686,8 +858,8 @@
                                                                 <span className="text-slate-400 italic text-xs">N/A</span>
                                                             ) : (
                                                                 <div className="flex items-center gap-2">
-                                                                    <input type="number" className="w-16 p-1 border rounded text-center text-sm" value={p.stock || 0} onChange={(e) => updateStock(p.id, e.target.value)} />
-                                                                    {p.stock < 5 && <AlertTriangle size={14} className="text-red-500"/>}
+                                                                    <input type="number" className="w-16 p-1 border rounded text-center text-sm focus:ring-2 focus:ring-emerald-500 outline-none" value={p.stock || 0} onChange={(e) => updateStock(p.id, e.target.value)} />
+                                                                    {p.stock < 5 && <AlertTriangle size={14} className="text-red-500 shrink-0"/>}
                                                                 </div>
                                                             )}
                                                         </td>
@@ -710,13 +882,13 @@
                             {/* ORDERS VIEW */}
                             {view === 'orders' && (
                                 <div className="animate-in fade-in">
-                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <table className="w-full text-left text-sm">
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
+                                        <table className="w-full text-left text-sm whitespace-nowrap">
                                             <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                                                 <tr>
                                                     <th className="p-4 font-bold">Order ID</th>
                                                     <th className="p-4 font-bold">Customer</th>
-                                                    <th className="p-4 font-bold">Date</th>
+                                                    <th className="p-4 font-bold hidden md:table-cell">Date</th>
                                                     <th className="p-4 font-bold">Total</th>
                                                     <th className="p-4 font-bold">Status</th>
                                                     <th className="p-4 font-bold text-right">Action</th>
@@ -726,12 +898,15 @@
                                                 {orders.map(o => (
                                                     <tr key={o.id} className="hover:bg-slate-50 transition-colors">
                                                         <td className="p-4 font-mono text-xs text-slate-500">#{o.id.slice(0,8).toUpperCase()}</td>
-                                                        <td className="p-4 font-medium text-slate-800">{o.userName}</td>
-                                                        <td className="p-4 text-slate-500">{new Date(o.createdAt?.seconds*1000).toLocaleDateString()}</td>
+                                                        <td className="p-4">
+                                                            <span className="font-medium text-slate-800 block">{o.userName}</span>
+                                                            <span className="text-xs text-slate-500 md:hidden mt-0.5 block">{new Date(o.createdAt?.seconds*1000).toLocaleDateString()}</span>
+                                                        </td>
+                                                        <td className="p-4 text-slate-500 hidden md:table-cell">{new Date(o.createdAt?.seconds*1000).toLocaleDateString()}</td>
                                                         <td className="p-4 font-bold text-slate-700">₦{o.total?.toLocaleString()}</td>
                                                         <td className="p-4">
                                                             <select 
-                                                                className={`border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider outline-none cursor-pointer
+                                                                className={`border rounded-full px-2 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider outline-none cursor-pointer
                                                                     ${o.status === 'delivered' ? 'bg-green-50 text-green-700 border-green-200' : 
                                                                     o.status === 'shipped' ? 'bg-purple-50 text-purple-700 border-purple-200' : 
                                                                     o.status === 'processing' ? 'bg-blue-50 text-blue-700 border-blue-200' : 
@@ -748,7 +923,7 @@
                                                             </select>
                                                         </td>
                                                         <td className="p-4 text-right">
-                                                            <button onClick={() => setSelectedOrder(o)} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded text-xs transition-colors">View Details</button>
+                                                            <button onClick={() => setSelectedOrder(o)} className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded text-xs transition-colors">Details</button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -763,15 +938,15 @@
                             {/* REQUESTS VIEW */}
                             {view === 'requests' && (
                                 <div className="animate-in fade-in">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                                         {recs.map(r => (
-                                            <div key={r.id} className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+                                            <div key={r.id} className="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
                                                 <div className="flex items-start gap-3 mb-4">
                                                     <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold uppercase shrink-0">
                                                         {r.userName?.charAt(0) || 'U'}
                                                     </div>
-                                                    <div>
-                                                        <p className="font-bold text-slate-800">{r.userName || 'Anonymous User'}</p>
+                                                    <div className="overflow-hidden">
+                                                        <p className="font-bold text-slate-800 truncate">{r.userName || 'Anonymous User'}</p>
                                                         <p className="text-xs text-slate-400">{new Date(r.createdAt?.seconds*1000).toLocaleString()}</p>
                                                     </div>
                                                 </div>
@@ -781,7 +956,7 @@
                                                 <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
                                                     <button onClick={async () => {
                                                         if(confirm('Delete this request?')) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_recommendations', r.id));
-                                                    }} className="text-xs text-red-500 hover:underline">Dismiss Request</button>
+                                                    }} className="text-xs text-red-500 hover:underline px-2 py-1">Dismiss Request</button>
                                                 </div>
                                             </div>
                                         ))}
@@ -793,17 +968,17 @@
                             {/* EVENTS VIEW */}
                             {view === 'events' && (
                                 <div className="animate-in fade-in">
-                                    <div className="flex justify-between items-center mb-6">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
                                         <h2 className="text-lg text-slate-500">Manage Hosted Events & Classes</h2>
-                                        <button onClick={() => setEventModalOpen(true)} className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 font-bold shadow-sm transition-colors"><Plus size={18}/> Add Event</button>
+                                        <button onClick={() => setEventModalOpen(true)} className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 font-bold shadow-sm transition-colors w-full sm:w-auto"><Plus size={18}/> Add Event</button>
                                     </div>
-                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <table className="w-full text-left text-sm">
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
+                                        <table className="w-full text-left text-sm whitespace-nowrap">
                                             <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                                                 <tr>
                                                     <th className="p-4 font-bold">Event Details</th>
-                                                    <th className="p-4 font-bold">Schedule</th>
-                                                    <th className="p-4 font-bold">Location</th>
+                                                    <th className="p-4 font-bold hidden sm:table-cell">Schedule</th>
+                                                    <th className="p-4 font-bold hidden lg:table-cell">Location</th>
                                                     <th className="p-4 font-bold">Status</th>
                                                     <th className="p-4 font-bold text-right">Actions</th>
                                                 </tr>
@@ -812,19 +987,22 @@
                                                 {events.map(e => (
                                                     <tr key={e.id} className="hover:bg-slate-50 transition-colors">
                                                         <td className="p-4 flex items-center gap-3">
-                                                            <img src={e.image} className="w-12 h-12 rounded-lg object-cover bg-slate-100 border" onError={(ev)=>{ev.target.src='https://placehold.co/100?text=Event'}}/>
-                                                            <span className="font-bold text-slate-800">{e.title}</span>
+                                                            <img src={e.image} className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover bg-slate-100 border shrink-0" onError={(ev)=>{ev.target.src='https://placehold.co/100?text=Event'}}/>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-slate-800 truncate max-w-[150px] sm:max-w-xs">{e.title}</span>
+                                                                <span className="text-xs text-slate-500 sm:hidden mt-0.5">{e.date}</span>
+                                                            </div>
                                                         </td>
-                                                        <td className="p-4 text-slate-600">
-                                                            <div className="flex items-center gap-1.5"><Calendar size={14}/> {e.date}</div>
-                                                            <div className="flex items-center gap-1.5 mt-1 text-xs"><Clock size={14}/> {e.time}</div>
+                                                        <td className="p-4 text-slate-600 hidden sm:table-cell">
+                                                            <div className="flex items-center gap-1.5"><Calendar size={14} className="shrink-0"/> {e.date}</div>
+                                                            <div className="flex items-center gap-1.5 mt-1 text-xs"><Clock size={14} className="shrink-0"/> {e.time}</div>
                                                         </td>
-                                                        <td className="p-4 text-slate-600">
-                                                            <div className="flex items-center gap-1.5"><MapPin size={14}/> {e.location}</div>
+                                                        <td className="p-4 text-slate-600 hidden lg:table-cell">
+                                                            <div className="flex items-center gap-1.5"><MapPin size={14} className="shrink-0"/> <span className="truncate max-w-[150px]">{e.location}</span></div>
                                                         </td>
                                                         <td className="p-4">
                                                             <select 
-                                                                className={`border rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider outline-none cursor-pointer
+                                                                className={`border rounded-full px-2 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider outline-none cursor-pointer
                                                                     ${e.status === 'completed' ? 'bg-slate-100 text-slate-600 border-slate-200' : 
                                                                     e.status === 'ongoing' ? 'bg-blue-50 text-blue-700 border-blue-200' : 
                                                                     'bg-emerald-50 text-emerald-700 border-emerald-200'}`}
@@ -839,7 +1017,7 @@
                                                         <td className="p-4">
                                                             <div className="flex justify-end gap-2">
                                                                 <button onClick={() => setSelectedEventForRegs(e)} className="flex items-center gap-1 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium rounded text-xs transition-colors border border-indigo-200">
-                                                                    <ListChecks size={14}/> Registrations
+                                                                    <ListChecks size={14} className="shrink-0"/> <span className="hidden sm:inline">Registrations</span>
                                                                 </button>
                                                                 <button onClick={() => handleDeleteEvent(e.id)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 size={16}/></button>
                                                             </div>
@@ -852,6 +1030,63 @@
                                     </div>
                                     <EventModal isOpen={isEventModalOpen} onClose={() => setEventModalOpen(false)} onSave={handleAddEvent} />
                                     <RegistrationsModal event={selectedEventForRegs} registrations={registrations} isOpen={!!selectedEventForRegs} onClose={() => setSelectedEventForRegs(null)} />
+                                </div>
+                            )}
+
+                            {/* POSTS/UPDATES VIEW */}
+                            {view === 'posts' && (
+                                <div className="animate-in fade-in">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+                                        <h2 className="text-lg text-slate-500">Manage News & Updates</h2>
+                                        <button onClick={() => setPostModalOpen(true)} className="flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 font-bold shadow-sm transition-colors w-full sm:w-auto"><Plus size={18}/> New Update</button>
+                                    </div>
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
+                                        <table className="w-full text-left text-sm whitespace-nowrap">
+                                            <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                                <tr>
+                                                    <th className="p-4 font-bold">Post Details</th>
+                                                    <th className="p-4 font-bold hidden sm:table-cell">Category</th>
+                                                    <th className="p-4 font-bold hidden lg:table-cell">Date Published</th>
+                                                    <th className="p-4 font-bold">Status</th>
+                                                    <th className="p-4 font-bold text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {posts.map(p => (
+                                                    <tr key={p.id} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="p-4 flex items-center gap-3">
+                                                            <img src={p.image} className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover bg-slate-100 border shrink-0" onError={(e)=>{e.target.src='https://placehold.co/100?text=Post'}}/>
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-slate-800 truncate max-w-[150px] md:max-w-xs">{p.title}</span>
+                                                                <span className="text-[10px] text-slate-500 sm:hidden mt-0.5">{p.category}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="p-4 text-slate-600 hidden sm:table-cell">
+                                                            <span className="bg-slate-100 px-2 py-1 rounded text-xs font-medium">{p.category}</span>
+                                                        </td>
+                                                        <td className="p-4 text-slate-600 hidden lg:table-cell">
+                                                            {p.createdAt?.seconds ? new Date(p.createdAt.seconds * 1000).toLocaleDateString() : p.date || 'Unknown'}
+                                                        </td>
+                                                        <td className="p-4">
+                                                            <span className={`inline-block px-2 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${p.published ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
+                                                                {p.published ? 'Published' : 'Draft'}
+                                                            </span>
+                                                        </td>
+                                                        <td className="p-4 text-right">
+                                                            <div className="flex justify-end gap-2 items-center h-full">
+                                                                <button onClick={() => togglePostPublish(p.id, p.published)} className={`p-1.5 rounded transition-colors ${p.published ? 'text-slate-400 hover:text-orange-500 hover:bg-orange-50' : 'text-emerald-500 hover:bg-emerald-50'}`} title={p.published ? "Move to Draft" : "Publish Now"}>
+                                                                    {p.published ? <ToggleRight size={20}/> : <ToggleLeft size={20}/>}
+                                                                </button>
+                                                                <button onClick={() => handleDeletePost(p.id)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 size={16}/></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                                {posts.length === 0 && <tr><td colSpan="5" className="p-8 text-center text-slate-500">No updates published. Click "New Update" to create one.</td></tr>}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <PostModal isOpen={isPostModalOpen} onClose={() => setPostModalOpen(false)} onSave={handleAddPost} />
                                 </div>
                             )}
 
