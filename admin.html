@@ -112,10 +112,21 @@
         };
 
         // --- Firebase Config ---
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        // Fallback to mock data if Firebase config is missing or invalid to prevent initialization crash
+        const isFirebaseConfigured = firebaseConfig && Object.keys(firebaseConfig).length > 0;
+        
+        let app, auth, db;
+        if (isFirebaseConfigured) {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+            } catch (err) {
+                console.warn("Failed to initialize Firebase app:", err);
+            }
+        }
+        
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const safeAppId = appId.replace(/\//g, '_'); // Fixes Firestore path segment errors
 
@@ -235,6 +246,10 @@
             // Initialize Firebase Auth & Real-time Listeners
             useEffect(() => {
                 const initAuth = async () => {
+                    if (!auth) {
+                         setUser({ uid: 'offline-mock-user' });
+                         return;
+                    }
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                             try {
@@ -247,39 +262,48 @@
                             await signInAnonymously(auth);
                         }
                     } catch (e) {
-                        console.error("Auth error:", e);
+                        console.warn("Auth error or network offline:", e);
                         // Fallback mock user if all network authentication fails
                         setUser({ uid: 'offline-user' });
                     }
                 };
                 initAuth();
                 
-                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                    if (currentUser) {
-                        setUser(currentUser);
-                    }
-                });
+                let unsubscribe = () => {};
+                if (auth) {
+                    unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                        if (currentUser) {
+                            setUser(currentUser);
+                        }
+                    });
+                }
                 return () => unsubscribe();
             }, []);
 
             useEffect(() => {
                 if (!user) return;
+                if (!db) return; // Stop if DB isn't healthy or initialized
                 
                 // Using safeAppId and pointing back to global public/data collection
-                const infoRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'info');
-                const eventRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'events');
-                const storeRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'store');
-                const configRef = doc(db, 'artifacts', safeAppId, 'public', 'data', 'config', 'adminSettings');
+                let unsubs = [];
+                try {
+                    const infoRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'info');
+                    const eventRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'events');
+                    const storeRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'store');
+                    const configRef = doc(db, 'artifacts', safeAppId, 'public', 'data', 'config', 'adminSettings');
 
-                const unsubs = [
-                    onSnapshot(infoRef, snap => setInfoData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.error),
-                    onSnapshot(eventRef, snap => setEventData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.error),
-                    onSnapshot(storeRef, snap => setStoreData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.error),
-                    onSnapshot(configRef, snap => {
-                        if (snap.exists()) setAdminPasscode(snap.data().passcode || 'emmy-kingz#');
-                        else setDoc(configRef, { passcode: 'emmy-kingz#' }).catch(console.error);
-                    }, console.error)
-                ];
+                    unsubs = [
+                        onSnapshot(infoRef, snap => setInfoData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.warn),
+                        onSnapshot(eventRef, snap => setEventData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.warn),
+                        onSnapshot(storeRef, snap => setStoreData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.warn),
+                        onSnapshot(configRef, snap => {
+                            if (snap.exists()) setAdminPasscode(snap.data().passcode || 'emmy-kingz#');
+                            else setDoc(configRef, { passcode: 'emmy-kingz#' }).catch(console.warn);
+                        }, console.warn)
+                    ];
+                } catch(e) {
+                     console.warn("Firestore error offline:", e);
+                }
 
                 return () => unsubs.forEach(unsub => unsub());
             }, [user]);
@@ -326,10 +350,13 @@
                 const newCode = e.target.newPasscode.value;
                 if(newCode.length < 5) { showToast('Passcode must be at least 5 characters', 'error'); return; }
                 try {
-                    await setDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', 'config', 'adminSettings'), { passcode: newCode }, { merge: true });
+                    if (db) {
+                       await setDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', 'config', 'adminSettings'), { passcode: newCode }, { merge: true });
+                    }
+                    setAdminPasscode(newCode); // Update local state regardless
                     setSettingsModalOpen(false);
-                    showToast('Admin passcode synced to cloud successfully!');
-                } catch (err) { showToast('Error updating passcode', 'error'); }
+                    showToast('Admin passcode updated successfully!');
+                } catch (err) { showToast('Error updating passcode (offline)', 'error'); }
             };
 
             const handleResetPasscode = (e) => {
@@ -367,19 +394,33 @@
                 dataToSave = { ...dataToSave, ...customFields };
 
                 try {
-                    await setDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', collectionName, id), dataToSave);
+                    if (db) {
+                       await setDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', collectionName, id), dataToSave);
+                    } else {
+                        // Mock local save if offline
+                        if (collectionName === 'info') setInfoData(prev => isEdit ? prev.map(p => p.id === id ? dataToSave : p) : [...prev, dataToSave]);
+                        if (collectionName === 'events') setEventData(prev => isEdit ? prev.map(p => p.id === id ? dataToSave : p) : [...prev, dataToSave]);
+                        if (collectionName === 'store') setStoreData(prev => isEdit ? prev.map(p => p.id === id ? dataToSave : p) : [...prev, dataToSave]);
+                    }
                     modalSetter(false);
-                    showToast(`Successfully ${isEdit ? 'updated' : 'added'} in cloud!`);
+                    showToast(`Successfully ${isEdit ? 'updated' : 'added'}!`);
                 } catch (err) {
-                    showToast('Error syncing with cloud', 'error');
+                    showToast('Error syncing with cloud (offline)', 'error');
                 }
             };
 
             const handleDelete = async (collectionName, id) => {
                 try {
-                    await deleteDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', collectionName, id.toString()));
+                    if (db) {
+                        await deleteDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', collectionName, id.toString()));
+                    } else {
+                        // Mock local delete if offline
+                        if (collectionName === 'info') setInfoData(prev => prev.filter(p => p.id !== id));
+                        if (collectionName === 'events') setEventData(prev => prev.filter(p => p.id !== id));
+                        if (collectionName === 'store') setStoreData(prev => prev.filter(p => p.id !== id));
+                    }
                     showToast('Item deleted successfully');
-                } catch (err) { showToast('Error deleting item', 'error'); }
+                } catch (err) { showToast('Error deleting item (offline)', 'error'); }
             };
 
             // --- Views ---
