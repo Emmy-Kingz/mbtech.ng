@@ -237,14 +237,28 @@
                 const initAuth = async () => {
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
+                            try {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                            } catch (err) {
+                                console.warn("Custom token sign-in failed, trying anonymous:", err);
+                                await signInAnonymously(auth);
+                            }
                         } else {
                             await signInAnonymously(auth);
                         }
-                    } catch (e) { console.error("Auth error:", e); }
+                    } catch (e) {
+                        console.error("Auth error:", e);
+                        // Fallback mock user if all network authentication fails
+                        setUser({ uid: 'offline-user' });
+                    }
                 };
                 initAuth();
-                const unsubscribe = onAuthStateChanged(auth, setUser);
+                
+                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                    if (currentUser) {
+                        setUser(currentUser);
+                    }
+                });
                 return () => unsubscribe();
             }, []);
 
@@ -656,6 +670,9 @@
                             })}
                         </nav>
                         <div className="p-4 border-t border-gray-800 space-y-2">
+                            <button onClick={() => setSettingsModalOpen(true)} className="w-full flex items-center px-4 py-3 rounded-xl hover:bg-gray-800 hover:text-white transition-all font-medium">
+                                <span className="mr-3 text-gray-400"><Icons.Settings /></span> Change Passcode
+                            </button>
                             <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all font-medium">
                                 <span className="mr-3"><Icons.Logout /></span> Sign Out
                             </button>
