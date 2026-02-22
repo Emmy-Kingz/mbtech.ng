@@ -313,7 +313,7 @@
                                 setAdminPasscodeHash(snap.data().passcode);
                             } else {
                                 // Default master code encrypted
-                                const defaultHash = await hashPasscodeData('emmy-kingz#');
+                                const defaultHash = await hashPasscodeData('emmy-admin%');
                                 setAdminPasscodeHash(defaultHash);
                                 setDoc(configRef, { passcode: defaultHash }).catch(console.warn);
                             }
