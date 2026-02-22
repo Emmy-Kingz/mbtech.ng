@@ -108,7 +108,9 @@
             TrendingUp: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>,
             Facebook: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>,
             Twitter: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>,
-            LinkedIn: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+            LinkedIn: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>,
+            Star: ({size=14, className="text-yellow-400"}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>,
+            Image: ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         };
 
         // --- Firebase Config ---
@@ -239,6 +241,7 @@
             const [isStoreModalOpen, setStoreModalOpen] = useState(false);
             
             const [currentItem, setCurrentItem] = useState(null);
+            const [previewImage, setPreviewImage] = useState(null); // Stores base64 image
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
             const showToast = (message, type = 'success') => setToast({ message, type });
@@ -382,6 +385,38 @@
                 }, 150);
             };
 
+            // Image Processor (Compression & Base64 Conversion)
+            const handleImageChange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (!file.type.startsWith('image/')) {
+                    showToast('Please upload a valid image file', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 500; // Resize to ensure it fits Firestore document limits
+                        let scale = 1;
+                        if (img.width > MAX_WIDTH) {
+                            scale = MAX_WIDTH / img.width;
+                        }
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const base64 = canvas.toDataURL('image/jpeg', 0.8);
+                        setPreviewImage(base64);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+
             // Generic CRUD handlers
             const handleSave = async (e, collectionName, modalSetter, customFields = {}) => {
                 e.preventDefault();
@@ -391,6 +426,11 @@
                 
                 let dataToSave = { id };
                 formData.forEach((value, key) => dataToSave[key] = value);
+                
+                // Explicitly capture toggles and images
+                dataToSave.featured = formData.get('featured') === 'on';
+                dataToSave.image = previewImage;
+                
                 dataToSave = { ...dataToSave, ...customFields };
 
                 try {
@@ -560,7 +600,14 @@
                         title="Information & Posts"
                         data={infoData}
                         columns={[
-                            { label: 'Title', key: 'title', render: (i) => <span className="font-medium text-light">{i.title}</span> },
+                            { label: 'Title', key: 'title', render: (i) => (
+                                <div className="flex items-center gap-3">
+                                    {i.image ? <img src={i.image} className="w-8 h-8 rounded object-cover border border-gray-700" alt="" /> : <div className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-gray-500"><Icons.Image size={14}/></div>}
+                                    <span className="font-medium text-light flex items-center gap-2">
+                                        {i.title} {i.featured && <Icons.Star title="Featured on Home" />}
+                                    </span>
+                                </div>
+                            ) },
                             { label: 'Date', key: 'date' },
                             { label: 'Status', key: 'status', render: (i) => (
                                 <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${i.status === 'Published' ? 'bg-accent/10 text-accent border border-accent/20' : 'bg-gray-800 text-gray-400 border border-gray-700'}`}>
@@ -568,13 +615,48 @@
                                 </span>
                             )}
                         ]}
-                        onAdd={() => { setCurrentItem(null); setInfoModalOpen(true); }}
-                        onEdit={(item) => { setCurrentItem(item); setInfoModalOpen(true); }}
+                        onAdd={() => { setCurrentItem(null); setPreviewImage(null); setInfoModalOpen(true); }}
+                        onEdit={(item) => { setCurrentItem(item); setPreviewImage(item.image || null); setInfoModalOpen(true); }}
                         onDelete={(id) => handleDelete('info', id)}
                         emptyState={{ title: "No Info Posts", description: "Create updates, news, or blog posts.", actionText: "New Post" }}
                     />
                     <Modal isOpen={isInfoModalOpen} onClose={() => setInfoModalOpen(false)} title={currentItem ? "Edit Info" : "Create Info"}>
                         <form onSubmit={(e) => handleSave(e, 'info', setInfoModalOpen, { date: new Date().toISOString().split('T')[0], author: 'Admin' })} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Cover Image</label>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    {previewImage ? (
+                                        <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-gray-700 bg-gray-900 group">
+                                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                                            <button type="button" onClick={() => setPreviewImage(null)} className="absolute top-1 right-1 bg-black/70 p-1 rounded-md hover:bg-red-500 text-white transition-colors"><Icons.Close size={12} /></button>
+                                        </div>
+                                    ) : (
+                                        <div className="w-20 h-20 shrink-0 rounded-lg border-2 border-dashed border-gray-700 flex items-center justify-center bg-gray-800/50 text-gray-500">
+                                            <Icons.Image />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 w-full space-y-2">
+                                        <label className="cursor-pointer inline-block px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
+                                            {previewImage ? 'Upload New File' : 'Upload Image File'}
+                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-gray-500 font-medium">OR</span>
+                                            <input 
+                                                type="url" 
+                                                placeholder="Paste image URL here..." 
+                                                className="flex-1 px-3 py-1.5 bg-primary border border-gray-700 rounded-lg focus:border-accent focus:ring-1 focus:ring-accent outline-none text-white text-sm"
+                                                value={previewImage && previewImage.startsWith('http') ? previewImage : ''}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (!val && previewImage?.startsWith('http')) setPreviewImage(null);
+                                                    else if (val) setPreviewImage(val);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Title</label>
                                 <input name="title" required defaultValue={currentItem?.title} className="w-full px-3 py-2 bg-primary border border-gray-700 rounded-lg focus:border-accent focus:ring-1 focus:ring-accent outline-none text-white" />
@@ -585,6 +667,12 @@
                                     <option value="Published">Published</option>
                                     <option value="Draft">Draft</option>
                                 </select>
+                            </div>
+                            <div className="pt-2">
+                                <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                                    <input type="checkbox" name="featured" defaultChecked={currentItem?.featured} className="w-4 h-4 rounded border-gray-700 bg-primary text-accent focus:ring-accent focus:ring-offset-gray-900" />
+                                    Feature this post on Homepage
+                                </label>
                             </div>
                             <div className="pt-4 flex justify-end gap-3">
                                 <button type="button" onClick={() => setInfoModalOpen(false)} className="px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium">Cancel</button>
@@ -601,18 +689,60 @@
                         title="Event Management"
                         data={eventData}
                         columns={[
-                            { label: 'Event Name', key: 'name', render: (i) => <span className="font-medium text-light">{i.name}</span> },
+                            { label: 'Event Name', key: 'name', render: (i) => (
+                                <div className="flex items-center gap-3">
+                                    {i.image ? <img src={i.image} className="w-8 h-8 rounded object-cover border border-gray-700" alt="" /> : <div className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-gray-500"><Icons.Image size={14}/></div>}
+                                    <span className="font-medium text-light flex items-center gap-2">
+                                        {i.name} {i.featured && <Icons.Star title="Featured on Home" />}
+                                    </span>
+                                </div>
+                            ) },
                             { label: 'Date', key: 'date' },
                             { label: 'Location', key: 'location' },
                             { label: 'Attendees', key: 'attendees', render: (i) => <span className="text-gray-500">{i.attendees} registered</span> }
                         ]}
-                        onAdd={() => { setCurrentItem(null); setEventModalOpen(true); }}
-                        onEdit={(item) => { setCurrentItem(item); setEventModalOpen(true); }}
+                        onAdd={() => { setCurrentItem(null); setPreviewImage(null); setEventModalOpen(true); }}
+                        onEdit={(item) => { setCurrentItem(item); setPreviewImage(item.image || null); setEventModalOpen(true); }}
                         onDelete={(id) => handleDelete('events', id)}
                         emptyState={{ title: "No Events", description: "Plan and organize upcoming meetups.", actionText: "Schedule Event" }}
                     />
                     <Modal isOpen={isEventModalOpen} onClose={() => setEventModalOpen(false)} title={currentItem ? "Edit Event" : "Schedule Event"}>
                         <form onSubmit={(e) => handleSave(e, 'events', setEventModalOpen, { attendees: currentItem ? currentItem.attendees : 0, synced: true })} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Event Flyer / Image</label>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    {previewImage ? (
+                                        <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-gray-700 bg-gray-900 group">
+                                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                                            <button type="button" onClick={() => setPreviewImage(null)} className="absolute top-1 right-1 bg-black/70 p-1 rounded-md hover:bg-red-500 text-white transition-colors"><Icons.Close size={12} /></button>
+                                        </div>
+                                    ) : (
+                                        <div className="w-20 h-20 shrink-0 rounded-lg border-2 border-dashed border-gray-700 flex items-center justify-center bg-gray-800/50 text-gray-500">
+                                            <Icons.Image />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 w-full space-y-2">
+                                        <label className="cursor-pointer inline-block px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
+                                            {previewImage ? 'Upload New File' : 'Upload Image File'}
+                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-gray-500 font-medium">OR</span>
+                                            <input 
+                                                type="url" 
+                                                placeholder="Paste image URL here..." 
+                                                className="flex-1 px-3 py-1.5 bg-primary border border-gray-700 rounded-lg focus:border-accent focus:ring-1 focus:ring-accent outline-none text-white text-sm"
+                                                value={previewImage && previewImage.startsWith('http') ? previewImage : ''}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (!val && previewImage?.startsWith('http')) setPreviewImage(null);
+                                                    else if (val) setPreviewImage(val);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Event Name</label>
                                 <input name="name" required defaultValue={currentItem?.name} className="w-full px-3 py-2 bg-primary border border-gray-700 rounded-lg focus:border-accent focus:ring-1 focus:ring-accent outline-none text-white" />
@@ -626,6 +756,12 @@
                                     <label className="block text-sm font-medium text-gray-400 mb-1">Location</label>
                                     <input name="location" required defaultValue={currentItem?.location} className="w-full px-3 py-2 bg-primary border border-gray-700 rounded-lg focus:border-accent focus:ring-1 focus:ring-accent outline-none text-white" />
                                 </div>
+                            </div>
+                            <div className="pt-2">
+                                <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                                    <input type="checkbox" name="featured" defaultChecked={currentItem?.featured} className="w-4 h-4 rounded border-gray-700 bg-primary text-accent focus:ring-accent focus:ring-offset-gray-900" />
+                                    Feature this event on Homepage
+                                </label>
                             </div>
                             <div className="pt-4 flex justify-end gap-3">
                                 <button type="button" onClick={() => setEventModalOpen(false)} className="px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium">Cancel</button>
@@ -642,7 +778,14 @@
                         title="Store Inventory"
                         data={storeData}
                         columns={[
-                            { label: 'Product Name', key: 'name', render: (i) => <span className="font-medium text-light">{i.name}</span> },
+                            { label: 'Product Name', key: 'name', render: (i) => (
+                                <div className="flex items-center gap-3">
+                                    {i.image ? <img src={i.image} className="w-8 h-8 rounded object-cover border border-gray-700" alt="" /> : <div className="w-8 h-8 rounded bg-gray-800 flex items-center justify-center text-gray-500"><Icons.Image size={14}/></div>}
+                                    <span className="font-medium text-light flex items-center gap-2">
+                                        {i.name} {i.featured && <Icons.Star title="Featured Product" />}
+                                    </span>
+                                </div>
+                            ) },
                             { label: 'Category', key: 'category' },
                             { label: 'Price (₦)', key: 'price', render: (i) => `₦${Number(i.price).toLocaleString()}` },
                             { label: 'Stock', key: 'stock', render: (i) => (
@@ -651,13 +794,48 @@
                                 </span>
                             )}
                         ]}
-                        onAdd={() => { setCurrentItem(null); setStoreModalOpen(true); }}
-                        onEdit={(item) => { setCurrentItem(item); setStoreModalOpen(true); }}
+                        onAdd={() => { setCurrentItem(null); setPreviewImage(null); setStoreModalOpen(true); }}
+                        onEdit={(item) => { setCurrentItem(item); setPreviewImage(item.image || null); setStoreModalOpen(true); }}
                         onDelete={(id) => handleDelete('store', id)}
                         emptyState={{ title: "Store is Empty", description: "Add products to start selling to users.", actionText: "Add Product" }}
                     />
                     <Modal isOpen={isStoreModalOpen} onClose={() => setStoreModalOpen(false)} title={currentItem ? "Edit Product" : "Add Product"}>
                         <form onSubmit={(e) => handleSave(e, 'store', setStoreModalOpen)} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-400 mb-1">Product Image</label>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                    {previewImage ? (
+                                        <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-gray-700 bg-gray-900 group">
+                                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                                            <button type="button" onClick={() => setPreviewImage(null)} className="absolute top-1 right-1 bg-black/70 p-1 rounded-md hover:bg-red-500 text-white transition-colors"><Icons.Close size={12} /></button>
+                                        </div>
+                                    ) : (
+                                        <div className="w-20 h-20 shrink-0 rounded-lg border-2 border-dashed border-gray-700 flex items-center justify-center bg-gray-800/50 text-gray-500">
+                                            <Icons.Image />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 w-full space-y-2">
+                                        <label className="cursor-pointer inline-block px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors border border-gray-700">
+                                            {previewImage ? 'Upload New File' : 'Upload Image File'}
+                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                                        </label>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs text-gray-500 font-medium">OR</span>
+                                            <input 
+                                                type="url" 
+                                                placeholder="Paste image URL here..." 
+                                                className="flex-1 px-3 py-1.5 bg-primary border border-gray-700 rounded-lg focus:border-accent focus:ring-1 focus:ring-accent outline-none text-white text-sm"
+                                                value={previewImage && previewImage.startsWith('http') ? previewImage : ''}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (!val && previewImage?.startsWith('http')) setPreviewImage(null);
+                                                    else if (val) setPreviewImage(val);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-400 mb-1">Product Name</label>
                                 <input name="name" required defaultValue={currentItem?.name} className="w-full px-3 py-2 bg-primary border border-gray-700 rounded-lg focus:border-accent focus:ring-1 focus:ring-accent outline-none text-white" />
@@ -680,6 +858,12 @@
                                     <option value="Merch">Merch</option>
                                     <option value="Course">Course</option>
                                 </select>
+                            </div>
+                            <div className="pt-2">
+                                <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                                    <input type="checkbox" name="featured" defaultChecked={currentItem?.featured} className="w-4 h-4 rounded border-gray-700 bg-primary text-accent focus:ring-accent focus:ring-offset-gray-900" />
+                                    Feature product in Store & Homepage
+                                </label>
                             </div>
                             <div className="pt-4 flex justify-end gap-3">
                                 <button type="button" onClick={() => setStoreModalOpen(false)} className="px-4 py-2 text-gray-400 hover:text-white transition-colors font-medium">Cancel</button>
