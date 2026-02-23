@@ -13,10 +13,10 @@
 
     <link rel="icon" type="image/png" href="favicon.png">
 
-    <!-- Fonts (Mbtech Brand Font) -->
+    <!-- Fonts (Mbtech Brand Font: Plus Jakarta Sans) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,8 +24,17 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['"Inter"', 'sans-serif'] },
-                    colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } }
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: { 
+                        brand: { 
+                            50: '#f0f7ff', 
+                            100: '#e0effe', 
+                            500: '#0056b3', 
+                            600: '#004494', 
+                            700: '#003370', 
+                            900: '#001a38' 
+                        } 
+                    }
                 }
             }
         }
@@ -83,7 +92,10 @@
             LogOut: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
             Lock: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>,
             Check: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
-            Sync: () => <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            Sync: () => <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>,
+            Location: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+            Phone: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>,
+            Mail: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
         };
 
         // --- CRYPTO HELPER ---
@@ -156,22 +168,47 @@
                 const collections = ['courses', 'store', 'info', 'connect', 'events'];
                 const loadedSet = new Set();
 
+                // Fallback: Force sync to finish after 8 seconds to prevent getting stuck
+                const timeoutId = setTimeout(() => {
+                    setIsSyncing(false);
+                    setSyncProgress(100);
+                }, 8000);
+
                 collections.forEach(col => {
-                    db.ref(col).on('value', snapshot => {
-                        const val = snapshot.val();
-                        const arr = val ? Object.keys(val).map(key => ({ id: key, ...val[key] })) : [];
-                        setData(prev => ({ ...prev, [col]: arr.reverse() })); // Reverse to show newest first
-                        
-                        loadedSet.add(col);
-                        const progress = Math.floor((loadedSet.size / collections.length) * 100);
-                        setSyncProgress(progress);
-                        if (progress === 100) {
-                            setIsSyncing(false);
+                    db.ref(col).on('value', 
+                        (snapshot) => {
+                            const val = snapshot.val();
+                            const arr = val ? Object.keys(val).map(key => ({ id: key, ...val[key] })) : [];
+                            setData(prev => ({ ...prev, [col]: arr.reverse() })); // Reverse to show newest first
+                            
+                            loadedSet.add(col);
+                            const progress = Math.floor((loadedSet.size / collections.length) * 100);
+                            setSyncProgress(progress);
+                            
+                            if (progress === 100) {
+                                setIsSyncing(false);
+                                clearTimeout(timeoutId);
+                            }
+                        },
+                        (error) => {
+                            console.warn(`Could not load ${col}:`, error.message);
+                            // If a collection fails (e.g. permission error), still mark it as loaded so the UI doesn't hang
+                            loadedSet.add(col);
+                            const progress = Math.floor((loadedSet.size / collections.length) * 100);
+                            setSyncProgress(progress);
+                            
+                            if (progress === 100) {
+                                setIsSyncing(false);
+                                clearTimeout(timeoutId);
+                            }
                         }
-                    });
+                    );
                 });
 
-                return () => collections.forEach(col => db.ref(col).off());
+                return () => {
+                    collections.forEach(col => db.ref(col).off());
+                    clearTimeout(timeoutId);
+                };
             }, []);
 
             const handleLogin = async (e) => {
@@ -255,13 +292,60 @@
                 setModalOpen(true);
             };
 
-            // Global Footer Component
+            // MBTECH Global Footer Component (Adapted from index.html)
             const GlobalFooter = () => (
-                <footer className="bg-white border-t border-slate-200 mt-auto w-full z-10">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <p className="text-center text-sm text-slate-500 font-medium">
-                            &copy; {new Date().getFullYear()} Mbtech. All rights reserved.
-                        </p>
+                <footer className="bg-slate-900 text-white pt-16 pb-8 mt-auto w-full z-10 border-t border-slate-800">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                        <div>
+                            <h3 className="text-2xl font-bold mb-4 font-sans text-white">MBTECH</h3>
+                            <p className="text-slate-400 mb-4 text-sm leading-relaxed">
+                                Empowering Africa through innovative technology solutions, digital skills training, and sustainable energy.
+                            </p>
+                            <div className="flex space-x-4">
+                                <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">f</a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">𝕏</a>
+                                <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">in</a>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 className="text-lg font-bold mb-4 text-white">Quick Links</h4>
+                            <ul className="space-y-2 text-sm text-slate-400">
+                                <li><a href="index.html" className="hover:text-brand-500 transition-colors">Home</a></li>
+                                <li><a href="course.html" className="hover:text-brand-500 transition-colors">Academy</a></li>
+                                <li><a href="store.html" className="hover:text-brand-500 transition-colors">Tech Store</a></li>
+                                <li><a href="info.html" className="hover:text-brand-500 transition-colors">Blog & Info</a></li>
+                                <li><a href="connect.html" className="hover:text-brand-500 transition-colors">Connect</a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-lg font-bold mb-4 text-white">Our Services</h4>
+                            <ul className="space-y-2 text-sm text-slate-400">
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Digital Skills Training</span></li>
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Software Development</span></li>
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Solar Installation</span></li>
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Tech Consultancy</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-lg font-bold mb-4 text-white">Contact Us</h4>
+                            <ul className="space-y-4 text-sm text-slate-400">
+                                <li className="flex items-start">
+                                    <span className="mr-3 mt-0.5 text-brand-500"><Icons.Location /></span>
+                                    <span>Lagos, Nigeria</span>
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="mr-3 text-brand-500"><Icons.Phone /></span>
+                                    <span>+234 (0) 90 123 456 78</span>
+                                </li>
+                                <li className="flex items-center">
+                                    <span className="mr-3 text-brand-500"><Icons.Mail /></span>
+                                    <span>hello@mbtech.ng</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800 pt-8 text-center text-slate-500 text-sm">
+                        <p>&copy; {new Date().getFullYear()} MBTECH NG. All rights reserved. | Secured Workspace</p>
                     </div>
                 </footer>
             );
@@ -288,7 +372,7 @@
             // --- RENDER VIEW 1: PUBLIC WEBSITE OVERVIEW ---
             if (!isAuthenticated && !showLoginForm) {
                 return (
-                    <div className="flex-1 flex flex-col bg-slate-50 min-h-screen">
+                    <div className="flex-1 flex flex-col bg-slate-50 min-h-screen font-sans">
                         <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                                 <div className="flex justify-between h-16 items-center">
@@ -333,9 +417,9 @@
             // --- RENDER VIEW 2: LOGIN PASSCODE SCREEN ---
             if (!isAuthenticated && showLoginForm) {
                 return (
-                    <div className="flex-1 flex flex-col justify-between">
-                        <div className="flex-1 flex items-center justify-center p-4">
-                            <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 relative">
+                    <div className="flex-1 flex flex-col justify-between font-sans">
+                        <div className="flex-1 flex items-center justify-center p-4 py-20 bg-slate-50">
+                            <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-slate-100 relative">
                                 <div className="text-center mb-8">
                                     <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-600">
                                         <Icons.Lock />
@@ -383,7 +467,7 @@
             ];
 
             return (
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col font-sans">
                     {/* Top Navigation */}
                     <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
