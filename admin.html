@@ -82,7 +82,8 @@
             Close: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>,
             LogOut: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
             Lock: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>,
-            Check: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+            Check: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
+            Sync: () => <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         };
 
         // --- CRYPTO HELPER ---
@@ -138,7 +139,9 @@
             
             // Data State
             const [data, setData] = React.useState({ courses: [], store: [], info: [], connect: [], events: [] });
-            const [loading, setLoading] = React.useState(true);
+            const [syncProgress, setSyncProgress] = React.useState(0);
+            const [isSyncing, setIsSyncing] = React.useState(true);
+            const [isAuthenticating, setIsAuthenticating] = React.useState(false);
             
             // Modal States
             const [currentItem, setCurrentItem] = React.useState(null);
@@ -151,15 +154,20 @@
             // Fetch Data unconditionally (so public overview can show stats)
             React.useEffect(() => {
                 const collections = ['courses', 'store', 'info', 'connect', 'events'];
-                let loaded = 0;
+                const loadedSet = new Set();
 
                 collections.forEach(col => {
                     db.ref(col).on('value', snapshot => {
                         const val = snapshot.val();
                         const arr = val ? Object.keys(val).map(key => ({ id: key, ...val[key] })) : [];
                         setData(prev => ({ ...prev, [col]: arr.reverse() })); // Reverse to show newest first
-                        loaded++;
-                        if (loaded >= collections.length) setLoading(false);
+                        
+                        loadedSet.add(col);
+                        const progress = Math.floor((loadedSet.size / collections.length) * 100);
+                        setSyncProgress(progress);
+                        if (progress === 100) {
+                            setIsSyncing(false);
+                        }
                     });
                 });
 
@@ -168,7 +176,7 @@
 
             const handleLogin = async (e) => {
                 e.preventDefault();
-                setLoading(true);
+                setIsAuthenticating(true);
                 const inputHash = await sha256(passcode);
                 const storedHash = localStorage.getItem('mbtech_admin_hash') || 'e7a53b471241f92e44534f37803eec08db1b2be482b6c7a7dc6c8605c312781f'; // Default: Admin@123
                 
@@ -179,7 +187,7 @@
                 } else {
                     setAuthError('Invalid passcode. Access denied.');
                 }
-                setLoading(false);
+                setIsAuthenticating(false);
             };
 
             const handleLogout = () => { 
@@ -255,6 +263,16 @@
                 </footer>
             );
 
+            // Global Progress Bar Component
+            const ProgressBar = () => {
+                if (!isSyncing) return null;
+                return (
+                    <div className="w-full bg-slate-100 h-1 overflow-hidden z-40 relative">
+                        <div className="bg-brand-500 h-full transition-all duration-300 ease-out" style={{ width: `${syncProgress}%` }}></div>
+                    </div>
+                );
+            };
+
             // Compute Stats
             const activeEventsCount = data.events.filter(e => e.status === 'Active').length;
             const dashboardStats = [
@@ -281,32 +299,28 @@
                                 </div>
                             </div>
                         </nav>
+                        <ProgressBar />
                         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                              <div className="text-center mb-12">
                                  <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4 tracking-tight">MBTECH System Overview</h1>
                                  <p className="text-slate-600 max-w-2xl mx-auto text-lg">Public analytics dashboard. Log in as an administrator to manage the store, publish blog posts, configure events, and view user inquiries.</p>
                              </div>
 
-                             {loading ? (
-                                <div className="flex flex-col items-center justify-center h-48 text-slate-400 gap-4">
-                                    <div className="w-10 h-10 border-4 border-slate-200 border-t-brand-600 rounded-full animate-spin"></div>
-                                    <p className="font-medium">Fetching live statistics...</p>
-                                </div>
-                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {dashboardStats.map((stat, i) => (
-                                        <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-4 hover:shadow-md transition-shadow">
-                                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
-                                                <stat.icon />
-                                            </div>
-                                            <div>
-                                                <p className="text-4xl font-extrabold text-slate-800 mb-1">{stat.val}</p>
-                                                <p className="text-slate-500 font-medium">{stat.label}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                             )}
+                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                 {dashboardStats.map((stat, i) => (
+                                     <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-4 hover:shadow-md transition-shadow">
+                                         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
+                                             <stat.icon className="w-8 h-8" />
+                                         </div>
+                                         <div>
+                                             <p className="text-4xl font-extrabold text-slate-800 mb-1">
+                                                 {isSyncing && stat.val === 0 ? <span className="text-2xl text-slate-400 animate-pulse">...</span> : stat.val}
+                                             </p>
+                                             <p className="text-slate-500 font-medium">{stat.label}</p>
+                                         </div>
+                                     </div>
+                                 ))}
+                             </div>
                         </main>
                         <GlobalFooter />
                     </div>
@@ -339,8 +353,8 @@
                                         />
                                     </div>
                                     {authError && <p className="text-red-500 text-sm text-center font-medium">{authError}</p>}
-                                    <button type="submit" disabled={loading} className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold shadow-sm transition-colors flex items-center justify-center gap-2">
-                                        {loading ? 'Verifying...' : 'Unlock Workspace'}
+                                    <button type="submit" disabled={isAuthenticating} className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold shadow-sm transition-colors flex items-center justify-center gap-2">
+                                        {isAuthenticating ? 'Verifying...' : 'Unlock Workspace'}
                                     </button>
                                 </form>
                                 <div className="mt-8 text-center border-t border-slate-100 pt-6">
@@ -415,243 +429,267 @@
                             ))}
                         </div>
                     </nav>
+                    <ProgressBar />
 
                     {/* Main Content Area */}
                     <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        {loading ? (
-                            <div className="flex flex-col items-center justify-center h-64 text-slate-400 gap-4">
-                                <div className="w-10 h-10 border-4 border-slate-200 border-t-brand-600 rounded-full animate-spin"></div>
-                                <p className="font-medium">Syncing with Firebase...</p>
+                        {isSyncing && (
+                            <div className="mb-6 flex items-center justify-between bg-brand-50 text-brand-700 px-4 py-3 rounded-xl text-sm font-medium border border-brand-100 shadow-sm">
+                                <div className="flex items-center gap-3">
+                                    <Icons.Sync />
+                                    <span>Live syncing with Firebase...</span>
+                                </div>
+                                <span>{syncProgress}%</span>
                             </div>
-                        ) : (
-                            <>
-                                {/* DASHBOARD */}
-                                {activeTab === 'dashboard' && (
-                                    <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-slate-800">System Dashboard</h2>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                            {dashboardStats.map((stat, i) => (
-                                                <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5 hover:shadow-md transition-shadow">
-                                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
-                                                        <stat.icon />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-slate-500 text-sm font-semibold">{stat.label}</p>
-                                                        <p className="text-3xl font-bold text-slate-800 mt-1">{stat.val}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* STORE TAB */}
-                                {activeTab === 'store' && (
-                                    <div>
-                                        <div className="flex justify-between items-center mb-6">
-                                            <h2 className="text-2xl font-bold text-slate-800">Store Inventory</h2>
-                                            <button onClick={() => openModal(null, setStoreModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                                <Icons.Plus className="mr-2" /> Add Item
-                                            </button>
-                                        </div>
-                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full">
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full text-left border-collapse min-w-[800px]">
-                                                    <thead>
-                                                        <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200 whitespace-nowrap">
-                                                            <th className="p-4 font-semibold">Product</th>
-                                                            <th className="p-4 font-semibold">Category</th>
-                                                            <th className="p-4 font-semibold">Type</th>
-                                                            <th className="p-4 font-semibold">Price (₦)</th>
-                                                            <th className="p-4 font-semibold">Stock</th>
-                                                            <th className="p-4 font-semibold text-right">Actions</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-slate-100">
-                                                        {data.store.map(item => (
-                                                            <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                                                                <td className="p-4 flex items-center gap-4 min-w-[250px]">
-                                                                    <img src={item.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200 flex-shrink-0" onError={(e) => e.target.src='https://placehold.co/100?text=IMG'}/>
-                                                                    <span className="font-semibold text-slate-800 line-clamp-2">{item.name}</span>
-                                                                </td>
-                                                                <td className="p-4 text-sm text-slate-600 whitespace-nowrap">{item.category}</td>
-                                                                <td className="p-4 whitespace-nowrap">
-                                                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${item.type === 'service' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}`}>
-                                                                        {item.type === 'service' ? 'Service' : 'Good'}
-                                                                    </span>
-                                                                </td>
-                                                                <td className="p-4 text-sm font-bold text-slate-800 whitespace-nowrap">{parseFloat(item.price).toLocaleString()}</td>
-                                                                <td className="p-4 whitespace-nowrap">
-                                                                    <span className={`text-sm font-semibold ${item.stock <= 5 ? 'text-red-600' : 'text-emerald-600'}`}>{item.stock}</span>
-                                                                </td>
-                                                                <td className="p-4 text-right whitespace-nowrap">
-                                                                    <div className="flex justify-end gap-2">
-                                                                        <button onClick={() => openModal(item, setStoreModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-white border border-slate-200 hover:border-brand-200 rounded-lg shadow-sm"><Icons.Edit /></button>
-                                                                        <button onClick={() => handleDelete('store', item.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 rounded-lg shadow-sm"><Icons.Delete /></button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                                {data.store.length === 0 && <div className="p-12 text-center text-slate-500">Store is empty. Add your first product.</div>}
+                        )}
+                        
+                        {/* DASHBOARD */}
+                        {activeTab === 'dashboard' && (
+                            <div className="space-y-6">
+                                <h2 className="text-2xl font-bold text-slate-800">System Dashboard</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {dashboardStats.map((stat, i) => (
+                                        <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5 hover:shadow-md transition-shadow">
+                                            <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
+                                                <stat.icon />
+                                            </div>
+                                            <div>
+                                                <p className="text-slate-500 text-sm font-semibold">{stat.label}</p>
+                                                <p className="text-3xl font-bold text-slate-800 mt-1">
+                                                    {isSyncing && stat.val === 0 ? <span className="text-xl text-slate-400 animate-pulse">...</span> : stat.val}
+                                                </p>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                                {/* EVENTS TAB */}
-                                {activeTab === 'events' && (
-                                    <div>
-                                        <div className="flex justify-between items-center mb-6">
-                                            <h2 className="text-2xl font-bold text-slate-800">Events Management</h2>
-                                            <button onClick={() => openModal(null, setEventModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                                <Icons.Plus className="mr-2" /> Create Event
-                                            </button>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                            {data.events.map(event => (
-                                                <div key={event.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group">
-                                                    <div className="h-48 bg-slate-100 relative overflow-hidden">
-                                                        <img src={event.image || 'https://placehold.co/600x400?text=Event'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                                        <div className={`absolute top-3 right-3 px-3 py-1 rounded-md text-xs font-bold shadow-sm ${event.status === 'Active' ? 'bg-brand-600 text-white' : event.status === 'Cancelled' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
-                                                            {event.status}
-                                                        </div>
-                                                    </div>
-                                                    <div className="p-5 flex-1 flex flex-col">
-                                                        <h3 className="font-bold text-lg text-slate-800 leading-tight mb-1">{event.title}</h3>
-                                                        <p className="text-sm text-brand-600 font-medium mb-3">{event.date} • {event.time}</p>
-                                                        <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{event.description}</p>
-                                                        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                                            <span className="text-xs font-medium text-slate-500 truncate max-w-[150px]" title={event.location}>📍 {event.location}</span>
-                                                            <div className="flex gap-2 flex-shrink-0">
-                                                                <button onClick={() => openModal(event, setEventModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
-                                                                <button onClick={() => handleDelete('events', event.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
+                        {/* STORE TAB */}
+                        {activeTab === 'store' && (
+                            <div>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold text-slate-800">Store Inventory</h2>
+                                    <button onClick={() => openModal(null, setStoreModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                        <Icons.Plus className="mr-2" /> Add Item
+                                    </button>
+                                </div>
+                                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left border-collapse min-w-[800px]">
+                                            <thead>
+                                                <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200 whitespace-nowrap">
+                                                    <th className="p-4 font-semibold">Product</th>
+                                                    <th className="p-4 font-semibold">Category</th>
+                                                    <th className="p-4 font-semibold">Type</th>
+                                                    <th className="p-4 font-semibold">Price (₦)</th>
+                                                    <th className="p-4 font-semibold">Stock</th>
+                                                    <th className="p-4 font-semibold text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {data.store.map(item => (
+                                                    <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="p-4 flex items-center gap-4 min-w-[250px]">
+                                                            <img src={item.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200 flex-shrink-0" onError={(e) => e.target.src='https://placehold.co/100?text=IMG'}/>
+                                                            <span className="font-semibold text-slate-800 line-clamp-2">{item.name}</span>
+                                                        </td>
+                                                        <td className="p-4 text-sm text-slate-600 whitespace-nowrap">{item.category}</td>
+                                                        <td className="p-4 whitespace-nowrap">
+                                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${item.type === 'service' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}`}>
+                                                                {item.type === 'service' ? 'Service' : 'Good'}
+                                                            </span>
+                                                        </td>
+                                                        <td className="p-4 text-sm font-bold text-slate-800 whitespace-nowrap">{parseFloat(item.price).toLocaleString()}</td>
+                                                        <td className="p-4 whitespace-nowrap">
+                                                            <span className={`text-sm font-semibold ${item.stock <= 5 ? 'text-red-600' : 'text-emerald-600'}`}>{item.stock}</span>
+                                                        </td>
+                                                        <td className="p-4 text-right whitespace-nowrap">
+                                                            <div className="flex justify-end gap-2">
+                                                                <button onClick={() => openModal(item, setStoreModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-white border border-slate-200 hover:border-brand-200 rounded-lg shadow-sm"><Icons.Edit /></button>
+                                                                <button onClick={() => handleDelete('store', item.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 rounded-lg shadow-sm"><Icons.Delete /></button>
                                                             </div>
-                                                        </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                        {data.store.length === 0 && (
+                                            <div className="p-12 text-center text-slate-500">
+                                                {isSyncing ? `Syncing data... (${syncProgress}%)` : 'Store is empty. Add your first product.'}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* EVENTS TAB */}
+                        {activeTab === 'events' && (
+                            <div>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold text-slate-800">Events Management</h2>
+                                    <button onClick={() => openModal(null, setEventModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                        <Icons.Plus className="mr-2" /> Create Event
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {data.events.map(event => (
+                                        <div key={event.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group">
+                                            <div className="h-48 bg-slate-100 relative overflow-hidden">
+                                                <img src={event.image || 'https://placehold.co/600x400?text=Event'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <div className={`absolute top-3 right-3 px-3 py-1 rounded-md text-xs font-bold shadow-sm ${event.status === 'Active' ? 'bg-brand-600 text-white' : event.status === 'Cancelled' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+                                                    {event.status}
+                                                </div>
+                                            </div>
+                                            <div className="p-5 flex-1 flex flex-col">
+                                                <h3 className="font-bold text-lg text-slate-800 leading-tight mb-1">{event.title}</h3>
+                                                <p className="text-sm text-brand-600 font-medium mb-3">{event.date} • {event.time}</p>
+                                                <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{event.description}</p>
+                                                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                                                    <span className="text-xs font-medium text-slate-500 truncate max-w-[150px]" title={event.location}>📍 {event.location}</span>
+                                                    <div className="flex gap-2 flex-shrink-0">
+                                                        <button onClick={() => openModal(event, setEventModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
+                                                        <button onClick={() => handleDelete('events', event.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
                                                     </div>
                                                 </div>
-                                            ))}
-                                            {data.events.length === 0 && <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">No events found. Create one above.</div>}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* INFO/BLOG TAB */}
-                                {activeTab === 'info' && (
-                                    <div>
-                                        <div className="flex justify-between items-center mb-6">
-                                            <h2 className="text-2xl font-bold text-slate-800">Blog & News</h2>
-                                            <button onClick={() => openModal(null, setInfoModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                                <Icons.Plus className="mr-2" /> Write Post
-                                            </button>
-                                        </div>
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                            {data.info.map(post => (
-                                                <div key={post.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col sm:flex-row gap-5 hover:shadow-md transition-all">
-                                                    <div className="w-full sm:w-32 h-40 sm:h-32 rounded-xl bg-slate-100 flex-shrink-0 overflow-hidden relative">
-                                                        <img src={post.image || 'https://placehold.co/400?text=News'} className="w-full h-full object-cover" alt="" />
-                                                        {!post.published && <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center text-white text-xs font-bold tracking-wider">DRAFT</div>}
-                                                    </div>
-                                                    <div className="flex-1 flex flex-col justify-between">
-                                                        <div>
-                                                            <div className="flex gap-2 mb-2">
-                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md">{post.category}</span>
-                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">{post.date}</span>
-                                                            </div>
-                                                            <h3 className="font-bold text-slate-800 text-lg leading-tight mb-2">{post.title}</h3>
-                                                            <p className="text-sm text-slate-600 line-clamp-2">{post.excerpt}</p>
-                                                        </div>
-                                                        <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                                                            <button onClick={() => openModal(post, setInfoModalOpen)} className="text-xs font-bold text-slate-600 hover:text-brand-700 px-3 py-1.5 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors border border-slate-200">Edit Post</button>
-                                                            <button onClick={() => handleDelete('info', post.id)} className="text-xs font-bold text-slate-600 hover:text-red-700 px-3 py-1.5 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors border border-slate-200">Delete</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {data.info.length === 0 && <div className="col-span-full py-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">No articles published yet.</div>}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* COURSES TAB */}
-                                {activeTab === 'courses' && (
-                                    <div>
-                                        <div className="flex justify-between items-center mb-6">
-                                            <h2 className="text-2xl font-bold text-slate-800">Academy Programs</h2>
-                                            <button onClick={() => openModal(null, setCourseModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                                <Icons.Plus className="mr-2" /> Add Course
-                                            </button>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                            {data.courses.map(course => (
-                                                <div key={course.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group">
-                                                    <div className="h-48 bg-slate-100 relative overflow-hidden">
-                                                        <img src={course.image || 'https://placehold.co/600x400?text=No+Image'} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-md text-xs font-bold text-slate-800 shadow-sm">
-                                                            ₦{parseFloat(course.price).toLocaleString()}
-                                                        </div>
-                                                    </div>
-                                                    <div className="p-5 flex-1 flex flex-col">
-                                                        <h3 className="font-bold text-lg text-slate-800 leading-tight mb-2">{course.title}</h3>
-                                                        <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{course.description}</p>
-                                                        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${course.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>{course.status}</span>
-                                                            <div className="flex gap-2">
-                                                                <button onClick={() => openModal(course, setCourseModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
-                                                                <button onClick={() => handleDelete('courses', course.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {data.courses.length === 0 && <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">No courses found. Create one above.</div>}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* CONNECT (USERS & LEADS) TAB */}
-                                {activeTab === 'connect' && (
-                                    <div>
-                                        <div className="flex justify-between items-center mb-6">
-                                            <h2 className="text-2xl font-bold text-slate-800">User Inquiries</h2>
-                                        </div>
-                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full">
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full text-left border-collapse min-w-[800px]">
-                                                    <thead>
-                                                        <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200 whitespace-nowrap">
-                                                            <th className="p-4 font-semibold">Date</th>
-                                                            <th className="p-4 font-semibold">Contact Info</th>
-                                                            <th className="p-4 font-semibold">Interest/Service</th>
-                                                            <th className="p-4 font-semibold">Message</th>
-                                                            <th className="p-4 font-semibold text-right">Action</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-slate-100">
-                                                        {data.connect.map(lead => (
-                                                            <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
-                                                                <td className="p-4 text-sm text-slate-500 whitespace-nowrap">{new Date(lead.createdAt).toLocaleDateString()}</td>
-                                                                <td className="p-4 min-w-[200px]">
-                                                                    <p className="font-semibold text-slate-800">{lead.name}</p>
-                                                                    <p className="text-sm text-brand-600"><a href={`mailto:${lead.email}`}>{lead.email}</a></p>
-                                                                    <p className="text-xs text-slate-500">{lead.phone}</p>
-                                                                </td>
-                                                                <td className="p-4 text-sm font-medium text-slate-700 whitespace-nowrap">{lead.service}</td>
-                                                                <td className="p-4 text-sm text-slate-600 max-w-xs truncate" title={lead.message}>{lead.message || '-'}</td>
-                                                                <td className="p-4 text-right whitespace-nowrap">
-                                                                    <button onClick={() => handleDelete('connect', lead.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 rounded-lg shadow-sm"><Icons.Delete /></button>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                                {data.connect.length === 0 && <div className="p-12 text-center text-slate-500">No leads captured yet.</div>}
                                             </div>
                                         </div>
+                                    ))}
+                                    {data.events.length === 0 && (
+                                        <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
+                                            {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No events found. Create one above.'}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* INFO/BLOG TAB */}
+                        {activeTab === 'info' && (
+                            <div>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold text-slate-800">Blog & News</h2>
+                                    <button onClick={() => openModal(null, setInfoModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                        <Icons.Plus className="mr-2" /> Write Post
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {data.info.map(post => (
+                                        <div key={post.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col sm:flex-row gap-5 hover:shadow-md transition-all">
+                                            <div className="w-full sm:w-32 h-40 sm:h-32 rounded-xl bg-slate-100 flex-shrink-0 overflow-hidden relative">
+                                                <img src={post.image || 'https://placehold.co/400?text=News'} className="w-full h-full object-cover" alt="" />
+                                                {!post.published && <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center text-white text-xs font-bold tracking-wider">DRAFT</div>}
+                                            </div>
+                                            <div className="flex-1 flex flex-col justify-between">
+                                                <div>
+                                                    <div className="flex gap-2 mb-2">
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md">{post.category}</span>
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">{post.date}</span>
+                                                    </div>
+                                                    <h3 className="font-bold text-slate-800 text-lg leading-tight mb-2">{post.title}</h3>
+                                                    <p className="text-sm text-slate-600 line-clamp-2">{post.excerpt}</p>
+                                                </div>
+                                                <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                                                    <button onClick={() => openModal(post, setInfoModalOpen)} className="text-xs font-bold text-slate-600 hover:text-brand-700 px-3 py-1.5 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors border border-slate-200">Edit Post</button>
+                                                    <button onClick={() => handleDelete('info', post.id)} className="text-xs font-bold text-slate-600 hover:text-red-700 px-3 py-1.5 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors border border-slate-200">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {data.info.length === 0 && (
+                                        <div className="col-span-full py-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
+                                            {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No articles published yet.'}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* COURSES TAB */}
+                        {activeTab === 'courses' && (
+                            <div>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold text-slate-800">Academy Programs</h2>
+                                    <button onClick={() => openModal(null, setCourseModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                        <Icons.Plus className="mr-2" /> Add Course
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {data.courses.map(course => (
+                                        <div key={course.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group">
+                                            <div className="h-48 bg-slate-100 relative overflow-hidden">
+                                                <img src={course.image || 'https://placehold.co/600x400?text=No+Image'} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-md text-xs font-bold text-slate-800 shadow-sm">
+                                                    ₦{parseFloat(course.price).toLocaleString()}
+                                                </div>
+                                            </div>
+                                            <div className="p-5 flex-1 flex flex-col">
+                                                <h3 className="font-bold text-lg text-slate-800 leading-tight mb-2">{course.title}</h3>
+                                                <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{course.description}</p>
+                                                <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${course.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>{course.status}</span>
+                                                    <div className="flex gap-2">
+                                                        <button onClick={() => openModal(course, setCourseModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
+                                                        <button onClick={() => handleDelete('courses', course.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {data.courses.length === 0 && (
+                                        <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
+                                            {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No courses found. Create one above.'}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* CONNECT (USERS & LEADS) TAB */}
+                        {activeTab === 'connect' && (
+                            <div>
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-bold text-slate-800">User Inquiries</h2>
+                                </div>
+                                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left border-collapse min-w-[800px]">
+                                            <thead>
+                                                <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200 whitespace-nowrap">
+                                                    <th className="p-4 font-semibold">Date</th>
+                                                    <th className="p-4 font-semibold">Contact Info</th>
+                                                    <th className="p-4 font-semibold">Interest/Service</th>
+                                                    <th className="p-4 font-semibold">Message</th>
+                                                    <th className="p-4 font-semibold text-right">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {data.connect.map(lead => (
+                                                    <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="p-4 text-sm text-slate-500 whitespace-nowrap">{new Date(lead.createdAt).toLocaleDateString()}</td>
+                                                        <td className="p-4 min-w-[200px]">
+                                                            <p className="font-semibold text-slate-800">{lead.name}</p>
+                                                            <p className="text-sm text-brand-600"><a href={`mailto:${lead.email}`}>{lead.email}</a></p>
+                                                            <p className="text-xs text-slate-500">{lead.phone}</p>
+                                                        </td>
+                                                        <td className="p-4 text-sm font-medium text-slate-700 whitespace-nowrap">{lead.service}</td>
+                                                        <td className="p-4 text-sm text-slate-600 max-w-xs truncate" title={lead.message}>{lead.message || '-'}</td>
+                                                        <td className="p-4 text-right whitespace-nowrap">
+                                                            <button onClick={() => handleDelete('connect', lead.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 rounded-lg shadow-sm"><Icons.Delete /></button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                        {data.connect.length === 0 && (
+                                            <div className="p-12 text-center text-slate-500">
+                                                {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No leads captured yet.'}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </>
+                                </div>
+                            </div>
                         )}
                     </main>
 
