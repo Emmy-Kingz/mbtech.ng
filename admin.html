@@ -107,6 +107,28 @@
         }
 
         // --- COMPONENTS ---
+        const AnimatedCounter = ({ target, suffix = '' }) => {
+            const [count, setCount] = React.useState(0);
+            
+            React.useEffect(() => {
+                let start = 0;
+                if (target === 0) return;
+                
+                const duration = 1500; // Animation lasts 1.5 seconds
+                const interval = Math.max(30, duration / target);
+                
+                const timer = setInterval(() => {
+                    start += 1;
+                    setCount(start);
+                    if (start >= target) clearInterval(timer);
+                }, interval);
+                
+                return () => clearInterval(timer);
+            }, [target]);
+
+            return <span>{count}{suffix}</span>;
+        };
+
         const Toast = ({ message, type, onClose }) => {
             React.useEffect(() => { const timer = setTimeout(onClose, 3000); return () => clearTimeout(timer); }, [onClose]);
             const bgClass = type === 'success' ? 'bg-emerald-500' : type === 'error' ? 'bg-red-500' : 'bg-slate-800';
@@ -297,14 +319,14 @@
                 <footer className="bg-slate-900 text-white pt-16 pb-8 mt-auto w-full z-10 border-t border-slate-800">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                         <div>
-                            <h3 className="text-2xl font-bold mb-4 font-sans text-white">MBTECH</h3>
+                            <img src="logo.png" alt="MBTECH Logo" className="h-10 mb-4 object-contain" />
                             <p className="text-slate-400 mb-4 text-sm leading-relaxed">
                                 Empowering Africa through innovative technology solutions, digital skills training, and sustainable energy.
                             </p>
                             <div className="flex space-x-4">
-                                <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">f</a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">𝕏</a>
-                                <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">in</a>
+                                <a href="https://facebook.com/mbtechng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">f</a>
+                                <a href="https://twitter.com/mbtechng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">𝕏</a>
+                                <a href="https://linkedin.com/company/mbtechng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors font-bold text-lg">in</a>
                             </div>
                         </div>
                         <div>
@@ -335,17 +357,17 @@
                                 </li>
                                 <li className="flex items-center">
                                     <span className="mr-3 text-brand-500"><Icons.Phone /></span>
-                                    <span>+234 (0) 90 123 456 78</span>
+                                    <span>+234 708 467 2771</span>
                                 </li>
                                 <li className="flex items-center">
                                     <span className="mr-3 text-brand-500"><Icons.Mail /></span>
-                                    <span>hello@mbtech.ng</span>
+                                    <a href="mailto:admin@mbtechng.com" className="hover:text-brand-500 transition-colors">admin@mbtechng.com</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800 pt-8 text-center text-slate-500 text-sm">
-                        <p>&copy; {new Date().getFullYear()} MBTECH NG. All rights reserved. | Secured Workspace</p>
+                        <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved. | Secured Workspace</p>
                     </div>
                 </footer>
             );
@@ -366,7 +388,7 @@
                 { label: 'Products in Store', val: data.store.length, icon: Icons.Store, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                 { label: 'Blog Posts', val: data.info.length, icon: Icons.Info, color: 'text-purple-600', bg: 'bg-purple-50' },
                 { label: 'Active Events', val: activeEventsCount, icon: Icons.Event, color: 'text-blue-600', bg: 'bg-blue-50' },
-                { label: 'Registered Users', val: data.connect.length, icon: Icons.Users, color: 'text-amber-600', bg: 'bg-amber-50' },
+                { label: 'Total Courses', val: 12, isFixed: true, suffix: '+', icon: Icons.Course, color: 'text-amber-600', bg: 'bg-amber-50' },
             ];
 
             // --- RENDER VIEW 1: PUBLIC WEBSITE OVERVIEW ---
@@ -376,9 +398,9 @@
                         <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                                 <div className="flex justify-between h-16 items-center">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">MB</div>
-                                        <span className="text-lg font-bold text-slate-900 hidden sm:block">Website Overview</span>
+                                    <div className="flex items-center gap-3">
+                                        <img src="logo.png" alt="MBTECH" className="h-8 w-auto object-contain" />
+                                        <span className="text-lg font-bold text-slate-900 hidden sm:block border-l border-slate-300 pl-3">Website Overview</span>
                                     </div>
                                     <button onClick={() => setShowLoginForm(true)} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-sm transition-colors shadow-sm flex items-center gap-2">
                                         <Icons.Lock /> <span>Login as Admin</span>
@@ -401,7 +423,7 @@
                                          </div>
                                          <div>
                                              <p className="text-4xl font-extrabold text-slate-800 mb-1">
-                                                 {isSyncing && stat.val === 0 ? <span className="text-2xl text-slate-400 animate-pulse">...</span> : <span>{stat.val}</span>}
+                                                 {isSyncing && stat.val === 0 && !stat.isFixed ? <span className="text-2xl text-slate-400 animate-pulse">...</span> : (stat.isFixed ? <AnimatedCounter target={stat.val} suffix={stat.suffix} /> : <span>{stat.val}</span>)}
                                              </p>
                                              <p className="text-slate-500 font-medium">{stat.label}</p>
                                          </div>
@@ -421,9 +443,7 @@
                         <div className="flex-1 flex items-center justify-center p-4 py-20 bg-slate-50">
                             <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md border border-slate-100 relative">
                                 <div className="text-center mb-8">
-                                    <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-600">
-                                        <Icons.Lock />
-                                    </div>
+                                    <img src="logo.png" alt="MBTECH" className="h-14 w-auto mx-auto mb-6 object-contain" />
                                     <h1 className="text-2xl font-bold text-slate-900 mb-2">Workspace Access</h1>
                                     <p className="text-slate-500 text-sm">Enter the master passcode to access the MBTECH portal.</p>
                                 </div>
@@ -473,9 +493,9 @@
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between h-16">
                                 <div className="flex overflow-hidden">
-                                    <div className="flex-shrink-0 flex items-center gap-2 mr-8">
-                                        <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">MB</div>
-                                        <span className="text-lg font-bold text-slate-900 hidden sm:block">Workspace</span>
+                                    <div className="flex-shrink-0 flex items-center gap-3 mr-8">
+                                        <img src="logo.png" alt="MBTECH" className="h-8 w-auto object-contain" />
+                                        <span className="text-lg font-bold text-slate-900 hidden sm:block border-l border-slate-300 pl-3">Workspace</span>
                                     </div>
                                     
                                     {/* Desktop Tabs */}
@@ -543,7 +563,7 @@
                                             <div>
                                                 <p className="text-slate-500 text-sm font-semibold">{stat.label}</p>
                                                 <p className="text-3xl font-bold text-slate-800 mt-1">
-                                                    {isSyncing && stat.val === 0 ? <span className="text-xl text-slate-400 animate-pulse">...</span> : <span>{stat.val}</span>}
+                                                    {isSyncing && stat.val === 0 && !stat.isFixed ? <span className="text-xl text-slate-400 animate-pulse">...</span> : (stat.isFixed ? <AnimatedCounter target={stat.val} suffix={stat.suffix} /> : <span>{stat.val}</span>)}
                                                 </p>
                                             </div>
                                         </div>
