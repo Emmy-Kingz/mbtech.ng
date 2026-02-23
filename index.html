@@ -625,145 +625,144 @@
     <!-- MAIN APPLICATION SCRIPT FOR FIREBASE INTEGRATION -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
-            authDomain: "mbtechstore-17984.firebaseapp.com",
-            projectId: "mbtechstore-17984",
-            storageBucket: "mbtechstore-17984.firebasestorage.app",
-            messagingSenderId: "1083008774596",
-            appId: "1:1083008774596:web:110b651c6426116ed43491"
-        };
+        // Defer Firebase initialization and auth until the entire homepage finishes loading
+        window.addEventListener('load', () => {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+                authDomain: "mbtechstore-17984.firebaseapp.com",
+                projectId: "mbtechstore-17984",
+                storageBucket: "mbtechstore-17984.firebasestorage.app",
+                messagingSenderId: "1083008774596",
+                appId: "1:1083008774596:web:110b651c6426116ed43491"
+            };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = 'mbtech-public-store';
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const appId = 'mbtech-public-store';
 
-        const initAuth = async () => {
-            try {
-                if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, window.__initial_auth_token);
-                    } catch (customTokenError) {
-                        console.error("Custom token failed, trying anonymous:", customTokenError);
-                        await signInAnonymously(auth);
-                    }
-                } else {
+            const initAuth = async () => {
+                try {
+                    // Since you are using your own custom Firebase project, 
+                    // the Canvas environment's auto-generated token will cause a 'custom-token-mismatch' error.
+                    // Instead, we skip the token check and directly use anonymous authentication.
                     await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Auth error:", error);
-                const eventsGrid = document.getElementById('events-grid');
-                if (eventsGrid) {
-                    eventsGrid.innerHTML = `
-                        <div class="col-span-full text-center bg-red-50 p-8 rounded-xl border border-red-200 border-dashed">
-                            <p class="text-red-600 font-bold mb-2">Authentication Failed</p>
-                            <p class="text-sm text-red-500">Please check your network connection or enable <b>Anonymous Sign-in</b> in Firebase.</p>
-                        </div>
-                    `;
-                }
-            }
-        };
-
-        initAuth();
-
-        onAuthStateChanged(auth, (user) => {
-            if (!user) return;
-            
-            // --- LOAD NEWS / INSIGHTS ---
-            const infoGrid = document.getElementById('info-grid');
-            if(infoGrid) {
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates'), (snapshot) => {
-                    infoGrid.innerHTML = '';
-                    let posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    
-                    // Filter published and sort by newest
-                    posts = posts.filter(p => p.published !== false);
-                    posts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                    
-                    // Take only the top 3 for the homepage
-                    posts = posts.slice(0, 3);
-
-                    if (posts.length === 0) {
-                        infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">No recent updates published. Check back soon!</p>';
-                        return;
-                    }
-
-                    posts.forEach(post => {
-                        const dateStr = post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) : post.date || 'Recent';
-                        const postHTML = `
-                            <a href="info.html" class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:border-orange-200 transition-all group flex flex-col cursor-pointer block">
-                                <div class="relative h-48 bg-slate-100 overflow-hidden">
-                                    <img src="${post.image || 'https://placehold.co/600x400?text=Update'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://placehold.co/600x400?text=Update'">
-                                    <div class="absolute top-4 left-4">
-                                        <span class="bg-white/90 backdrop-blur text-slate-900 text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm uppercase tracking-widest">${post.category || 'Update'}</span>
-                                    </div>
-                                </div>
-                                <div class="p-6 md:p-8 flex-grow flex flex-col">
-                                    <div class="flex items-center gap-2 text-xs font-bold text-slate-400 mb-3">
-                                        <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> 
-                                        ${dateStr}
-                                    </div>
-                                    <h3 class="font-extrabold text-slate-900 text-lg leading-tight mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">${post.title}</h3>
-                                    <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-6 flex-grow">${post.excerpt || post.content}</p>
-                                    <div class="mt-auto pt-4 border-t border-slate-100">
-                                        <span class="text-xs font-bold text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">Read Article <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></span>
-                                    </div>
-                                </div>
-                            </a>
-                        `;
-                        infoGrid.innerHTML += postHTML;
-                    });
-                }, (error) => {
-                    console.error("Error fetching updates", error);
-                    infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load updates at this time.</p>';
-                });
-            }
-
-            // --- LOAD EVENTS ---
-            const eventsGrid = document.getElementById('events-grid');
-            if(eventsGrid) {
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_events'), (snapshot) => {
-                    eventsGrid.innerHTML = '';
-                    if (snapshot.empty) {
-                        eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-white p-8 rounded-[2rem] border border-slate-200 border-dashed">No upcoming events right now. Stay tuned!</p>';
-                        return;
-                    }
-                    
-                    // Sort newest first
-                    const events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    events.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-                    events.forEach((ev) => {
-                        const eventHTML = `
-                            <div class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col">
-                                <div class="relative bg-slate-900 h-48 overflow-hidden">
-                                    <img src="${ev.image || 'https://placehold.co/800x400?text=Event'}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x400?text=Event'">
-                                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur text-slate-900 px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-extrabold shadow-sm">${ev.date || 'TBA'}</div>
-                                </div>
-                                <div class="p-6 md:p-8 flex-grow flex flex-col">
-                                    <h3 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight">${ev.title}</h3>
-                                    <p class="text-slate-500 text-sm mb-6 flex-grow line-clamp-3 leading-relaxed">${ev.description}</p>
-                                    <div class="flex items-center justify-between border-t border-slate-100 pt-5 mt-auto">
-                                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                                            <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
-                                            <span class="truncate max-w-[100px]">${ev.location || 'Virtual'}</span>
-                                        </span>
-                                        <a href="connect.html" class="text-purple-600 text-[10px] bg-purple-50 px-4 py-2 rounded-full font-black uppercase tracking-wider hover:bg-purple-600 hover:text-white transition-colors">Register</a>
-                                    </div>
-                                </div>
+                } catch (error) {
+                    console.error("Auth error:", error);
+                    const eventsGrid = document.getElementById('events-grid');
+                    if (eventsGrid) {
+                        eventsGrid.innerHTML = `
+                            <div class="col-span-full text-center bg-red-50 p-8 rounded-xl border border-red-200 border-dashed">
+                                <p class="text-red-600 font-bold mb-2">Authentication Failed</p>
+                                <p class="text-sm text-red-500">Please check your network connection or enable <b>Anonymous Sign-in</b> in your Firebase Auth Console.</p>
                             </div>
                         `;
-                        eventsGrid.innerHTML += eventHTML;
+                    }
+                }
+            };
+
+            // Start authentication in the background
+            initAuth();
+
+            // Setup data listeners that fire only when auth state confirms connection
+            onAuthStateChanged(auth, (user) => {
+                if (!user) return;
+                
+                // --- LOAD NEWS / INSIGHTS ---
+                const infoGrid = document.getElementById('info-grid');
+                if(infoGrid) {
+                    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates'), (snapshot) => {
+                        infoGrid.innerHTML = '';
+                        let posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        
+                        // Filter published and sort by newest
+                        posts = posts.filter(p => p.published !== false);
+                        posts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                        
+                        // Take only the top 3 for the homepage
+                        posts = posts.slice(0, 3);
+
+                        if (posts.length === 0) {
+                            infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">No recent updates published. Check back soon!</p>';
+                            return;
+                        }
+
+                        posts.forEach(post => {
+                            const dateStr = post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) : post.date || 'Recent';
+                            const postHTML = `
+                                <a href="info.html" class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl hover:border-orange-200 transition-all group flex flex-col cursor-pointer block">
+                                    <div class="relative h-48 bg-slate-100 overflow-hidden">
+                                        <img src="${post.image || 'https://placehold.co/600x400?text=Update'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="this.src='https://placehold.co/600x400?text=Update'">
+                                        <div class="absolute top-4 left-4">
+                                            <span class="bg-white/90 backdrop-blur text-slate-900 text-[10px] font-extrabold px-3 py-1.5 rounded-lg shadow-sm uppercase tracking-widest">${post.category || 'Update'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="p-6 md:p-8 flex-grow flex flex-col">
+                                        <div class="flex items-center gap-2 text-xs font-bold text-slate-400 mb-3">
+                                            <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg> 
+                                            ${dateStr}
+                                        </div>
+                                        <h3 class="font-extrabold text-slate-900 text-lg leading-tight mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">${post.title}</h3>
+                                        <p class="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-6 flex-grow">${post.excerpt || post.content}</p>
+                                        <div class="mt-auto pt-4 border-t border-slate-100">
+                                            <span class="text-xs font-bold text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">Read Article <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg></span>
+                                        </div>
+                                    </div>
+                                </a>
+                            `;
+                            infoGrid.innerHTML += postHTML;
+                        });
+                    }, (error) => {
+                        console.error("Error fetching updates", error);
+                        infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load updates at this time.</p>';
                     });
-                }, (error) => {
-                    console.error("Error fetching events", error);
-                    eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-white p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load events at this time.</p>';
-                });
-            }
+                }
+
+                // --- LOAD EVENTS ---
+                const eventsGrid = document.getElementById('events-grid');
+                if(eventsGrid) {
+                    onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_events'), (snapshot) => {
+                        eventsGrid.innerHTML = '';
+                        if (snapshot.empty) {
+                            eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-white p-8 rounded-[2rem] border border-slate-200 border-dashed">No upcoming events right now. Stay tuned!</p>';
+                            return;
+                        }
+                        
+                        // Sort newest first
+                        const events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        events.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+                        events.forEach((ev) => {
+                            const eventHTML = `
+                                <div class="bg-white border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col">
+                                    <div class="relative bg-slate-900 h-48 overflow-hidden">
+                                        <img src="${ev.image || 'https://placehold.co/800x400?text=Event'}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/800x400?text=Event'">
+                                        <div class="absolute top-4 right-4 bg-white/90 backdrop-blur text-slate-900 px-3 py-1.5 rounded-lg text-[10px] uppercase tracking-widest font-extrabold shadow-sm">${ev.date || 'TBA'}</div>
+                                    </div>
+                                    <div class="p-6 md:p-8 flex-grow flex flex-col">
+                                        <h3 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight">${ev.title}</h3>
+                                        <p class="text-slate-500 text-sm mb-6 flex-grow line-clamp-3 leading-relaxed">${ev.description}</p>
+                                        <div class="flex items-center justify-between border-t border-slate-100 pt-5 mt-auto">
+                                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                                <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> 
+                                                <span class="truncate max-w-[100px]">${ev.location || 'Virtual'}</span>
+                                            </span>
+                                            <a href="connect.html" class="text-purple-600 text-[10px] bg-purple-50 px-4 py-2 rounded-full font-black uppercase tracking-wider hover:bg-purple-600 hover:text-white transition-colors">Register</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            eventsGrid.innerHTML += eventHTML;
+                        });
+                    }, (error) => {
+                        console.error("Error fetching events", error);
+                        eventsGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-white p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load events at this time.</p>';
+                    });
+                }
+            });
         });
     </script>
 
