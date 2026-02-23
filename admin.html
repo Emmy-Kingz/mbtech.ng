@@ -16,935 +16,830 @@
     <!-- Fonts (Mbtech Brand Font) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Dependencies -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6',
-                            600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a', 950: '#172554',
-                        }
-                    }
+                    fontFamily: { sans: ['"Inter"', 'sans-serif'] },
+                    colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' } }
                 }
             }
         }
     </script>
+
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; overflow-x: hidden; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
-        .modal-enter { animation: modalFadeIn 0.2s ease-out forwards; }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .toast-enter { animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
+        body { background-color: #f8fafc; overflow-x: hidden; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .modal-overlay { animation: fadeIn 0.2s ease-out; }
+        .modal-content { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+    <div id="root" class="flex-1 flex flex-col"></div>
 
-    <script type="text/babel" data-type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <script type="text/babel">
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-EXAMPLE_KEY_KEEP_YOURS", 
+            authDomain: "mbtech-97d8c.firebaseapp.com",
+            databaseURL: "https://mbtech-97d8c-default-rtdb.firebaseio.com",
+            projectId: "mbtech-97d8c",
+            storageBucket: "mbtech-97d8c.appspot.com",
+            messagingSenderId: "565780521362",
+            appId: "1:565780521362:web:9c7ca90479d20c4a4505ee"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const db = firebase.database();
 
-        const { useState, useEffect } = React;
+        // --- ICONS SET ---
+        const Icons = {
+            Dashboard: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>,
+            Store: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>,
+            Event: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+            Info: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>,
+            Course: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>,
+            Users: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
+            Settings: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+            Plus: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+            Edit: () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+            Delete: () => <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
+            Close: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>,
+            LogOut: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
+            Lock: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>,
+            Check: () => <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+        };
 
-        // --- Cryptography for Secure Data Exchange ---
-        const hashPasscodeData = async (text) => {
-            const msgUint8 = new TextEncoder().encode(text);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        // --- CRYPTO HELPER ---
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        };
-
-        // --- SVGs ---
-        const Icons = {
-            Dashboard: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>,
-            Info: ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>,
-            Calendar: ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>,
-            Store: ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
-            Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>,
-            Logout: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>,
-            Plus: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
-            Trash: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>,
-            Edit: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>,
-            Close: ({size=24}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
-            Menu: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>,
-            CheckCircle: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>,
-            Alert: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>,
-            Sync: ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>,
-            Lock: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>,
-            Star: ({size=14, className="text-amber-400"}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>,
-            Image: ({size=20}) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        };
-
-        // --- Firebase Config ---
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        const isFirebaseConfigured = firebaseConfig && Object.keys(firebaseConfig).length > 0;
-        
-        let app, auth, db;
-        if (isFirebaseConfigured) {
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-            } catch (err) {
-                console.warn("Failed to initialize Firebase app:", err);
-            }
         }
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const safeAppId = appId.replace(/\//g, '_'); // Fixes Firestore path segment errors
 
-        // --- Shared Components ---
+        // --- COMPONENTS ---
         const Toast = ({ message, type, onClose }) => {
-            useEffect(() => {
-                const timer = setTimeout(() => { onClose(); }, 3000);
-                return () => clearTimeout(timer);
-            }, [onClose]);
+            React.useEffect(() => { const timer = setTimeout(onClose, 3000); return () => clearTimeout(timer); }, [onClose]);
+            const bg = type === 'success' ? 'bg-emerald-500' : type === 'error' ? 'bg-red-500' : 'bg-slate-800';
             return (
-                <div className="fixed bottom-6 right-6 z-50 flex items-center bg-white p-4 rounded-xl shadow-lg border border-slate-100 toast-enter">
-                    <div className="mr-3">{type === 'success' ? <Icons.CheckCircle /> : <Icons.Alert />}</div>
-                    <p className="text-sm font-medium text-slate-800">{message}</p>
-                    <button onClick={onClose} className="ml-4 text-slate-400 hover:text-slate-600 transition-colors"><Icons.Close size={16} /></button>
+                <div className="fixed bottom-6 right-6 z-50 animate-[slideUp_0.3s_ease-out]">
+                    <div className={`${bg} text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 font-medium`}>
+                        {type === 'success' && <Icons.Check />}
+                        {type === 'error' && <Icons.Close />}
+                        {message}
+                    </div>
                 </div>
             );
         };
 
-        const Modal = ({ isOpen, onClose, title, children }) => {
+        const Modal = ({ isOpen, onClose, title, children, maxWidth = "max-w-xl" }) => {
             if (!isOpen) return null;
             return (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden modal-enter border border-slate-100">
-                        <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay bg-slate-900/60 backdrop-blur-sm">
+                    <div className={`bg-white rounded-2xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col modal-content`}>
+                        <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
                             <h3 className="text-lg font-bold text-slate-800">{title}</h3>
-                            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors p-1.5 rounded-full hover:bg-slate-200"><Icons.Close size={20}/></button>
+                            <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-200">
+                                <Icons.Close />
+                            </button>
                         </div>
-                        <div className="p-6">{children}</div>
+                        <div className="p-6 overflow-y-auto hide-scrollbar flex-1">
+                            {children}
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        const Footer = () => (
-            <footer className="w-full py-6 mt-auto bg-white border-t border-slate-200 z-10 relative">
-                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div className="flex items-center gap-3">
-                        <img src="logo.png" alt="Mbtech Logo" className="h-6 object-contain grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all" onError={(e) => { e.target.onerror = null; e.target.src = 'favicon.png'; }} />
-                        <span className="text-slate-500 text-sm font-medium">© {new Date().getFullYear()} Mbtech.ng Workspace. All rights reserved.</span>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <span className="text-xs font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-1.5">
-                            <Icons.Lock size={12} /> Secured Portal
-                        </span>
-                    </div>
-                </div>
-            </footer>
-        );
-
-        const TableView = ({ title, data, columns, onAdd, onEdit, onDelete, emptyState }) => (
-            <div className="space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
-                    <h2 className="text-xl sm:text-2xl font-bold text-slate-800">{title}</h2>
-                    {onAdd && (
-                        <button onClick={onAdd} className="inline-flex items-center justify-center px-4 py-2.5 bg-brand-600 text-white text-sm font-medium rounded-xl hover:bg-brand-700 transition-colors shadow-sm active:scale-95 w-full sm:w-auto">
-                            <span className="mr-2"><Icons.Plus /></span> Add New
-                        </button>
-                    )}
-                </div>
-
-                {data.length === 0 ? (
-                    <div className="text-center py-16 px-6 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                        <div className="mx-auto w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 text-slate-400 shadow-sm border border-slate-100"><Icons.Info size={24}/></div>
-                        <h3 className="text-sm font-semibold text-slate-800">{emptyState.title}</h3>
-                        <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">{emptyState.description}</p>
-                        {onAdd && (
-                            <button onClick={onAdd} className="mt-6 inline-flex items-center px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors shadow-sm">
-                                <span className="mr-2"><Icons.Plus /></span> {emptyState.actionText}
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div className="overflow-x-auto custom-scrollbar">
-                            <table className="w-full text-left whitespace-nowrap">
-                                <thead className="bg-slate-50 border-b border-slate-200">
-                                    <tr>
-                                        {columns.map((col, i) => <th key={i} className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{col.label}</th>)}
-                                        <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {data.map((item) => (
-                                        <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                                            {columns.map((col, i) => (
-                                                <td key={i} className="px-6 py-4 text-sm text-slate-700">{col.render ? col.render(item) : item[col.key]}</td>
-                                            ))}
-                                            <td className="px-6 py-4 text-right space-x-2">
-                                                <button onClick={() => onEdit(item)} className="p-2 text-slate-400 hover:text-brand-600 bg-white hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-100" title="Edit"><Icons.Edit /></button>
-                                                <button onClick={() => onDelete(item.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100" title="Delete"><Icons.Trash /></button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
-
-        // --- Main App ---
+        // --- MAIN APP COMPONENT ---
         const App = () => {
-            const [user, setUser] = useState(null);
-            const [isLoggedIn, setIsLoggedIn] = useState(false);
-            const [activeTab, setActiveTab] = useState('dashboard');
-            const [toast, setToast] = useState(null);
+            const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+            const [showLoginForm, setShowLoginForm] = React.useState(false);
+            const [passcode, setPasscode] = React.useState('');
+            const [authError, setAuthError] = React.useState('');
+            const [activeTab, setActiveTab] = React.useState('dashboard');
+            const [toast, setToast] = React.useState(null);
             
-            // App Data
-            const [infoData, setInfoData] = useState([]);
-            const [eventData, setEventData] = useState([]);
-            const [storeData, setStoreData] = useState([]);
+            // Data State
+            const [data, setData] = React.useState({ courses: [], store: [], info: [], connect: [], events: [] });
+            const [loading, setLoading] = React.useState(true);
             
-            // Security State (Hashed)
-            const [adminPasscodeHash, setAdminPasscodeHash] = useState('');
-            
-            // Modals & Auth State
-            const [isLoginModalOpen, setLoginModalOpen] = useState(false);
-            const [isAuthenticating, setIsAuthenticating] = useState(false);
-            const [authProgress, setAuthProgress] = useState(0);
-            const [isResettingPasscode, setIsResettingPasscode] = useState(false);
-            const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
-            
-            const [isInfoModalOpen, setInfoModalOpen] = useState(false);
-            const [isEventModalOpen, setEventModalOpen] = useState(false);
-            const [isStoreModalOpen, setStoreModalOpen] = useState(false);
-            
-            const [currentItem, setCurrentItem] = useState(null);
-            const [previewImage, setPreviewImage] = useState(null); // Stores base64 image
-            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            // Modal States
+            const [currentItem, setCurrentItem] = React.useState(null);
+            const [isCourseModalOpen, setCourseModalOpen] = React.useState(false);
+            const [isStoreModalOpen, setStoreModalOpen] = React.useState(false);
+            const [isEventModalOpen, setEventModalOpen] = React.useState(false);
+            const [isInfoModalOpen, setInfoModalOpen] = React.useState(false);
+            const [isSettingsModalOpen, setSettingsModalOpen] = React.useState(false);
+
+            // Fetch Data unconditionally (so public overview can show stats)
+            React.useEffect(() => {
+                const collections = ['courses', 'store', 'info', 'connect', 'events'];
+                let loaded = 0;
+
+                collections.forEach(col => {
+                    db.ref(col).on('value', snapshot => {
+                        const val = snapshot.val();
+                        const arr = val ? Object.keys(val).map(key => ({ id: key, ...val[key] })) : [];
+                        setData(prev => ({ ...prev, [col]: arr.reverse() })); // Reverse to show newest first
+                        loaded++;
+                        if (loaded >= collections.length) setLoading(false);
+                    });
+                });
+
+                return () => collections.forEach(col => db.ref(col).off());
+            }, []);
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                const inputHash = await sha256(passcode);
+                const storedHash = localStorage.getItem('mbtech_admin_hash') || 'e7a53b471241f92e44534f37803eec08db1b2be482b6c7a7dc6c8605c312781f'; // Default: Admin@123
+                
+                if (inputHash === storedHash) {
+                    setIsAuthenticated(true);
+                    setShowLoginForm(false); // Reset form visibility on success
+                    setAuthError('');
+                } else {
+                    setAuthError('Invalid passcode. Access denied.');
+                }
+                setLoading(false);
+            };
+
+            const handleLogout = () => { 
+                setIsAuthenticated(false); 
+                setShowLoginForm(false); 
+                setPasscode(''); 
+            };
 
             const showToast = (message, type = 'success') => setToast({ message, type });
 
-            // Initialize Firebase Auth & Real-time Listeners
-            useEffect(() => {
-                const initAuth = async () => {
-                    if (!auth) {
-                         setUser({ uid: 'offline-mock-user' });
-                         return;
-                    }
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            try {
-                                await signInWithCustomToken(auth, __initial_auth_token);
-                            } catch (err) {
-                                console.warn("Custom token sign-in failed, trying anonymous:", err);
-                                await signInAnonymously(auth);
-                            }
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (e) {
-                        console.warn("Auth error or network offline:", e);
-                        setUser({ uid: 'offline-user' });
-                    }
-                };
-                initAuth();
-                
-                let unsubscribe = () => {};
-                if (auth) {
-                    unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                        if (currentUser) {
-                            setUser(currentUser);
-                        }
-                    });
-                }
-                return () => unsubscribe();
-            }, []);
-
-            useEffect(() => {
-                if (!user) return;
-                if (!db) return; // Stop if DB isn't healthy
-                
-                let unsubs = [];
-                try {
-                    const infoRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'info');
-                    const eventRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'events');
-                    const storeRef = collection(db, 'artifacts', safeAppId, 'public', 'data', 'store');
-                    const configRef = doc(db, 'artifacts', safeAppId, 'public', 'data', 'config', 'adminSettings');
-
-                    unsubs = [
-                        onSnapshot(infoRef, snap => setInfoData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.warn),
-                        onSnapshot(eventRef, snap => setEventData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.warn),
-                        onSnapshot(storeRef, snap => setStoreData(snap.docs.map(d => ({id: d.id, ...d.data()}))), console.warn),
-                        onSnapshot(configRef, async snap => {
-                            if (snap.exists() && snap.data().passcode) {
-                                setAdminPasscodeHash(snap.data().passcode);
-                            } else {
-                                // Default master code encrypted
-                                const defaultHash = await hashPasscodeData('emmy-admin%');
-                                setAdminPasscodeHash(defaultHash);
-                                setDoc(configRef, { passcode: defaultHash }).catch(console.warn);
-                            }
-                        }, console.warn)
-                    ];
-                } catch(e) {
-                     console.warn("Firestore error offline:", e);
-                }
-
-                return () => unsubs.forEach(unsub => unsub());
-            }, [user]);
-
-            // --- Handlers ---
-            const handleLogin = async (e) => {
+            // CRUD Handlers
+            const handleSave = async (e, collection, setModalOpen, extraData = {}) => {
                 e.preventDefault();
-                const inputPasscode = e.target.passcode.value;
-                const inputHash = await hashPasscodeData(inputPasscode);
-                const defaultHash = await hashPasscodeData('emmy-admin%');
+                const formData = new FormData(e.target);
+                const payload = Object.fromEntries(formData.entries());
+                Object.assign(payload, extraData);
                 
-                // Fallback to default hash if Firestore hasn't loaded or is offline
-                const currentValidHash = adminPasscodeHash || defaultHash;
-                
-                // Compare hashed input against hashed truth in DB
-                if (inputHash === currentValidHash || inputPasscode === 'emmy-admin%') {
-                    setIsAuthenticating(true);
-                    setAuthProgress(0);
-                    
-                    let progress = 0;
-                    const authInterval = setInterval(() => {
-                        progress += Math.floor(Math.random() * 15) + 5; 
-                        if (progress >= 100) {
-                            progress = 100;
-                            clearInterval(authInterval);
-                            setTimeout(() => {
-                                setIsLoggedIn(true);
-                                setLoginModalOpen(false);
-                                setIsAuthenticating(false);
-                                setAuthProgress(0);
-                                showToast('Secure connection established! Access granted.');
-                            }, 400); 
-                        }
-                        setAuthProgress(progress);
-                    }, 150);
-                } else {
-                    showToast('Incorrect passcode. Access Denied.', 'error');
+                // Convert numbers
+                if (payload.price) payload.price = parseFloat(payload.price);
+                if (payload.oldPrice) payload.oldPrice = parseFloat(payload.oldPrice);
+                if (payload.stock) payload.stock = parseInt(payload.stock);
+
+                try {
+                    if (currentItem && currentItem.id) {
+                        await db.ref(`${collection}/${currentItem.id}`).update(payload);
+                        showToast(`${collection.charAt(0).toUpperCase() + collection.slice(1)} item updated!`);
+                    } else {
+                        const id = Date.now().toString();
+                        await db.ref(`${collection}/${id}`).set({ ...payload, id, createdAt: new Date().toISOString() });
+                        showToast(`New ${collection} item created!`);
+                    }
+                    setModalOpen(false);
+                    setCurrentItem(null);
+                } catch (error) {
+                    showToast(error.message, 'error');
                 }
             };
 
-            const handleLogout = () => {
-                setIsLoggedIn(false);
-                setActiveTab('dashboard');
-                showToast('Logged out securely.');
+            const handleDelete = async (collection, id) => {
+                if (window.confirm(`Are you sure you want to delete this item from ${collection}?`)) {
+                    try {
+                        await db.ref(`${collection}/${id}`).remove();
+                        showToast('Item deleted successfully.');
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
             };
 
             const handleChangePasscode = async (e) => {
                 e.preventDefault();
-                const newCode = e.target.newPasscode.value;
-                if(newCode.length < 5) { showToast('Passcode must be at least 5 characters', 'error'); return; }
-                
-                try {
-                    const hashedNewCode = await hashPasscodeData(newCode);
-                    if (db) {
-                       await setDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', 'config', 'adminSettings'), { passcode: hashedNewCode }, { merge: true });
-                    }
-                    setAdminPasscodeHash(hashedNewCode);
-                    setSettingsModalOpen(false);
-                    showToast('Admin passcode encrypted and updated successfully!');
-                } catch (err) { showToast('Error updating encrypted passcode (offline)', 'error'); }
+                const newPass = e.target.newPasscode.value;
+                if(newPass.length < 6) { showToast('Passcode must be at least 6 characters', 'error'); return; }
+                const hash = await sha256(newPass);
+                localStorage.setItem('mbtech_admin_hash', hash);
+                showToast('Admin passcode updated securely!');
+                setSettingsModalOpen(false);
             };
 
-            const handleResetPasscode = (e) => {
-                if (e) e.preventDefault();
-                setIsAuthenticating(true);
-                setAuthProgress(0);
-                
-                let progress = 0;
-                const resetInterval = setInterval(() => {
-                    progress += Math.floor(Math.random() * 20) + 10;
-                    if (progress >= 100) {
-                        progress = 100;
-                        clearInterval(resetInterval);
-                        setTimeout(() => {
-                            setIsAuthenticating(false);
-                            setAuthProgress(0);
-                            setIsResettingPasscode(false);
-                            showToast('Encrypted recovery link sent to emmanuel.amobi03@gmail.com', 'success');
-                        }, 400);
-                    }
-                    setAuthProgress(progress);
-                }, 150);
+            const openModal = (item, setModalOpen) => {
+                setCurrentItem(item);
+                setModalOpen(true);
             };
 
-            // Image Processor (Compression & Base64 Conversion)
-            const handleImageChange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                if (!file.type.startsWith('image/')) {
-                    showToast('Please upload a valid image file', 'error');
-                    return;
-                }
+            // Global Footer Component
+            const GlobalFooter = () => (
+                <footer className="bg-white border-t border-slate-200 mt-auto w-full z-10">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <p className="text-center text-sm text-slate-500 font-medium">
+                            &copy; {new Date().getFullYear()} Mbtech. All rights reserved.
+                        </p>
+                    </div>
+                </footer>
+            );
 
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 500; 
-                        let scale = 1;
-                        if (img.width > MAX_WIDTH) {
-                            scale = MAX_WIDTH / img.width;
-                        }
-                        canvas.width = img.width * scale;
-                        canvas.height = img.height * scale;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        const base64 = canvas.toDataURL('image/jpeg', 0.8);
-                        setPreviewImage(base64);
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            };
+            // Compute Stats
+            const activeEventsCount = data.events.filter(e => e.status === 'Active').length;
+            const dashboardStats = [
+                { label: 'Products in Store', val: data.store.length, icon: Icons.Store, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                { label: 'Blog Posts', val: data.info.length, icon: Icons.Info, color: 'text-purple-600', bg: 'bg-purple-50' },
+                { label: 'Active Events', val: activeEventsCount, icon: Icons.Event, color: 'text-blue-600', bg: 'bg-blue-50' },
+                { label: 'Registered Users', val: data.connect.length, icon: Icons.Users, color: 'text-amber-600', bg: 'bg-amber-50' },
+            ];
 
-            // Generic CRUD handlers
-            const handleSave = async (e, collectionName, modalSetter, customFields = {}) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const isEdit = !!currentItem;
-                const id = isEdit ? currentItem.id : Date.now().toString();
-                
-                let dataToSave = { id };
-                formData.forEach((value, key) => dataToSave[key] = value);
-                
-                dataToSave.featured = formData.get('featured') === 'on';
-                dataToSave.image = previewImage;
-                dataToSave = { ...dataToSave, ...customFields };
-
-                try {
-                    if (db) {
-                       await setDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', collectionName, id), dataToSave);
-                    } else {
-                        if (collectionName === 'info') setInfoData(prev => isEdit ? prev.map(p => p.id === id ? dataToSave : p) : [...prev, dataToSave]);
-                        if (collectionName === 'events') setEventData(prev => isEdit ? prev.map(p => p.id === id ? dataToSave : p) : [...prev, dataToSave]);
-                        if (collectionName === 'store') setStoreData(prev => isEdit ? prev.map(p => p.id === id ? dataToSave : p) : [...prev, dataToSave]);
-                    }
-                    modalSetter(false);
-                    showToast(`Successfully ${isEdit ? 'updated' : 'added'}!`);
-                } catch (err) {
-                    showToast('Error syncing with cloud (offline)', 'error');
-                }
-            };
-
-            const handleDelete = async (collectionName, id) => {
-                try {
-                    if (db) {
-                        await deleteDoc(doc(db, 'artifacts', safeAppId, 'public', 'data', collectionName, id.toString()));
-                    } else {
-                        if (collectionName === 'info') setInfoData(prev => prev.filter(p => p.id !== id));
-                        if (collectionName === 'events') setEventData(prev => prev.filter(p => p.id !== id));
-                        if (collectionName === 'store') setStoreData(prev => prev.filter(p => p.id !== id));
-                    }
-                    showToast('Item deleted successfully');
-                } catch (err) { showToast('Error deleting item (offline)', 'error'); }
-            };
-
-            // --- Views ---
-
-            if (!isLoggedIn) {
+            // --- RENDER VIEW 1: PUBLIC WEBSITE OVERVIEW ---
+            if (!isAuthenticated && !showLoginForm) {
                 return (
-                    <div className="min-h-screen bg-slate-50 flex flex-col relative overflow-hidden">
-                        {/* Subtle background decoration matching the brand */}
-                        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-[0.04] pointer-events-none">
-                            <div className="absolute -top-48 -left-48 w-96 h-96 rounded-full bg-brand-600 blur-3xl"></div>
-                            <div className="absolute bottom-1/4 -right-24 w-72 h-72 rounded-full bg-indigo-500 blur-3xl"></div>
-                        </div>
+                    <div className="flex-1 flex flex-col bg-slate-50 min-h-screen">
+                        <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <div className="flex justify-between h-16 items-center">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">MB</div>
+                                        <span className="text-lg font-bold text-slate-900 hidden sm:block">Website Overview</span>
+                                    </div>
+                                    <button onClick={() => setShowLoginForm(true)} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-sm transition-colors shadow-sm flex items-center gap-2">
+                                        <Icons.Lock className="w-4 h-4" /> Login as Admin
+                                    </button>
+                                </div>
+                            </div>
+                        </nav>
+                        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                             <div className="text-center mb-12">
+                                 <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4 tracking-tight">MBTECH System Overview</h1>
+                                 <p className="text-slate-600 max-w-2xl mx-auto text-lg">Public analytics dashboard. Log in as an administrator to manage the store, publish blog posts, configure events, and view user inquiries.</p>
+                             </div>
 
-                        <header className="relative z-10 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex justify-between items-center shadow-sm">
-                            <div className="flex items-center gap-3">
-                                <img src="logo.png" alt="Mbtech" className="h-10 object-contain" onError={(e) => { e.target.onerror = null; e.target.src = 'favicon.png'; }} />
-                                <h1 className="text-xl font-bold text-slate-800 hidden sm:block tracking-tight">Mbtech Portal</h1>
-                            </div>
-                            <button onClick={() => setLoginModalOpen(true)} className="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-colors font-medium shadow-sm active:scale-95">
-                                <Icons.Lock /> Admin Access
-                            </button>
-                        </header>
-                        
-                        <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto p-6 sm:p-10 mt-6 sm:mt-12">
-                            <div className="text-center mb-16">
-                                <h2 className="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight mb-4">
-                                    Ecosystem <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-500">Overview</span>
-                                </h2>
-                                <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                                    Real-time pulse of the Mbtech platform. Authenticate to manage content, events, and your store inventory seamlessly.
-                                </p>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 w-full max-w-5xl mx-auto">
-                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center text-center hover:shadow-md hover:border-brand-300 transition-all duration-300 group">
-                                    <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"><Icons.Info size={32} /></div>
-                                    <h3 className="text-5xl font-black text-slate-800 mb-2">{infoData.length}</h3>
-                                    <p className="text-slate-500 font-semibold uppercase tracking-wider text-xs">Published Updates</p>
+                             {loading ? (
+                                <div className="flex flex-col items-center justify-center h-48 text-slate-400 gap-4">
+                                    <div className="w-10 h-10 border-4 border-slate-200 border-t-brand-600 rounded-full animate-spin"></div>
+                                    <p className="font-medium">Fetching live statistics...</p>
                                 </div>
-                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center text-center hover:shadow-md hover:border-purple-300 transition-all duration-300 group">
-                                    <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"><Icons.Calendar size={32} /></div>
-                                    <h3 className="text-5xl font-black text-slate-800 mb-2">{eventData.length}</h3>
-                                    <p className="text-slate-500 font-semibold uppercase tracking-wider text-xs">Upcoming Events</p>
+                             ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    {dashboardStats.map((stat, i) => (
+                                        <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-4 hover:shadow-md transition-shadow">
+                                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
+                                                <stat.icon />
+                                            </div>
+                                            <div>
+                                                <p className="text-4xl font-extrabold text-slate-800 mb-1">{stat.val}</p>
+                                                <p className="text-slate-500 font-medium">{stat.label}</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 flex flex-col items-center text-center hover:shadow-md hover:border-emerald-300 transition-all duration-300 group">
-                                    <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"><Icons.Store size={32} /></div>
-                                    <h3 className="text-5xl font-black text-slate-800 mb-2">{storeData.length}</h3>
-                                    <p className="text-slate-500 font-semibold uppercase tracking-wider text-xs">Active Products</p>
-                                </div>
-                            </div>
+                             )}
                         </main>
-
-                        <Footer />
-
-                        <Modal isOpen={isLoginModalOpen} onClose={() => {
-                            if (!isAuthenticating) {
-                                setLoginModalOpen(false);
-                                setIsResettingPasscode(false);
-                            }
-                        }} title={isResettingPasscode ? "Passcode Recovery" : "Secure Admin Login"}>
-                            {isAuthenticating ? (
-                                <div className="flex flex-col items-center justify-center py-8 space-y-4">
-                                    <div className="w-16 h-16 rounded-full border-4 border-slate-100 border-t-brand-600 animate-spin mb-2"></div>
-                                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                                        <div className="bg-brand-600 h-full rounded-full transition-all duration-200 ease-out" style={{ width: `${authProgress}%` }}></div>
-                                    </div>
-                                    <p className="text-slate-500 font-medium animate-pulse text-sm">Authenticating & Validating Hash... {authProgress}%</p>
-                                </div>
-                            ) : isResettingPasscode ? (
-                                <div className="space-y-5">
-                                    <p className="text-sm text-slate-600 mb-4">A recovery link will be securely sent to the registered administrator email address.</p>
-                                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
-                                        <span className="text-brand-600 font-bold tracking-wide">emmanuel.amobi03@gmail.com</span>
-                                    </div>
-                                    <div className="pt-2 space-y-3">
-                                        <button onClick={handleResetPasscode} className="w-full py-3.5 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-bold shadow-md shadow-brand-500/20 transition-all text-lg">
-                                            Send Recovery Email
-                                        </button>
-                                        <button onClick={() => setIsResettingPasscode(false)} className="w-full py-2.5 text-slate-500 hover:text-slate-800 transition-colors text-sm font-medium">
-                                            Back to Login
-                                        </button>
-                                    </div>
-                                </div>
-                            ) : (
-                                <form onSubmit={handleLogin} className="space-y-5">
-                                    <div className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg flex items-center gap-2 mb-4">
-                                        <Icons.Lock size={14}/> Transport & Credentials Encrypted
-                                    </div>
-                                    <div>
-                                        <input name="passcode" type="password" required placeholder="Enter passcode..." className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all text-lg text-slate-900 shadow-sm" autoFocus />
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <button type="button" onClick={() => setIsResettingPasscode(true)} className="text-xs font-semibold text-brand-600 hover:text-brand-800 transition-colors">Forgot Passcode?</button>
-                                    </div>
-                                    <div className="pt-2">
-                                        <button type="submit" className="w-full py-3.5 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-bold shadow-md shadow-brand-500/20 transition-all text-lg flex items-center justify-center gap-2">
-                                            <Icons.Lock size={18}/> Unlock Dashboard
-                                        </button>
-                                    </div>
-                                </form>
-                            )}
-                        </Modal>
-
-                        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+                        <GlobalFooter />
                     </div>
                 );
             }
 
+            // --- RENDER VIEW 2: LOGIN PASSCODE SCREEN ---
+            if (!isAuthenticated && showLoginForm) {
+                return (
+                    <div className="flex-1 flex flex-col justify-between">
+                        <div className="flex-1 flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 relative">
+                                <div className="text-center mb-8">
+                                    <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-600">
+                                        <Icons.Lock className="w-8 h-8" />
+                                    </div>
+                                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Workspace Access</h1>
+                                    <p className="text-slate-500 text-sm">Enter the master passcode to access the MBTECH portal.</p>
+                                </div>
+                                <form onSubmit={handleLogin} className="space-y-6">
+                                    <div>
+                                        <input 
+                                            type="password" 
+                                            value={passcode} 
+                                            onChange={(e) => setPasscode(e.target.value)}
+                                            placeholder="••••••••" 
+                                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none text-center text-xl tracking-[0.5em] text-slate-800 transition-all"
+                                            autoFocus
+                                            required
+                                        />
+                                    </div>
+                                    {authError && <p className="text-red-500 text-sm text-center font-medium">{authError}</p>}
+                                    <button type="submit" disabled={loading} className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold shadow-sm transition-colors flex items-center justify-center gap-2">
+                                        {loading ? 'Verifying...' : 'Unlock Workspace'}
+                                    </button>
+                                </form>
+                                <div className="mt-8 text-center border-t border-slate-100 pt-6">
+                                    <button type="button" onClick={() => setShowLoginForm(false)} className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+                                        &larr; Return to Overview
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <GlobalFooter />
+                    </div>
+                );
+            }
+
+            // --- RENDER VIEW 3: ADMIN DASHBOARD (Authenticated) ---
             const navItems = [
                 { id: 'dashboard', label: 'Dashboard', icon: Icons.Dashboard },
-                { id: 'info', label: 'Info & Posts', icon: Icons.Info },
-                { id: 'events', label: 'Events Sync', icon: Icons.Calendar },
-                { id: 'store', label: 'Store Manager', icon: Icons.Store }
+                { id: 'store', label: 'Store', icon: Icons.Store },
+                { id: 'events', label: 'Events', icon: Icons.Event },
+                { id: 'info', label: 'Blog & Info', icon: Icons.Info },
+                { id: 'courses', label: 'Academy', icon: Icons.Course },
+                { id: 'connect', label: 'Users & Leads', icon: Icons.Users },
             ];
 
-            const renderInfo = () => (
-                <>
-                    <TableView 
-                        title="Information & Posts"
-                        data={infoData}
-                        columns={[
-                            { label: 'Title', key: 'title', render: (i) => (
-                                <div className="flex items-center gap-3">
-                                    {i.image ? <img src={i.image} className="w-8 h-8 rounded object-cover border border-slate-200 shadow-sm" alt="" /> : <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200"><Icons.Image size={14}/></div>}
-                                    <span className="font-medium text-slate-800 flex items-center gap-2">
-                                        {i.title} {i.featured && <Icons.Star title="Featured on Home" />}
-                                    </span>
-                                </div>
-                            ) },
-                            { label: 'Date', key: 'date' },
-                            { label: 'Status', key: 'status', render: (i) => (
-                                <span className={`px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${i.status === 'Published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
-                                    {i.status}
-                                </span>
-                            )}
-                        ]}
-                        onAdd={() => { setCurrentItem(null); setPreviewImage(null); setInfoModalOpen(true); }}
-                        onEdit={(item) => { setCurrentItem(item); setPreviewImage(item.image || null); setInfoModalOpen(true); }}
-                        onDelete={(id) => handleDelete('info', id)}
-                        emptyState={{ title: "No Info Posts", description: "Create updates, news, or blog posts.", actionText: "New Post" }}
-                    />
-                    <Modal isOpen={isInfoModalOpen} onClose={() => setInfoModalOpen(false)} title={currentItem ? "Edit Info" : "Create Info"}>
-                        <form onSubmit={(e) => handleSave(e, 'info', setInfoModalOpen, { date: new Date().toISOString().split('T')[0], author: 'Admin' })} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Cover Image</label>
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                    {previewImage ? (
-                                        <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group shadow-sm">
-                                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
-                                            <button type="button" onClick={() => setPreviewImage(null)} className="absolute top-1 right-1 bg-white/90 shadow-sm p-1 rounded-md hover:bg-red-50 text-red-600 transition-colors"><Icons.Close size={12} /></button>
-                                        </div>
-                                    ) : (
-                                        <div className="w-20 h-20 shrink-0 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center bg-slate-50 text-slate-400">
-                                            <Icons.Image />
-                                        </div>
-                                    )}
-                                    <div className="flex-1 w-full space-y-2">
-                                        <label className="cursor-pointer inline-block px-4 py-2 bg-white text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
-                                            {previewImage ? 'Upload New File' : 'Upload Image File'}
-                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                                        </label>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-slate-400 font-bold">OR</span>
-                                            <input 
-                                                type="url" 
-                                                placeholder="Paste image URL here..." 
-                                                className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-800 text-sm"
-                                                value={previewImage && previewImage.startsWith('http') ? previewImage : ''}
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    if (!val && previewImage?.startsWith('http')) setPreviewImage(null);
-                                                    else if (val) setPreviewImage(val);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Title</label>
-                                <input name="title" required defaultValue={currentItem?.title} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Status</label>
-                                <select name="status" defaultValue={currentItem?.status || 'Draft'} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm">
-                                    <option value="Published">Published</option>
-                                    <option value="Draft">Draft</option>
-                                </select>
-                            </div>
-                            <div className="pt-2">
-                                <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer font-medium p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
-                                    <input type="checkbox" name="featured" defaultChecked={currentItem?.featured} className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
-                                    Feature this post on Homepage
-                                </label>
-                            </div>
-                            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
-                                <button type="button" onClick={() => setInfoModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
-                                <button type="submit" className="px-5 py-2 text-white bg-brand-600 rounded-lg hover:bg-brand-700 font-medium shadow-sm">Save Post</button>
-                            </div>
-                        </form>
-                    </Modal>
-                </>
-            );
-
-            const renderEvents = () => (
-                <>
-                    <TableView 
-                        title="Event Management"
-                        data={eventData}
-                        columns={[
-                            { label: 'Event Name', key: 'name', render: (i) => (
-                                <div className="flex items-center gap-3">
-                                    {i.image ? <img src={i.image} className="w-8 h-8 rounded object-cover border border-slate-200 shadow-sm" alt="" /> : <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200"><Icons.Image size={14}/></div>}
-                                    <span className="font-medium text-slate-800 flex items-center gap-2">
-                                        {i.name} {i.featured && <Icons.Star title="Featured on Home" />}
-                                    </span>
-                                </div>
-                            ) },
-                            { label: 'Date', key: 'date' },
-                            { label: 'Location', key: 'location' },
-                            { label: 'Attendees', key: 'attendees', render: (i) => <span className="text-slate-500 font-medium">{i.attendees} registered</span> }
-                        ]}
-                        onAdd={() => { setCurrentItem(null); setPreviewImage(null); setEventModalOpen(true); }}
-                        onEdit={(item) => { setCurrentItem(item); setPreviewImage(item.image || null); setEventModalOpen(true); }}
-                        onDelete={(id) => handleDelete('events', id)}
-                        emptyState={{ title: "No Events", description: "Plan and organize upcoming meetups.", actionText: "Schedule Event" }}
-                    />
-                    <Modal isOpen={isEventModalOpen} onClose={() => setEventModalOpen(false)} title={currentItem ? "Edit Event" : "Schedule Event"}>
-                        <form onSubmit={(e) => handleSave(e, 'events', setEventModalOpen, { attendees: currentItem ? currentItem.attendees : 0, synced: true })} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Event Flyer / Image</label>
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                    {previewImage ? (
-                                        <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group shadow-sm">
-                                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
-                                            <button type="button" onClick={() => setPreviewImage(null)} className="absolute top-1 right-1 bg-white/90 shadow-sm p-1 rounded-md hover:bg-red-50 text-red-600 transition-colors"><Icons.Close size={12} /></button>
-                                        </div>
-                                    ) : (
-                                        <div className="w-20 h-20 shrink-0 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center bg-slate-50 text-slate-400">
-                                            <Icons.Image />
-                                        </div>
-                                    )}
-                                    <div className="flex-1 w-full space-y-2">
-                                        <label className="cursor-pointer inline-block px-4 py-2 bg-white text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
-                                            {previewImage ? 'Upload New File' : 'Upload Image File'}
-                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                                        </label>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-slate-400 font-bold">OR</span>
-                                            <input 
-                                                type="url" 
-                                                placeholder="Paste image URL here..." 
-                                                className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-800 text-sm"
-                                                value={previewImage && previewImage.startsWith('http') ? previewImage : ''}
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    if (!val && previewImage?.startsWith('http')) setPreviewImage(null);
-                                                    else if (val) setPreviewImage(val);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Event Name</label>
-                                <input name="name" required defaultValue={currentItem?.name} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Date</label>
-                                    <input name="date" type="date" required defaultValue={currentItem?.date} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Location</label>
-                                    <input name="location" required defaultValue={currentItem?.location} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm" />
-                                </div>
-                            </div>
-                            <div className="pt-2">
-                                <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer font-medium p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
-                                    <input type="checkbox" name="featured" defaultChecked={currentItem?.featured} className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
-                                    Feature this event on Homepage
-                                </label>
-                            </div>
-                            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
-                                <button type="button" onClick={() => setEventModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
-                                <button type="submit" className="px-5 py-2 text-white bg-brand-600 rounded-lg hover:bg-brand-700 font-medium shadow-sm">Save Event</button>
-                            </div>
-                        </form>
-                    </Modal>
-                </>
-            );
-
-            const renderStore = () => (
-                <>
-                    <TableView 
-                        title="Store Inventory"
-                        data={storeData}
-                        columns={[
-                            { label: 'Product Name', key: 'name', render: (i) => (
-                                <div className="flex items-center gap-3">
-                                    {i.image ? <img src={i.image} className="w-8 h-8 rounded object-cover border border-slate-200 shadow-sm" alt="" /> : <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400 border border-slate-200"><Icons.Image size={14}/></div>}
-                                    <span className="font-medium text-slate-800 flex items-center gap-2">
-                                        {i.name} {i.featured && <Icons.Star title="Featured Product" />}
-                                    </span>
-                                </div>
-                            ) },
-                            { label: 'Category', key: 'category' },
-                            { label: 'Price (₦)', key: 'price', render: (i) => `₦${Number(i.price).toLocaleString()}` },
-                            { label: 'Stock', key: 'stock', render: (i) => (
-                                <span className={`px-2.5 py-1 rounded-full text-xs font-bold tracking-wide ${i.stock > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-600 border border-red-200'}`}>
-                                    {i.stock > 0 ? `${i.stock} in stock` : 'Out of Stock'}
-                                </span>
-                            )}
-                        ]}
-                        onAdd={() => { setCurrentItem(null); setPreviewImage(null); setStoreModalOpen(true); }}
-                        onEdit={(item) => { setCurrentItem(item); setPreviewImage(item.image || null); setStoreModalOpen(true); }}
-                        onDelete={(id) => handleDelete('store', id)}
-                        emptyState={{ title: "Store is Empty", description: "Add products to start selling to users.", actionText: "Add Product" }}
-                    />
-                    <Modal isOpen={isStoreModalOpen} onClose={() => setStoreModalOpen(false)} title={currentItem ? "Edit Product" : "Add Product"}>
-                        <form onSubmit={(e) => handleSave(e, 'store', setStoreModalOpen)} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Product Image</label>
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                    {previewImage ? (
-                                        <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group shadow-sm">
-                                            <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
-                                            <button type="button" onClick={() => setPreviewImage(null)} className="absolute top-1 right-1 bg-white/90 shadow-sm p-1 rounded-md hover:bg-red-50 text-red-600 transition-colors"><Icons.Close size={12} /></button>
-                                        </div>
-                                    ) : (
-                                        <div className="w-20 h-20 shrink-0 rounded-lg border-2 border-dashed border-slate-300 flex items-center justify-center bg-slate-50 text-slate-400">
-                                            <Icons.Image />
-                                        </div>
-                                    )}
-                                    <div className="flex-1 w-full space-y-2">
-                                        <label className="cursor-pointer inline-block px-4 py-2 bg-white text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-50 transition-colors border border-slate-200 shadow-sm">
-                                            {previewImage ? 'Upload New File' : 'Upload Image File'}
-                                            <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-                                        </label>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs text-slate-400 font-bold">OR</span>
-                                            <input 
-                                                type="url" 
-                                                placeholder="Paste image URL here..." 
-                                                className="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-800 text-sm"
-                                                value={previewImage && previewImage.startsWith('http') ? previewImage : ''}
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    if (!val && previewImage?.startsWith('http')) setPreviewImage(null);
-                                                    else if (val) setPreviewImage(val);
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Product Name</label>
-                                <input name="name" required defaultValue={currentItem?.name} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Price (₦)</label>
-                                    <input name="price" type="number" required defaultValue={currentItem?.price} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Stock Amount</label>
-                                    <input name="stock" type="number" required defaultValue={currentItem?.stock} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm" />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Category</label>
-                                <select name="category" defaultValue={currentItem?.category || 'Hardware'} className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none text-slate-900 shadow-sm">
-                                    <option value="Hardware">Hardware</option>
-                                    <option value="Software">Software</option>
-                                    <option value="Merch">Merch</option>
-                                    <option value="Course">Course</option>
-                                </select>
-                            </div>
-                            <div className="pt-2">
-                                <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer font-medium p-3 border border-slate-200 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors">
-                                    <input type="checkbox" name="featured" defaultChecked={currentItem?.featured} className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
-                                    Feature product in Store & Homepage
-                                </label>
-                            </div>
-                            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
-                                <button type="button" onClick={() => setStoreModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
-                                <button type="submit" className="px-5 py-2 text-white bg-brand-600 rounded-lg hover:bg-brand-700 font-medium shadow-sm">Save Product</button>
-                            </div>
-                        </form>
-                    </Modal>
-                </>
-            );
-
             return (
-                <div className="min-h-screen flex bg-slate-50">
-                    {/* Sidebar */}
-                    <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 transition-transform transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:w-64 flex flex-col`}>
-                        <div className="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950 gap-3">
-                            <img src="favicon.png" alt="Mbtech Admin" className="h-6 object-contain" onError={(e) => { e.target.style.display = 'none'; }} />
-                            <span className="font-bold text-white tracking-wide">Admin Portal</span>
-                        </div>
-                        <nav className="flex-1 px-4 py-6 space-y-2">
-                            {navItems.map(item => {
-                                const Icon = item.icon;
-                                const isActive = activeTab === item.id;
-                                return (
-                                    <button key={item.id} onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }} className={`w-full flex items-center px-4 py-3 rounded-xl transition-all font-medium ${isActive ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                                        <span className={`mr-3 ${isActive ? 'text-white' : 'text-slate-500'}`}><Icon size={20} /></span>
-                                        {item.label}
+                <div className="flex-1 flex flex-col">
+                    {/* Top Navigation */}
+                    <nav className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="flex justify-between h-16">
+                                <div className="flex overflow-hidden">
+                                    <div className="flex-shrink-0 flex items-center gap-2 mr-8">
+                                        <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">MB</div>
+                                        <span className="text-lg font-bold text-slate-900 hidden sm:block">Workspace</span>
+                                    </div>
+                                    
+                                    {/* Desktop Tabs */}
+                                    <div className="hidden lg:flex space-x-6">
+                                        {navItems.map(item => (
+                                            <button 
+                                                key={item.id} 
+                                                onClick={() => setActiveTab(item.id)}
+                                                className={`${activeTab === item.id ? 'border-brand-600 text-brand-600' : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'} whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm flex items-center transition-colors`}
+                                            >
+                                                <item.icon />
+                                                <span className="ml-2">{item.label}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <button onClick={() => setSettingsModalOpen(true)} className="text-slate-400 hover:text-slate-700 p-2 rounded-full hover:bg-slate-100 transition-colors" title="Settings">
+                                        <Icons.Settings />
                                     </button>
-                                );
-                            })}
-                        </nav>
-                        <div className="p-4 border-t border-slate-800 space-y-2">
-                            <button onClick={() => setSettingsModalOpen(true)} className="w-full flex items-center px-4 py-3 rounded-xl hover:bg-slate-800 hover:text-white transition-all font-medium text-slate-400">
-                                <span className="mr-3 text-slate-500"><Icons.Settings /></span> Change Passcode
-                            </button>
-                            <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all font-medium">
-                                <span className="mr-3"><Icons.Logout /></span> Sign Out
-                            </button>
+                                    <button onClick={handleLogout} className="text-slate-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors" title="Logout">
+                                        <Icons.LogOut />
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </aside>
+                        {/* Mobile Tabs */}
+                        <div className="lg:hidden border-t border-slate-100 bg-slate-50 px-2 py-2 flex overflow-x-auto hide-scrollbar space-x-2 snap-x">
+                             {navItems.map(item => (
+                                <button 
+                                    key={item.id} 
+                                    onClick={() => setActiveTab(item.id)}
+                                    className={`snap-start ${activeTab === item.id ? 'bg-brand-100 text-brand-700' : 'text-slate-600 hover:bg-slate-200'} whitespace-nowrap px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition-colors`}
+                                >
+                                    <item.icon />
+                                    <span className="ml-1.5">{item.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </nav>
 
                     {/* Main Content Area */}
-                    <div className="flex-1 flex flex-col h-screen overflow-hidden">
-                        <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between z-10 shadow-sm">
-                            <div className="flex items-center">
-                                <button onClick={() => setMobileMenuOpen(true)} className="md:hidden p-2 -ml-2 mr-2 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors">
-                                    <Icons.Menu />
-                                </button>
-                                <h2 className="text-xl font-bold text-slate-800 hidden sm:block">
-                                    {navItems.find(i => i.id === activeTab)?.label}
-                                </h2>
+                    <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        {loading ? (
+                            <div className="flex flex-col items-center justify-center h-64 text-slate-400 gap-4">
+                                <div className="w-10 h-10 border-4 border-slate-200 border-t-brand-600 rounded-full animate-spin"></div>
+                                <p className="font-medium">Syncing with Firebase...</p>
                             </div>
-                            <div className="flex items-center gap-4">
-                                <span className="flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full shadow-sm">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                    Secure Session
-                                </span>
-                            </div>
-                        </header>
-
-                        <main className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar relative flex flex-col">
-                            <div className="max-w-6xl mx-auto w-full flex-1">
+                        ) : (
+                            <>
+                                {/* DASHBOARD */}
                                 {activeTab === 'dashboard' && (
                                     <div className="space-y-6">
-                                        <h2 className="text-2xl font-bold text-slate-900">Welcome Back</h2>
-                                        <p className="text-slate-500 text-lg">Manage and oversee the Mbtech platform easily. Select a tab from the menu to start editing.</p>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                                            <div onClick={()=>setActiveTab('info')} className="bg-white border border-slate-200 shadow-sm p-6 rounded-2xl flex items-center gap-4 hover:border-brand-300 hover:shadow-md transition-all cursor-pointer group">
-                                                <div className="w-14 h-14 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"><Icons.Info size={28}/></div>
-                                                <div><p className="text-2xl font-black text-slate-800">{infoData.length}</p><p className="text-sm text-slate-500 font-bold uppercase tracking-wide">Info Posts</p></div>
-                                            </div>
-                                            <div onClick={()=>setActiveTab('events')} className="bg-white border border-slate-200 shadow-sm p-6 rounded-2xl flex items-center gap-4 hover:border-purple-300 hover:shadow-md transition-all cursor-pointer group">
-                                                <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"><Icons.Calendar size={28}/></div>
-                                                <div><p className="text-2xl font-black text-slate-800">{eventData.length}</p><p className="text-sm text-slate-500 font-bold uppercase tracking-wide">Events</p></div>
-                                            </div>
-                                            <div onClick={()=>setActiveTab('store')} className="bg-white border border-slate-200 shadow-sm p-6 rounded-2xl flex items-center gap-4 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group">
-                                                <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform"><Icons.Store size={28}/></div>
-                                                <div><p className="text-2xl font-black text-slate-800">{storeData.length}</p><p className="text-sm text-slate-500 font-bold uppercase tracking-wide">Products</p></div>
+                                        <h2 className="text-2xl font-bold text-slate-800">System Dashboard</h2>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                            {dashboardStats.map((stat, i) => (
+                                                <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5 hover:shadow-md transition-shadow">
+                                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
+                                                        <stat.icon />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-slate-500 text-sm font-semibold">{stat.label}</p>
+                                                        <p className="text-3xl font-bold text-slate-800 mt-1">{stat.val}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* STORE TAB */}
+                                {activeTab === 'store' && (
+                                    <div>
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h2 className="text-2xl font-bold text-slate-800">Store Inventory</h2>
+                                            <button onClick={() => openModal(null, setStoreModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                                <Icons.Plus className="mr-2" /> Add Item
+                                            </button>
+                                        </div>
+                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left border-collapse min-w-[800px]">
+                                                    <thead>
+                                                        <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200 whitespace-nowrap">
+                                                            <th className="p-4 font-semibold">Product</th>
+                                                            <th className="p-4 font-semibold">Category</th>
+                                                            <th className="p-4 font-semibold">Type</th>
+                                                            <th className="p-4 font-semibold">Price (₦)</th>
+                                                            <th className="p-4 font-semibold">Stock</th>
+                                                            <th className="p-4 font-semibold text-right">Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-slate-100">
+                                                        {data.store.map(item => (
+                                                            <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                                                                <td className="p-4 flex items-center gap-4 min-w-[250px]">
+                                                                    <img src={item.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200 flex-shrink-0" onError={(e) => e.target.src='https://placehold.co/100?text=IMG'}/>
+                                                                    <span className="font-semibold text-slate-800 line-clamp-2">{item.name}</span>
+                                                                </td>
+                                                                <td className="p-4 text-sm text-slate-600 whitespace-nowrap">{item.category}</td>
+                                                                <td className="p-4 whitespace-nowrap">
+                                                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${item.type === 'service' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}`}>
+                                                                        {item.type === 'service' ? 'Service' : 'Good'}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="p-4 text-sm font-bold text-slate-800 whitespace-nowrap">{parseFloat(item.price).toLocaleString()}</td>
+                                                                <td className="p-4 whitespace-nowrap">
+                                                                    <span className={`text-sm font-semibold ${item.stock <= 5 ? 'text-red-600' : 'text-emerald-600'}`}>{item.stock}</span>
+                                                                </td>
+                                                                <td className="p-4 text-right whitespace-nowrap">
+                                                                    <div className="flex justify-end gap-2">
+                                                                        <button onClick={() => openModal(item, setStoreModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-white border border-slate-200 hover:border-brand-200 rounded-lg shadow-sm"><Icons.Edit /></button>
+                                                                        <button onClick={() => handleDelete('store', item.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 rounded-lg shadow-sm"><Icons.Delete /></button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                                {data.store.length === 0 && <div className="p-12 text-center text-slate-500">Store is empty. Add your first product.</div>}
                                             </div>
                                         </div>
                                     </div>
                                 )}
-                                {activeTab === 'info' && renderInfo()}
-                                {activeTab === 'events' && renderEvents()}
-                                {activeTab === 'store' && renderStore()}
+
+                                {/* EVENTS TAB */}
+                                {activeTab === 'events' && (
+                                    <div>
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h2 className="text-2xl font-bold text-slate-800">Events Management</h2>
+                                            <button onClick={() => openModal(null, setEventModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                                <Icons.Plus className="mr-2" /> Create Event
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {data.events.map(event => (
+                                                <div key={event.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group">
+                                                    <div className="h-48 bg-slate-100 relative overflow-hidden">
+                                                        <img src={event.image || 'https://placehold.co/600x400?text=Event'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                        <div className={`absolute top-3 right-3 px-3 py-1 rounded-md text-xs font-bold shadow-sm ${event.status === 'Active' ? 'bg-brand-600 text-white' : event.status === 'Cancelled' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+                                                            {event.status}
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-5 flex-1 flex flex-col">
+                                                        <h3 className="font-bold text-lg text-slate-800 leading-tight mb-1">{event.title}</h3>
+                                                        <p className="text-sm text-brand-600 font-medium mb-3">{event.date} • {event.time}</p>
+                                                        <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{event.description}</p>
+                                                        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                                                            <span className="text-xs font-medium text-slate-500 truncate max-w-[150px]" title={event.location}>📍 {event.location}</span>
+                                                            <div className="flex gap-2 flex-shrink-0">
+                                                                <button onClick={() => openModal(event, setEventModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
+                                                                <button onClick={() => handleDelete('events', event.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {data.events.length === 0 && <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">No events found. Create one above.</div>}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* INFO/BLOG TAB */}
+                                {activeTab === 'info' && (
+                                    <div>
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h2 className="text-2xl font-bold text-slate-800">Blog & News</h2>
+                                            <button onClick={() => openModal(null, setInfoModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                                <Icons.Plus className="mr-2" /> Write Post
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            {data.info.map(post => (
+                                                <div key={post.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col sm:flex-row gap-5 hover:shadow-md transition-all">
+                                                    <div className="w-full sm:w-32 h-40 sm:h-32 rounded-xl bg-slate-100 flex-shrink-0 overflow-hidden relative">
+                                                        <img src={post.image || 'https://placehold.co/400?text=News'} className="w-full h-full object-cover" alt="" />
+                                                        {!post.published && <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center text-white text-xs font-bold tracking-wider">DRAFT</div>}
+                                                    </div>
+                                                    <div className="flex-1 flex flex-col justify-between">
+                                                        <div>
+                                                            <div className="flex gap-2 mb-2">
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-2.5 py-1 rounded-md">{post.category}</span>
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">{post.date}</span>
+                                                            </div>
+                                                            <h3 className="font-bold text-slate-800 text-lg leading-tight mb-2">{post.title}</h3>
+                                                            <p className="text-sm text-slate-600 line-clamp-2">{post.excerpt}</p>
+                                                        </div>
+                                                        <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                                                            <button onClick={() => openModal(post, setInfoModalOpen)} className="text-xs font-bold text-slate-600 hover:text-brand-700 px-3 py-1.5 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors border border-slate-200">Edit Post</button>
+                                                            <button onClick={() => handleDelete('info', post.id)} className="text-xs font-bold text-slate-600 hover:text-red-700 px-3 py-1.5 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors border border-slate-200">Delete</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {data.info.length === 0 && <div className="col-span-full py-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">No articles published yet.</div>}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* COURSES TAB */}
+                                {activeTab === 'courses' && (
+                                    <div>
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h2 className="text-2xl font-bold text-slate-800">Academy Programs</h2>
+                                            <button onClick={() => openModal(null, setCourseModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
+                                                <Icons.Plus className="mr-2" /> Add Course
+                                            </button>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {data.courses.map(course => (
+                                                <div key={course.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group">
+                                                    <div className="h-48 bg-slate-100 relative overflow-hidden">
+                                                        <img src={course.image || 'https://placehold.co/600x400?text=No+Image'} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                                        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-md text-xs font-bold text-slate-800 shadow-sm">
+                                                            ₦{parseFloat(course.price).toLocaleString()}
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-5 flex-1 flex flex-col">
+                                                        <h3 className="font-bold text-lg text-slate-800 leading-tight mb-2">{course.title}</h3>
+                                                        <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{course.description}</p>
+                                                        <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${course.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>{course.status}</span>
+                                                            <div className="flex gap-2">
+                                                                <button onClick={() => openModal(course, setCourseModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
+                                                                <button onClick={() => handleDelete('courses', course.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {data.courses.length === 0 && <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">No courses found. Create one above.</div>}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* CONNECT (USERS & LEADS) TAB */}
+                                {activeTab === 'connect' && (
+                                    <div>
+                                        <div className="flex justify-between items-center mb-6">
+                                            <h2 className="text-2xl font-bold text-slate-800">User Inquiries</h2>
+                                        </div>
+                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left border-collapse min-w-[800px]">
+                                                    <thead>
+                                                        <tr className="bg-slate-50 text-slate-500 text-sm border-b border-slate-200 whitespace-nowrap">
+                                                            <th className="p-4 font-semibold">Date</th>
+                                                            <th className="p-4 font-semibold">Contact Info</th>
+                                                            <th className="p-4 font-semibold">Interest/Service</th>
+                                                            <th className="p-4 font-semibold">Message</th>
+                                                            <th className="p-4 font-semibold text-right">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-slate-100">
+                                                        {data.connect.map(lead => (
+                                                            <tr key={lead.id} className="hover:bg-slate-50 transition-colors">
+                                                                <td className="p-4 text-sm text-slate-500 whitespace-nowrap">{new Date(lead.createdAt).toLocaleDateString()}</td>
+                                                                <td className="p-4 min-w-[200px]">
+                                                                    <p className="font-semibold text-slate-800">{lead.name}</p>
+                                                                    <p className="text-sm text-brand-600"><a href={`mailto:${lead.email}`}>{lead.email}</a></p>
+                                                                    <p className="text-xs text-slate-500">{lead.phone}</p>
+                                                                </td>
+                                                                <td className="p-4 text-sm font-medium text-slate-700 whitespace-nowrap">{lead.service}</td>
+                                                                <td className="p-4 text-sm text-slate-600 max-w-xs truncate" title={lead.message}>{lead.message || '-'}</td>
+                                                                <td className="p-4 text-right whitespace-nowrap">
+                                                                    <button onClick={() => handleDelete('connect', lead.id)} className="p-2 text-slate-400 hover:text-red-600 bg-white border border-slate-200 hover:border-red-200 rounded-lg shadow-sm"><Icons.Delete /></button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                                {data.connect.length === 0 && <div className="p-12 text-center text-slate-500">No leads captured yet.</div>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </main>
+
+                    {/* Global Footer (Dashboard View) */}
+                    <GlobalFooter />
+
+                    {/* MODALS */}
+                    
+                    {/* Store Modal */}
+                    <Modal isOpen={isStoreModalOpen} onClose={() => setStoreModalOpen(false)} title={currentItem ? "Edit Product/Service" : "Add to Store"}>
+                        <form onSubmit={(e) => handleSave(e, 'store', setStoreModalOpen)} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Item Name</label>
+                                <input name="name" required defaultValue={currentItem?.name} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
                             </div>
-                            
-                            <Footer />
-                        </main>
-                    </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Category</label>
+                                    <select name="category" defaultValue={currentItem?.category || 'Solar & Energy'} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all appearance-none cursor-pointer shadow-sm">
+                                        <option value="Solar & Energy">Solar & Energy</option>
+                                        <option value="Gadgets">Gadgets</option>
+                                        <option value="Electricals">Electricals</option>
+                                        <option value="Software">Software</option>
+                                        <option value="Services">Services</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Product Type</label>
+                                    <select name="type" defaultValue={currentItem?.type || 'good'} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all appearance-none cursor-pointer shadow-sm">
+                                        <option value="good">Physical Good</option>
+                                        <option value="service">Service / Installation</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Price (₦)</label>
+                                    <input name="price" type="number" required defaultValue={currentItem?.price} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Old Price (₦)</label>
+                                    <input name="oldPrice" type="number" defaultValue={currentItem?.oldPrice} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Stock</label>
+                                    <input name="stock" type="number" required defaultValue={currentItem?.stock || 10} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Image URL</label>
+                                <input name="image" type="url" required defaultValue={currentItem?.image} placeholder="https://..." className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                            </div>
+                            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
+                                <button type="button" onClick={() => setStoreModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                                <button type="submit" className="px-5 py-2.5 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-medium shadow-sm transition-all">Save Item</button>
+                            </div>
+                        </form>
+                    </Modal>
+
+                    {/* Events Modal */}
+                    <Modal isOpen={isEventModalOpen} onClose={() => setEventModalOpen(false)} title={currentItem ? "Edit Event" : "Create Event"}>
+                        <form onSubmit={(e) => handleSave(e, 'events', setEventModalOpen)} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Event Title</label>
+                                <input name="title" required defaultValue={currentItem?.title} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Date</label>
+                                    <input name="date" type="date" required defaultValue={currentItem?.date} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Time</label>
+                                    <input name="time" type="time" required defaultValue={currentItem?.time} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Location / Meeting Link</label>
+                                <input name="location" required defaultValue={currentItem?.location} placeholder="e.g., Google Meet Link or Office Address" className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Image URL</label>
+                                <input name="image" type="url" required defaultValue={currentItem?.image} placeholder="https://..." className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                                <textarea name="description" required rows="3" defaultValue={currentItem?.description} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all resize-none shadow-sm"></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Status</label>
+                                <select name="status" defaultValue={currentItem?.status || 'Active'} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all appearance-none cursor-pointer shadow-sm">
+                                    <option value="Active">Active</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
+                                <button type="button" onClick={() => setEventModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                                <button type="submit" className="px-5 py-2.5 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-medium shadow-sm transition-all">Save Event</button>
+                            </div>
+                        </form>
+                    </Modal>
+
+                    {/* Info Modal */}
+                    <Modal isOpen={isInfoModalOpen} onClose={() => setInfoModalOpen(false)} title={currentItem ? "Edit Blog Post" : "Write Blog Post"} maxWidth="max-w-2xl">
+                        <form onSubmit={(e) => handleSave(e, 'info', setInfoModalOpen, { date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), author: 'MBTECH Admin', published: e.target.status.value === 'Published' })} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Post Title</label>
+                                    <input name="title" required defaultValue={currentItem?.title} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Category</label>
+                                    <input name="category" required defaultValue={currentItem?.category || 'Updates'} placeholder="e.g. Tech News, Academy" className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Cover Image URL</label>
+                                <input name="image" type="url" required defaultValue={currentItem?.image} placeholder="https://..." className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Short Excerpt (For Homepage Preview)</label>
+                                <textarea name="excerpt" required rows="2" defaultValue={currentItem?.excerpt} placeholder="A quick summary..." className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all resize-none shadow-sm"></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Full Blog Content</label>
+                                <textarea name="content" required rows="10" defaultValue={currentItem?.content} placeholder="Write the full article details here..." className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all resize-y leading-relaxed shadow-sm"></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Visibility Status</label>
+                                <select name="status" defaultValue={currentItem?.published ? 'Published' : 'Draft'} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all appearance-none cursor-pointer shadow-sm">
+                                    <option value="Published">Published (Visible to public)</option>
+                                    <option value="Draft">Draft (Hidden)</option>
+                                </select>
+                            </div>
+                            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
+                                <button type="button" onClick={() => setInfoModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                                <button type="submit" className="px-5 py-2.5 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-medium shadow-sm transition-all">Save Post</button>
+                            </div>
+                        </form>
+                    </Modal>
+
+                    {/* Course Modal */}
+                    <Modal isOpen={isCourseModalOpen} onClose={() => setCourseModalOpen(false)} title={currentItem ? "Edit Course" : "Create Course"}>
+                        <form onSubmit={(e) => handleSave(e, 'courses', setCourseModalOpen)} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Course Title</label>
+                                <input name="title" required defaultValue={currentItem?.title} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                                <textarea name="description" required rows="3" defaultValue={currentItem?.description} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all resize-none shadow-sm"></textarea>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Price (₦)</label>
+                                    <input name="price" type="number" required defaultValue={currentItem?.price} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Duration</label>
+                                    <input name="duration" required defaultValue={currentItem?.duration} placeholder="e.g. 8 Weeks" className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Image URL</label>
+                                <input name="image" type="url" required defaultValue={currentItem?.image} placeholder="https://..." className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Status</label>
+                                <select name="status" defaultValue={currentItem?.status || 'Active'} className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all appearance-none cursor-pointer shadow-sm">
+                                    <option value="Active">Active</option>
+                                    <option value="Upcoming">Upcoming</option>
+                                </select>
+                            </div>
+                            <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
+                                <button type="button" onClick={() => setCourseModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
+                                <button type="submit" className="px-5 py-2.5 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-medium shadow-sm transition-all">Save Course</button>
+                            </div>
+                        </form>
+                    </Modal>
 
                     {/* Settings Modal */}
-                    <Modal isOpen={isSettingsModalOpen} onClose={() => setSettingsModalOpen(false)} title="Change Master Passcode">
+                    <Modal isOpen={isSettingsModalOpen} onClose={() => setSettingsModalOpen(false)} title="Security Settings">
                         <form onSubmit={handleChangePasscode} className="space-y-4">
-                            <p className="text-sm text-slate-500 mb-4">Update the master passcode used to securely access this dashboard. Changes securely sync to Firebase.</p>
+                            <p className="text-sm text-slate-500 mb-4">Change the master passcode used to access this admin portal. Keep it secure.</p>
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-1">New Passcode</label>
-                                <input name="newPasscode" required type="text" placeholder="e.g. secureAdmin2026" className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all shadow-sm" />
+                                <input name="newPasscode" type="password" required minLength="6" placeholder="Enter new passcode" className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none text-slate-900 transition-all tracking-widest shadow-sm" />
                             </div>
                             <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
                                 <button type="button" onClick={() => setSettingsModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
@@ -955,11 +850,8 @@
                         </form>
                     </Modal>
 
-                    {/* Global Toasts & Overlays */}
+                    {/* Toasts */}
                     {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-                    {mobileMenuOpen && (
-                        <div className="fixed inset-0 bg-slate-900/50 z-30 md:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}></div>
-                    )}
                 </div>
             );
         };
