@@ -97,10 +97,10 @@
         // --- COMPONENTS ---
         const Toast = ({ message, type, onClose }) => {
             React.useEffect(() => { const timer = setTimeout(onClose, 3000); return () => clearTimeout(timer); }, [onClose]);
-            const bg = type === 'success' ? 'bg-emerald-500' : type === 'error' ? 'bg-red-500' : 'bg-slate-800';
+            const bgClass = type === 'success' ? 'bg-emerald-500' : type === 'error' ? 'bg-red-500' : 'bg-slate-800';
             return (
                 <div className="fixed bottom-6 right-6 z-50 animate-[slideUp_0.3s_ease-out]">
-                    <div className={`${bg} text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 font-medium`}>
+                    <div className={bgClass + " text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 font-medium"}>
                         {type === 'success' && <Icons.Check />}
                         {type === 'error' && <Icons.Close />}
                         {message}
@@ -113,7 +113,7 @@
             if (!isOpen) return null;
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay bg-slate-900/60 backdrop-blur-sm">
-                    <div className={`bg-white rounded-2xl shadow-xl w-full ${maxWidth} max-h-[90vh] flex flex-col modal-content`}>
+                    <div className={"bg-white rounded-2xl shadow-xl w-full max-h-[90vh] flex flex-col modal-content " + maxWidth}>
                         <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
                             <h3 className="text-lg font-bold text-slate-800">{title}</h3>
                             <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-200">
@@ -178,7 +178,10 @@
                 e.preventDefault();
                 setIsAuthenticating(true);
                 const inputHash = await sha256(passcode);
-                const storedHash = localStorage.getItem('mbtech_admin_hash') || 'e7a53b471241f92e44534f37803eec08db1b2be482b6c7a7dc6c8605c312781f'; // Default: Admin@123
+                
+                // Set the default passcode to 'emmy-admin%%' securely via hashing
+                const expectedDefaultHash = await sha256('emmy-admin%%');
+                const storedHash = localStorage.getItem('mbtech_admin_hash') || expectedDefaultHash;
                 
                 if (inputHash === storedHash) {
                     setIsAuthenticated(true);
@@ -212,12 +215,12 @@
 
                 try {
                     if (currentItem && currentItem.id) {
-                        await db.ref(`${collection}/${currentItem.id}`).update(payload);
-                        showToast(`${collection.charAt(0).toUpperCase() + collection.slice(1)} item updated!`);
+                        await db.ref(collection + '/' + currentItem.id).update(payload);
+                        showToast(collection.charAt(0).toUpperCase() + collection.slice(1) + ' item updated!');
                     } else {
                         const id = Date.now().toString();
-                        await db.ref(`${collection}/${id}`).set({ ...payload, id, createdAt: new Date().toISOString() });
-                        showToast(`New ${collection} item created!`);
+                        await db.ref(collection + '/' + id).set({ ...payload, id, createdAt: new Date().toISOString() });
+                        showToast('New ' + collection + ' item created!');
                     }
                     setModalOpen(false);
                     setCurrentItem(null);
@@ -227,9 +230,9 @@
             };
 
             const handleDelete = async (collection, id) => {
-                if (window.confirm(`Are you sure you want to delete this item from ${collection}?`)) {
+                if (window.confirm('Are you sure you want to delete this item from ' + collection + '?')) {
                     try {
-                        await db.ref(`${collection}/${id}`).remove();
+                        await db.ref(collection + '/' + id).remove();
                         showToast('Item deleted successfully.');
                     } catch (error) {
                         showToast(error.message, 'error');
@@ -268,7 +271,7 @@
                 if (!isSyncing) return null;
                 return (
                     <div className="w-full bg-slate-100 h-1 overflow-hidden z-40 relative">
-                        <div className="bg-brand-500 h-full transition-all duration-300 ease-out" style={{ width: `${syncProgress}%` }}></div>
+                        <div className="bg-brand-500 h-full transition-all duration-300 ease-out" style={{ width: syncProgress + '%' }}></div>
                     </div>
                 );
             };
@@ -294,7 +297,7 @@
                                         <span className="text-lg font-bold text-slate-900 hidden sm:block">Website Overview</span>
                                     </div>
                                     <button onClick={() => setShowLoginForm(true)} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-medium text-sm transition-colors shadow-sm flex items-center gap-2">
-                                        <Icons.Lock className="w-4 h-4" /> Login as Admin
+                                        <Icons.Lock /> <span>Login as Admin</span>
                                     </button>
                                 </div>
                             </div>
@@ -309,12 +312,12 @@
                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                  {dashboardStats.map((stat, i) => (
                                      <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-4 hover:shadow-md transition-shadow">
-                                         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
-                                             <stat.icon className="w-8 h-8" />
+                                         <div className={"w-16 h-16 rounded-2xl flex items-center justify-center " + stat.bg + " " + stat.color}>
+                                             <stat.icon />
                                          </div>
                                          <div>
                                              <p className="text-4xl font-extrabold text-slate-800 mb-1">
-                                                 {isSyncing && stat.val === 0 ? <span className="text-2xl text-slate-400 animate-pulse">...</span> : stat.val}
+                                                 {isSyncing && stat.val === 0 ? <span className="text-2xl text-slate-400 animate-pulse">...</span> : <span>{stat.val}</span>}
                                              </p>
                                              <p className="text-slate-500 font-medium">{stat.label}</p>
                                          </div>
@@ -335,7 +338,7 @@
                             <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 relative">
                                 <div className="text-center mb-8">
                                     <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-brand-600">
-                                        <Icons.Lock className="w-8 h-8" />
+                                        <Icons.Lock />
                                     </div>
                                     <h1 className="text-2xl font-bold text-slate-900 mb-2">Workspace Access</h1>
                                     <p className="text-slate-500 text-sm">Enter the master passcode to access the MBTECH portal.</p>
@@ -354,7 +357,7 @@
                                     </div>
                                     {authError && <p className="text-red-500 text-sm text-center font-medium">{authError}</p>}
                                     <button type="submit" disabled={isAuthenticating} className="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-semibold shadow-sm transition-colors flex items-center justify-center gap-2">
-                                        {isAuthenticating ? 'Verifying...' : 'Unlock Workspace'}
+                                        {isAuthenticating ? <span>Verifying...</span> : <span>Unlock Workspace</span>}
                                     </button>
                                 </form>
                                 <div className="mt-8 text-center border-t border-slate-100 pt-6">
@@ -397,7 +400,7 @@
                                             <button 
                                                 key={item.id} 
                                                 onClick={() => setActiveTab(item.id)}
-                                                className={`${activeTab === item.id ? 'border-brand-600 text-brand-600' : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'} whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm flex items-center transition-colors`}
+                                                className={"whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-sm flex items-center transition-colors " + (activeTab === item.id ? 'border-brand-600 text-brand-600' : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300')}
                                             >
                                                 <item.icon />
                                                 <span className="ml-2">{item.label}</span>
@@ -421,7 +424,7 @@
                                 <button 
                                     key={item.id} 
                                     onClick={() => setActiveTab(item.id)}
-                                    className={`snap-start ${activeTab === item.id ? 'bg-brand-100 text-brand-700' : 'text-slate-600 hover:bg-slate-200'} whitespace-nowrap px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition-colors`}
+                                    className={"snap-start whitespace-nowrap px-3 py-2 rounded-lg text-sm font-semibold flex items-center transition-colors " + (activeTab === item.id ? 'bg-brand-100 text-brand-700' : 'text-slate-600 hover:bg-slate-200')}
                                 >
                                     <item.icon />
                                     <span className="ml-1.5">{item.label}</span>
@@ -450,13 +453,13 @@
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     {dashboardStats.map((stat, i) => (
                                         <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${stat.bg} ${stat.color}`}>
+                                            <div className={"w-14 h-14 rounded-xl flex items-center justify-center " + stat.bg + " " + stat.color}>
                                                 <stat.icon />
                                             </div>
                                             <div>
                                                 <p className="text-slate-500 text-sm font-semibold">{stat.label}</p>
                                                 <p className="text-3xl font-bold text-slate-800 mt-1">
-                                                    {isSyncing && stat.val === 0 ? <span className="text-xl text-slate-400 animate-pulse">...</span> : stat.val}
+                                                    {isSyncing && stat.val === 0 ? <span className="text-xl text-slate-400 animate-pulse">...</span> : <span>{stat.val}</span>}
                                                 </p>
                                             </div>
                                         </div>
@@ -471,7 +474,7 @@
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-2xl font-bold text-slate-800">Store Inventory</h2>
                                     <button onClick={() => openModal(null, setStoreModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                        <Icons.Plus className="mr-2" /> Add Item
+                                        <Icons.Plus /> <span className="ml-2">Add Item</span>
                                     </button>
                                 </div>
                                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden w-full">
@@ -491,18 +494,18 @@
                                                 {data.store.map(item => (
                                                     <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                                                         <td className="p-4 flex items-center gap-4 min-w-[250px]">
-                                                            <img src={item.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200 flex-shrink-0" onError={(e) => e.target.src='https://placehold.co/100?text=IMG'}/>
+                                                            <img src={item.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200 flex-shrink-0" onError={(e) => { e.target.src='https://placehold.co/100?text=IMG' }} />
                                                             <span className="font-semibold text-slate-800 line-clamp-2">{item.name}</span>
                                                         </td>
                                                         <td className="p-4 text-sm text-slate-600 whitespace-nowrap">{item.category}</td>
                                                         <td className="p-4 whitespace-nowrap">
-                                                            <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${item.type === 'service' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700'}`}>
+                                                            <span className={"text-xs font-bold px-2.5 py-1 rounded-md " + (item.type === 'service' ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-700')}>
                                                                 {item.type === 'service' ? 'Service' : 'Good'}
                                                             </span>
                                                         </td>
                                                         <td className="p-4 text-sm font-bold text-slate-800 whitespace-nowrap">{parseFloat(item.price).toLocaleString()}</td>
                                                         <td className="p-4 whitespace-nowrap">
-                                                            <span className={`text-sm font-semibold ${item.stock <= 5 ? 'text-red-600' : 'text-emerald-600'}`}>{item.stock}</span>
+                                                            <span className={"text-sm font-semibold " + (item.stock <= 5 ? 'text-red-600' : 'text-emerald-600')}>{item.stock}</span>
                                                         </td>
                                                         <td className="p-4 text-right whitespace-nowrap">
                                                             <div className="flex justify-end gap-2">
@@ -516,7 +519,7 @@
                                         </table>
                                         {data.store.length === 0 && (
                                             <div className="p-12 text-center text-slate-500">
-                                                {isSyncing ? `Syncing data... (${syncProgress}%)` : 'Store is empty. Add your first product.'}
+                                                {isSyncing ? <span>Syncing data... ({syncProgress}%)</span> : <span>Store is empty. Add your first product.</span>}
                                             </div>
                                         )}
                                     </div>
@@ -530,7 +533,7 @@
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-2xl font-bold text-slate-800">Events Management</h2>
                                     <button onClick={() => openModal(null, setEventModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                        <Icons.Plus className="mr-2" /> Create Event
+                                        <Icons.Plus /> <span className="ml-2">Create Event</span>
                                     </button>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -538,16 +541,18 @@
                                         <div key={event.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col group">
                                             <div className="h-48 bg-slate-100 relative overflow-hidden">
                                                 <img src={event.image || 'https://placehold.co/600x400?text=Event'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                                <div className={`absolute top-3 right-3 px-3 py-1 rounded-md text-xs font-bold shadow-sm ${event.status === 'Active' ? 'bg-brand-600 text-white' : event.status === 'Cancelled' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white'}`}>
+                                                <div className={"absolute top-3 right-3 px-3 py-1 rounded-md text-xs font-bold shadow-sm " + (event.status === 'Active' ? 'bg-brand-600 text-white' : event.status === 'Cancelled' ? 'bg-red-600 text-white' : 'bg-slate-800 text-white')}>
                                                     {event.status}
                                                 </div>
                                             </div>
                                             <div className="p-5 flex-1 flex flex-col">
                                                 <h3 className="font-bold text-lg text-slate-800 leading-tight mb-1">{event.title}</h3>
-                                                <p className="text-sm text-brand-600 font-medium mb-3">{event.date} • {event.time}</p>
+                                                <p className="text-sm text-brand-600 font-medium mb-3">{event.date} &#8226; {event.time}</p>
                                                 <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{event.description}</p>
                                                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                                    <span className="text-xs font-medium text-slate-500 truncate max-w-[150px]" title={event.location}>📍 {event.location}</span>
+                                                    <span className="text-xs font-medium text-slate-500 truncate max-w-[150px]" title={event.location}>
+                                                        <span role="img" aria-label="location">&#128205;</span> {event.location}
+                                                    </span>
                                                     <div className="flex gap-2 flex-shrink-0">
                                                         <button onClick={() => openModal(event, setEventModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
                                                         <button onClick={() => handleDelete('events', event.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
@@ -558,7 +563,7 @@
                                     ))}
                                     {data.events.length === 0 && (
                                         <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
-                                            {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No events found. Create one above.'}
+                                            {isSyncing ? <span>Syncing data... ({syncProgress}%)</span> : <span>No events found. Create one above.</span>}
                                         </div>
                                     )}
                                 </div>
@@ -571,7 +576,7 @@
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-2xl font-bold text-slate-800">Blog & News</h2>
                                     <button onClick={() => openModal(null, setInfoModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                        <Icons.Plus className="mr-2" /> Write Post
+                                        <Icons.Plus /> <span className="ml-2">Write Post</span>
                                     </button>
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -599,7 +604,7 @@
                                     ))}
                                     {data.info.length === 0 && (
                                         <div className="col-span-full py-12 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
-                                            {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No articles published yet.'}
+                                            {isSyncing ? <span>Syncing data... ({syncProgress}%)</span> : <span>No articles published yet.</span>}
                                         </div>
                                     )}
                                 </div>
@@ -612,7 +617,7 @@
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-2xl font-bold text-slate-800">Academy Programs</h2>
                                     <button onClick={() => openModal(null, setCourseModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-medium flex items-center shadow-sm transition-colors">
-                                        <Icons.Plus className="mr-2" /> Add Course
+                                        <Icons.Plus /> <span className="ml-2">Add Course</span>
                                     </button>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -628,7 +633,7 @@
                                                 <h3 className="font-bold text-lg text-slate-800 leading-tight mb-2">{course.title}</h3>
                                                 <p className="text-sm text-slate-500 line-clamp-2 mb-4 flex-1">{course.description}</p>
                                                 <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${course.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500'}`}>{course.status}</span>
+                                                    <span className={"text-xs font-bold px-2.5 py-1 rounded-md " + (course.status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-500')}>{course.status}</span>
                                                     <div className="flex gap-2">
                                                         <button onClick={() => openModal(course, setCourseModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-lg transition-colors"><Icons.Edit /></button>
                                                         <button onClick={() => handleDelete('courses', course.id)} className="p-2 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"><Icons.Delete /></button>
@@ -639,7 +644,7 @@
                                     ))}
                                     {data.courses.length === 0 && (
                                         <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
-                                            {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No courses found. Create one above.'}
+                                            {isSyncing ? <span>Syncing data... ({syncProgress}%)</span> : <span>No courses found. Create one above.</span>}
                                         </div>
                                     )}
                                 </div>
@@ -670,7 +675,7 @@
                                                         <td className="p-4 text-sm text-slate-500 whitespace-nowrap">{new Date(lead.createdAt).toLocaleDateString()}</td>
                                                         <td className="p-4 min-w-[200px]">
                                                             <p className="font-semibold text-slate-800">{lead.name}</p>
-                                                            <p className="text-sm text-brand-600"><a href={`mailto:${lead.email}`}>{lead.email}</a></p>
+                                                            <p className="text-sm text-brand-600"><a href={"mailto:" + lead.email}>{lead.email}</a></p>
                                                             <p className="text-xs text-slate-500">{lead.phone}</p>
                                                         </td>
                                                         <td className="p-4 text-sm font-medium text-slate-700 whitespace-nowrap">{lead.service}</td>
@@ -684,7 +689,7 @@
                                         </table>
                                         {data.connect.length === 0 && (
                                             <div className="p-12 text-center text-slate-500">
-                                                {isSyncing ? `Syncing data... (${syncProgress}%)` : 'No leads captured yet.'}
+                                                {isSyncing ? <span>Syncing data... ({syncProgress}%)</span> : <span>No leads captured yet.</span>}
                                             </div>
                                         )}
                                     </div>
@@ -882,7 +887,7 @@
                             <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 mt-4">
                                 <button type="button" onClick={() => setSettingsModalOpen(false)} className="px-4 py-2 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-lg font-medium transition-colors">Cancel</button>
                                 <button type="submit" className="px-5 py-2.5 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-medium shadow-sm transition-all flex items-center justify-center">
-                                    <Icons.Lock className="mr-2" /> Save Encrypted Passcode
+                                    <Icons.Lock /> <span className="ml-2">Save Encrypted Passcode</span>
                                 </button>
                             </div>
                         </form>
