@@ -304,23 +304,25 @@
 
         // --- COMPONENTS ---
 
-        const TopBar = () => (
-            <div className="bg-slate-900 text-slate-300 text-xs py-2.5 hidden lg:block border-b border-slate-800">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <div className="flex gap-6">
-                        <a href={`tel:${CONTACT_NUMBER}`} className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Phone size={14} /> +234 {CONTACT_NUMBER.slice(1)}</a>
-                        <a href="mailto:mesobest2000@gmail.com" className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Mail size={14} /> sales@mbtech.ng</a>
-                    </div>
-                    <div className="flex gap-5">
-                        <a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-white cursor-pointer transition-colors">Support</a>
-                        <span className="hover:text-white cursor-pointer transition-colors">Partner Portal</span>
-                        <span className="text-emerald-500 font-semibold flex items-center gap-1.5"><Lock size={12}/> Secure Connection</span>
+        function TopBar() {
+            return (
+                <div className="bg-slate-900 text-slate-300 text-xs py-2.5 hidden lg:block border-b border-slate-800">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                        <div className="flex gap-6">
+                            <a href={`tel:${CONTACT_NUMBER}`} className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Phone size={14} /> +234 {CONTACT_NUMBER.slice(1)}</a>
+                            <a href="mailto:mesobest2000@gmail.com" className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Mail size={14} /> sales@mbtech.ng</a>
+                        </div>
+                        <div className="flex gap-5">
+                            <a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-white cursor-pointer transition-colors">Support</a>
+                            <span className="hover:text-white cursor-pointer transition-colors">Partner Portal</span>
+                            <span className="text-emerald-500 font-semibold flex items-center gap-1.5"><Lock size={12}/> Secure Connection</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
 
-        const Navbar = ({ cartCount, onCartClick, user, onAuthClick, onViewChange, currentView }) => {
+        function Navbar({ cartCount, onCartClick, user, onAuthClick, onViewChange, currentView }) {
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const isStaff = user && (ADMIN_EMAILS.includes(user.email) || MANAGER_EMAILS.includes(user.email));
             
@@ -430,60 +432,64 @@
                 </div>
             </nav>
             );
-        };
+        }
 
-        const Hero = ({ onShopNow }) => (
-            <div className="relative bg-slate-900 text-white overflow-hidden rounded-b-[2rem] sm:rounded-none sm:mb-0 mb-6">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/30 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
-                
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-32 relative z-10 flex flex-col md:flex-row items-center">
-                    <div className="md:w-[55%] text-center md:text-left pt-6 md:pt-0">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-900/50 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
-                            <Zap size={14} fill="currentColor" /> Authorized Distributor
+        function Hero({ onShopNow }) {
+            return (
+                <div className="relative bg-slate-900 text-white overflow-hidden rounded-b-[2rem] sm:rounded-none sm:mb-0 mb-6">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/30 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3"></div>
+                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
+                    
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-32 relative z-10 flex flex-col md:flex-row items-center">
+                        <div className="md:w-[55%] text-center md:text-left pt-6 md:pt-0">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-900/50 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                                <Zap size={14} fill="currentColor" /> Authorized Distributor
+                            </div>
+                            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+                                Reliable Tech for <br className="hidden sm:block"/>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Modern Living</span>
+                            </h1>
+                            <p className="text-base sm:text-lg text-slate-300 mb-8 sm:mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                                Connect to a world of premium gadgets, high-capacity solar energy solutions, and expert installations. Seamlessly integrated with Mesobest Technology.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                                <button onClick={onShopNow} className={`px-8 py-4 ${BRAND_GREEN} ${BRAND_GREEN_HOVER} text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2`}>
+                                    Shop Catalog <ArrowRight size={18} />
+                                </button>
+                                <a href="connect.html" className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white font-bold rounded-xl transition-all flex items-center justify-center">
+                                    Learn More
+                                </a>
+                            </div>
                         </div>
-                        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
-                            Reliable Tech for <br className="hidden sm:block"/>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Modern Living</span>
-                        </h1>
-                        <p className="text-base sm:text-lg text-slate-300 mb-8 sm:mb-10 max-w-lg mx-auto md:mx-0 leading-relaxed">
-                            Connect to a world of premium gadgets, high-capacity solar energy solutions, and expert installations. Seamlessly integrated with Mesobest Technology.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                            <button onClick={onShopNow} className={`px-8 py-4 ${BRAND_GREEN} ${BRAND_GREEN_HOVER} text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2`}>
-                                Shop Catalog <ArrowRight size={18} />
-                            </button>
-                            <a href="connect.html" className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white font-bold rounded-xl transition-all flex items-center justify-center">
-                                Learn More
-                            </a>
-                        </div>
-                    </div>
-                    <div className="md:w-[45%] mt-16 md:mt-0 flex justify-center relative w-full">
-                        <div className="relative z-10 w-full max-w-sm lg:max-w-md bg-gradient-to-br from-slate-800 to-slate-900 p-2 sm:p-3 rounded-[2rem] shadow-2xl border border-slate-700/50 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
-                            <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=800" className="rounded-[1.5rem] w-full object-cover aspect-[4/3]" alt="Premium Tech Showcase" />
-                            {/* Floating UI Elements for aesthetics */}
-                            <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-4 rounded-2xl shadow-xl border border-slate-100 hidden sm:flex items-center gap-3 animate-bounce" style={{animationDuration: '3s'}}>
-                                <div className="bg-emerald-100 text-emerald-600 p-2 rounded-full"><ShieldAlert size={20}/></div>
-                                <div>
-                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Warranty</p>
-                                    <p className="font-extrabold text-sm">100% Guaranteed</p>
+                        <div className="md:w-[45%] mt-16 md:mt-0 flex justify-center relative w-full">
+                            <div className="relative z-10 w-full max-w-sm lg:max-w-md bg-gradient-to-br from-slate-800 to-slate-900 p-2 sm:p-3 rounded-[2rem] shadow-2xl border border-slate-700/50 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
+                                <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&q=80&w=800" className="rounded-[1.5rem] w-full object-cover aspect-[4/3]" alt="Premium Tech Showcase" />
+                                {/* Floating UI Elements for aesthetics */}
+                                <div className="absolute -bottom-6 -left-6 bg-white text-slate-900 p-4 rounded-2xl shadow-xl border border-slate-100 hidden sm:flex items-center gap-3 animate-bounce" style={{animationDuration: '3s'}}>
+                                    <div className="bg-emerald-100 text-emerald-600 p-2 rounded-full"><ShieldAlert size={20}/></div>
+                                    <div>
+                                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">Warranty</p>
+                                        <p className="font-extrabold text-sm">100% Guaranteed</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
 
-        const FloatingSupport = () => (
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl shadow-[#25D366]/30 hover:bg-[#20b858] transition-transform hover:scale-110 flex items-center justify-center animate-in slide-in-from-bottom-10" aria-label="Chat on WhatsApp">
-                <MessageCircle size={30} fill="white" className="text-white" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
-            </a>
-        );
+        function FloatingSupport() {
+            return (
+                <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-40 bg-[#25D366] text-white p-4 rounded-full shadow-2xl shadow-[#25D366]/30 hover:bg-[#20b858] transition-transform hover:scale-110 flex items-center justify-center animate-in slide-in-from-bottom-10" aria-label="Chat on WhatsApp">
+                    <MessageCircle size={30} fill="white" className="text-white" />
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+                </a>
+            );
+        }
 
-        const CartDrawer = ({ cart, cartOpen, setCartOpen, updateQty, removeFromCart, handleCheckout }) => {
+        function CartDrawer({ cart, cartOpen, setCartOpen, updateQty, removeFromCart, handleCheckout }) {
             const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
             return (
                 <div className={`fixed inset-0 z-50 flex justify-end transition-all ${cartOpen ? 'visible' : 'invisible'}`}>
@@ -535,9 +541,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const AuthModal = ({ setAuthOpen, notify }) => {
+        function AuthModal({ setAuthOpen, notify, setUser }) {
             const [isSignUp, setIsSignUp] = useState(false);
             const [loading, setLoading] = useState(false);
 
@@ -551,10 +557,16 @@
                 try {
                     if (isSignUp) {
                         const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                        if (name) await updateProfile(userCred.user, { displayName: name });
+                        if (name) {
+                            await updateProfile(userCred.user, { displayName: name });
+                            setUser({ ...userCred.user, displayName: name }); // Immediately update state with name
+                        } else {
+                            setUser(userCred.user);
+                        }
                         notify("Account created successfully!");
                     } else {
-                        await signInWithEmailAndPassword(auth, email, password);
+                        const userCred = await signInWithEmailAndPassword(auth, email, password);
+                        setUser(userCred.user);
                         notify("Welcome back!");
                     }
                     setAuthOpen(false);
@@ -568,7 +580,8 @@
             const handleGoogleAuth = async () => {
                 setLoading(true);
                 try {
-                    await signInWithPopup(auth, new GoogleAuthProvider());
+                    const userCred = await signInWithPopup(auth, new GoogleAuthProvider());
+                    setUser(userCred.user);
                     notify("Signed in with Google!");
                     setAuthOpen(false);
                 } catch (err) {
@@ -614,9 +627,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const CheckoutView = ({ user, setView, placeOrder }) => {
+        function CheckoutView({ user, setView, placeOrder }) {
             const [form, setForm] = useState({name: user?.displayName||'', phone:'', address:''});
             const [honeypot, setHoneypot] = useState('');
             return (
@@ -672,9 +685,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const RecModal = ({ isOpen, onClose, user, notify }) => {
+        function RecModal({ isOpen, onClose, user, notify }) {
             const [form, setForm] = useState({ name: user?.displayName || '', phone: '', description: '' });
             const [loading, setLoading] = useState(false);
 
@@ -737,9 +750,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const LegalModal = ({ docType, onClose }) => {
+        function LegalModal({ docType, onClose }) {
             if (!docType) return null;
             const content = LEGAL_DOCS[docType];
             if (!content) return null;
@@ -761,7 +774,7 @@
                     </div>
                 </div>
             );
-        };
+        }
 
         // --- ROOT APP ---
         function App() {
@@ -779,17 +792,10 @@
             useEffect(() => {
                 const initAuth = async () => {
                     try {
-                        // Check if __initial_auth_token is defined and use it if available
-                        if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
-                            try {
-                                await signInWithCustomToken(auth, window.__initial_auth_token);
-                            } catch (customTokenError) {
-                                console.error("Custom token sign in failed, falling back to anonymous:", customTokenError);
-                                await signInAnonymously(auth);
-                            }
-                        } else {
-                            await signInAnonymously(auth);
-                        }
+                        // Since you are using your own custom Firebase project, 
+                        // the Canvas environment's auto-generated token will cause a 'custom-token-mismatch' error.
+                        // Instead, we skip the token check and directly use anonymous authentication.
+                        await signInAnonymously(auth);
                     } catch (e) { 
                         console.error("Auth init error:", e); 
                     }
@@ -849,7 +855,7 @@
                         )}
                     </div>
 
-                    {authOpen && <AuthModal setAuthOpen={setAuthOpen} notify={notify} />}
+                    {authOpen && <AuthModal setAuthOpen={setAuthOpen} notify={notify} setUser={setUser} />}
                     <CartDrawer cart={cart} cartOpen={cartOpen} setCartOpen={setCartOpen} updateQty={updateQty} removeFromCart={removeFromCart} handleCheckout={()=>{setCartOpen(false); if(!user || user.isAnonymous) setAuthOpen(true); else setView('checkout');}} />
                     <RecModal isOpen={recOpen} onClose={() => setRecOpen(false)} user={user && !user.isAnonymous ? user : null} notify={notify} />
                     <LegalModal docType={legalDoc} onClose={() => setLegalDoc(null)} />
