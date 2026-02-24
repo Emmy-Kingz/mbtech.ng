@@ -50,6 +50,9 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Paystack Inline Script -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
     
     <!-- Import Map: Defines where to load libraries from -->
     <script type="importmap">
@@ -134,7 +137,7 @@
             Facebook, Twitter, Instagram, Linkedin, HelpCircle, Lightbulb,
             ShieldAlert, Lock, Github, Image as ImageIcon, ExternalLink, UploadCloud,
             Home, BookOpen, Users, Store as StoreIcon, FileText, Plus, Minus,
-            ShieldCheck, FileKey, RefreshCcw
+            ShieldCheck, FileKey, RefreshCcw, Shield
         } from 'lucide-react';
 
         // --- FIREBASE IMPORTS ---
@@ -177,6 +180,9 @@
         // Local Branding Assets
         const LOGO_URL = "./logo.png";
         const FAVICON_URL = "./favicon.png";
+
+        // Paystack Live Key
+        const PAYSTACK_PUBLIC_KEY = "pk_live_6b255b359bbbf6aaf5a69d03d2262f0bd60b7e3c"; 
         
         const NAV_ITEMS = [
             { name: 'Home', url: 'index.html', icon: <Home size={18} /> },
@@ -284,7 +290,7 @@
                     - **Non-Returnable:** Software licenses, downloadable products, and items damaged by user misuse (e.g., power surges without protection).
 
                     **3. Refund Process**
-                    - Contact support at mesobest2000@gmail.com with your Order ID.
+                    - Contact support at support@mbtech.ng with your Order ID.
                     - Once the return is received and inspected, refunds are processed within 5-7 business days to your original payment method or bank account.
 
                     **4. Service Cancellations**
@@ -310,7 +316,7 @@
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                         <div className="flex gap-6">
                             <a href={`tel:${CONTACT_NUMBER}`} className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Phone size={14} /> +234 {CONTACT_NUMBER.slice(1)}</a>
-                            <a href="mailto:mesobest2000@gmail.com" className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Mail size={14} /> sales@mbtech.ng</a>
+                            <a href="mailto:support@mbtech.ng" className="flex items-center gap-2 hover:text-emerald-400 cursor-pointer transition-colors"><Mail size={14} /> support@mbtech.ng</a>
                         </div>
                         <div className="flex gap-5">
                             <a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-white cursor-pointer transition-colors">Support</a>
@@ -629,9 +635,47 @@
             );
         }
 
-        function CheckoutView({ user, setView, placeOrder }) {
-            const [form, setForm] = useState({name: user?.displayName||'', phone:'', address:''});
+        // --- UPDATED CHECKOUT VIEW WITH PAYSTACK ---
+        function CheckoutView({ user, setView, placeOrder, total, notify }) {
+            const [form, setForm] = useState({
+                name: user?.displayName || '', 
+                email: user?.email || '', 
+                phone: '', 
+                address: ''
+            });
             const [honeypot, setHoneypot] = useState('');
+
+            const handlePaystackPayment = () => {
+                if (!form.name || !form.email || !form.phone || !form.address) {
+                    notify("Please fill all details, including your email address for the receipt.", "error");
+                    return;
+                }
+
+                const handler = PaystackPop.setup({
+                    key: PAYSTACK_PUBLIC_KEY,
+                    email: form.email,
+                    amount: total * 100, // Paystack expects amount in Kobo
+                    currency: 'NGN',
+                    ref: 'MBTECH_' + Math.floor((Math.random() * 1000000000) + 1),
+                    metadata: {
+                        custom_fields: [
+                            { display_name: "Customer Name", variable_name: "customer_name", value: form.name },
+                            { display_name: "Mobile Number", variable_name: "mobile_number", value: form.phone },
+                            { display_name: "Delivery Address", variable_name: "delivery_address", value: form.address }
+                        ]
+                    },
+                    callback: function(response){
+                        // Payment successful
+                        placeOrder('paystack', form, response.reference);
+                    },
+                    onClose: function(){
+                        notify("Payment window closed.", "error");
+                    }
+                });
+
+                handler.openIframe();
+            };
+
             return (
                 <div className="min-h-screen bg-slate-50 py-8 lg:py-12">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -641,17 +685,26 @@
                         <div className="grid lg:grid-cols-5 gap-8">
                             <div className="lg:col-span-3 space-y-6">
                                 <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100">
-                                    <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><MapPin size={20} className="text-emerald-600"/> Delivery Details</h3>
+                                    <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><MapPin size={20} className="text-emerald-600"/> Delivery & Contact Details</h3>
                                     <div className="space-y-4">
                                         <input type="text" className="opacity-0 absolute -z-10 h-0 w-0" tabIndex={-1} autoComplete="off" value={honeypot} onChange={e => setHoneypot(e.target.value)} />
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
-                                            <input className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Enter your full name" value={form.name} onChange={e=>setForm({...form, name:e.target.value})}/>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
+                                                <input className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Enter your full name" value={form.name} onChange={e=>setForm({...form, name:e.target.value})}/>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email Address</label>
+                                                <input type="email" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="For payment receipt" value={form.email} onChange={e=>setForm({...form, email:e.target.value})}/>
+                                            </div>
                                         </div>
+                                        
                                         <div>
                                             <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone Number</label>
                                             <input type="tel" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. 08012345678" value={form.phone} onChange={e=>setForm({...form, phone:e.target.value})}/>
                                         </div>
+                                        
                                         <div>
                                             <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Delivery Address</label>
                                             <textarea className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-emerald-500 outline-none h-28 resize-none" placeholder="Full street address, city, state" value={form.address} onChange={e=>setForm({...form, address:e.target.value})}/>
@@ -662,20 +715,40 @@
 
                             <div className="lg:col-span-2 space-y-6">
                                 <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-100 sticky top-24">
-                                    <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><CreditCard size={20} className="text-emerald-600"/> Payment Method</h3>
+                                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><CreditCard size={20} className="text-emerald-600"/> Payment Method</h3>
+                                    <div className="text-2xl font-extrabold text-slate-800 mb-6">Total: ₦{total.toLocaleString()}</div>
+                                    
                                     <div className="space-y-3">
-                                        <button onClick={() => !honeypot && placeOrder('transfer', form)} className="w-full p-4 border border-slate-200 rounded-2xl flex items-center gap-4 hover:border-emerald-500 hover:bg-emerald-50 transition-all group text-left">
-                                            <div className="p-3 bg-slate-100 group-hover:bg-white rounded-full text-slate-600 group-hover:text-emerald-600 transition-colors"><Banknote size={24}/></div>
+                                        {/* Paystack Payment Option */}
+                                        <button onClick={() => !honeypot && handlePaystackPayment()} className="w-full p-4 border border-blue-200 bg-blue-50 rounded-2xl flex items-center gap-4 hover:border-blue-400 hover:bg-blue-100 transition-all group text-left relative overflow-hidden">
+                                            <div className="p-3 bg-white shadow-sm rounded-full text-blue-600 transition-colors"><Shield size={24}/></div>
                                             <div>
-                                                <div className="font-bold text-slate-900">Bank Transfer</div>
-                                                <div className="text-xs text-slate-500 mt-0.5">Manual payment verification</div>
+                                                <div className="font-bold text-slate-900">Pay with Card / Bank</div>
+                                                <div className="text-xs text-slate-600 mt-0.5">Secure payment via Paystack</div>
+                                            </div>
+                                            <div className="absolute right-[-10px] top-1/2 -translate-y-1/2 opacity-10">
+                                                <CreditCard size={100} />
                                             </div>
                                         </button>
+                                        
+                                        <div className="relative py-2">
+                                            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
+                                            <div className="relative flex justify-center"><span className="bg-white px-2 text-xs font-bold text-slate-400 uppercase tracking-widest">OR</span></div>
+                                        </div>
+
                                         <button onClick={() => !honeypot && placeOrder('whatsapp', form)} className="w-full p-4 border border-[#25D366]/30 bg-[#25D366]/5 rounded-2xl flex items-center gap-4 hover:bg-[#25D366]/10 transition-all text-left">
                                             <div className="p-3 bg-white shadow-sm rounded-full text-[#25D366]"><MessageCircle size={24}/></div>
                                             <div>
                                                 <div className="font-bold text-slate-900">WhatsApp Checkout</div>
                                                 <div className="text-xs text-slate-600 mt-0.5">Fastest & most direct option</div>
+                                            </div>
+                                        </button>
+                                        
+                                        <button onClick={() => !honeypot && placeOrder('transfer', form)} className="w-full p-4 border border-slate-200 rounded-2xl flex items-center gap-4 hover:border-emerald-500 hover:bg-emerald-50 transition-all group text-left">
+                                            <div className="p-3 bg-slate-100 group-hover:bg-white rounded-full text-slate-600 group-hover:text-emerald-600 transition-colors"><Banknote size={24}/></div>
+                                            <div>
+                                                <div className="font-bold text-slate-900">Manual Transfer</div>
+                                                <div className="text-xs text-slate-500 mt-0.5">Pay manually and send receipt</div>
                                             </div>
                                         </button>
                                     </div>
@@ -792,9 +865,6 @@
             useEffect(() => {
                 const initAuth = async () => {
                     try {
-                        // Since you are using your own custom Firebase project, 
-                        // the Canvas environment's auto-generated token will cause a 'custom-token-mismatch' error.
-                        // Instead, we skip the token check and directly use anonymous authentication.
                         await signInAnonymously(auth);
                     } catch (e) { 
                         console.error("Auth init error:", e); 
@@ -829,17 +899,29 @@
             
             const removeFromCart = (id) => setCart(c => c.filter(i => i.id !== id));
             
-            const placeOrder = async (method, details) => {
+            const placeOrder = async (method, details, transactionRef = null) => {
                 if(!user) return;
                 if (!details.name || !details.phone || !details.address) { notify("Please fill all details", "error"); return; }
                 if (!checkRateLimit('lastOrderTime', 45)) { notify("Please wait before placing another order.", "error"); return; }
                 try {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_orders'), {
-                        userId: user.uid, userName: user.displayName || details.name, items: cart, total: cart.reduce((a,b)=>a+(b.price*b.qty),0), method, status: 'pending', createdAt: serverTimestamp(), contact: details.phone, address: details.address
+                        userId: user.uid, 
+                        userName: user.displayName || details.name, 
+                        email: details.email || user.email || '',
+                        items: cart, 
+                        total: cart.reduce((a,b)=>a+(b.price*b.qty),0), 
+                        method, 
+                        status: method === 'paystack' ? 'paid' : 'pending',
+                        transactionReference: transactionRef,
+                        createdAt: serverTimestamp(), 
+                        contact: details.phone, 
+                        address: details.address
                     });
                     setCart([]); setView('success');
                 } catch(e) { console.error(e); notify("Order processing failed", "error"); }
             };
+
+            const cartTotal = cart.reduce((a, b) => a + (b.price * b.qty), 0);
 
             return (
                 <div className="min-h-screen flex flex-col font-sans text-slate-800">
@@ -863,7 +945,7 @@
                     <TopBar />
                     <Navbar cartCount={cart.reduce((a,b)=>a+b.qty,0)} onCartClick={() => setCartOpen(true)} user={user && !user.isAnonymous ? user : null} onAuthClick={() => setAuthOpen(true)} onViewChange={setView} currentView={view} />
 
-                    {view === 'checkout' ? <CheckoutView user={user && !user.isAnonymous ? user : null} setView={setView} placeOrder={placeOrder} /> : 
+                    {view === 'checkout' ? <CheckoutView user={user && !user.isAnonymous ? user : null} setView={setView} placeOrder={placeOrder} total={cartTotal} notify={notify} /> : 
                      view === 'success' ? (
                         <div className="flex-1 flex flex-col items-center justify-center text-center p-6 min-h-[70vh]">
                             <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6 animate-bounce" style={{animationIterationCount: 1}}><CheckCircle size={48} strokeWidth={2.5}/></div>
@@ -932,15 +1014,29 @@
                                                 </div>
                                             </div>
                                         ))}
+
+                                        {/* Display Empty State with Categories when search returns zero products */}
                                         {((view === 'shop' && filter !== 'All' && products.filter(p => p.category === filter || (filter==='Services' && p.type==='service')).length === 0)) && (
-                                            <div className="col-span-full py-20 px-6 text-center bg-slate-50 rounded-[2rem] border border-slate-100 border-dashed flex flex-col items-center">
+                                            <div className="col-span-full py-16 px-6 text-center bg-slate-50 rounded-[2rem] border border-slate-100 border-dashed flex flex-col items-center">
                                                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-full flex items-center justify-center shadow-sm text-slate-300 mb-4"><Search className="w-8 h-8 sm:w-10 sm:h-10"/></div>
                                                 <h3 className="font-bold text-base sm:text-lg text-slate-800 mb-2">No products found</h3>
-                                                <p className="text-xs sm:text-sm text-slate-500 max-w-md">We couldn't find any products in the "{filter}" category at the moment. Please check back later or view other categories.</p>
+                                                <p className="text-xs sm:text-sm text-slate-500 max-w-md mb-8">We couldn't find any products in the "{filter}" category at the moment. Browse other categories below:</p>
+                                                
+                                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6 w-full max-w-4xl mx-auto">
+                                                    {CATEGORIES.filter(c => c.name !== 'All').map(category => (
+                                                        <button key={category.name} onClick={() => { setFilter(category.name); setView('shop'); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="flex flex-col items-center justify-center p-4 sm:p-6 bg-white border border-slate-100 rounded-[1.5rem] hover:bg-emerald-50 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-500/10 transition-all group shadow-sm">
+                                                            <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-emerald-600 mb-3 group-hover:scale-110 transition-transform group-hover:bg-white group-hover:shadow-md">
+                                                                <div className="scale-110">{category.icon}</div>
+                                                            </div>
+                                                            <span className="font-bold text-slate-700 text-[11px] sm:text-sm text-center leading-tight">{category.name}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
                                         )}
                                     </div>
                                 )}
+
                                 <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2rem] p-6 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 shadow-2xl relative overflow-hidden">
                                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
                                     <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500/20 rounded-full blur-[80px] translate-x-1/2 -translate-y-1/2"></div>
@@ -957,6 +1053,7 @@
                         </div>
                      )}
                     
+                    {/* Restored Complete Footer matching Index */}
                     <footer className="bg-slate-950 text-slate-400 pt-16 pb-24 md:pb-12 border-t-4 border-emerald-600 mt-auto">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 border-b border-slate-800 pb-12 mb-8">
@@ -986,6 +1083,7 @@
                                         <li><a href="index.html" className="hover:text-emerald-500 transition-colors flex items-center gap-2"><Home size={16}/> Home</a></li>
                                         <li><a href="course.html" className="hover:text-emerald-500 transition-colors flex items-center gap-2"><BookOpen size={16}/> Tech Courses</a></li>
                                         <li><a href="connect.html" className="hover:text-emerald-500 transition-colors flex items-center gap-2"><Users size={16}/> Join Community</a></li>
+                                        <li><a href="info.html" className="hover:text-emerald-500 transition-colors flex items-center gap-2"><FileText size={16}/> News & Updates</a></li>
                                     </ul>
                                 </div>
 
@@ -1002,7 +1100,7 @@
                                     <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contact Us</h4>
                                     <ul className="space-y-4 text-sm">
                                         <li className="flex items-center gap-3"><Phone size={16} className="text-emerald-500"/> +234 708 467 2771</li>
-                                        <li className="flex items-center gap-3"><Mail size={16} className="text-emerald-500"/> info@mbtech.ng</li>
+                                        <li className="flex items-center gap-3"><Mail size={16} className="text-emerald-500"/> support@mbtech.ng</li>
                                         <li className="flex items-start gap-3"><MapPin size={16} className="text-emerald-500 mt-1"/> Ikorodu, Lagos, Nigeria</li>
                                     </ul>
                                 </div>
