@@ -9,7 +9,7 @@
 
 class FeaturePromoterBot {
     constructor() {
-        this.delay = 30000; // Wait 30 seconds before showing (change to 60000 for 60s)
+        this.delay = 90000; // Wait 30 seconds before showing (change to 60000 for 60s)
         this.sessionKey = 'mbtech_promo_dismissed';
         
         // The different features of the platform
