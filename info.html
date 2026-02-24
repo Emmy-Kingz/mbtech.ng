@@ -179,7 +179,7 @@
 
         // --- COMPONENTS ---
 
-        const Navbar = () => {
+        function Navbar() {
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const [scrolled, setScrolled] = useState(false);
 
@@ -242,36 +242,38 @@
                     </div>
                 </nav>
             );
-        };
+        }
 
-        const BottomNav = () => (
-            <div className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-safe">
-                <div className="flex justify-between items-center h-16 px-2">
-                    <a href="index.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
-                        <Home size={20} />
-                        <span className="text-[9px] font-bold uppercase tracking-wider">Home</span>
-                    </a>
-                    <a href="course.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
-                        <BookOpen size={20} />
-                        <span className="text-[9px] font-bold uppercase tracking-wider">Courses</span>
-                    </a>
-                    <a href="store.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
-                        <StoreIcon size={20} />
-                        <span className="text-[9px] font-bold uppercase tracking-wider">Store</span>
-                    </a>
-                    <a href="connect.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
-                        <Users size={20} />
-                        <span className="text-[9px] font-bold uppercase tracking-wider">Connect</span>
-                    </a>
-                    <a href="info.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-brand-blue transition-colors">
-                        <Newspaper size={20} />
-                        <span className="text-[9px] font-bold uppercase tracking-wider">Updates</span>
-                    </a>
+        function BottomNav() {
+            return (
+                <div className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-40 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-safe">
+                    <div className="flex justify-between items-center h-16 px-2">
+                        <a href="index.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                            <Home size={20} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider">Home</span>
+                        </a>
+                        <a href="course.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                            <BookOpen size={20} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider">Courses</span>
+                        </a>
+                        <a href="store.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                            <StoreIcon size={20} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider">Store</span>
+                        </a>
+                        <a href="connect.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                            <Users size={20} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider">Connect</span>
+                        </a>
+                        <a href="info.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-brand-blue transition-colors">
+                            <Newspaper size={20} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider">Updates</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
 
-        const ReadModal = ({ post, onClose }) => {
+        function ReadModal({ post, onClose }) {
             if (!post) return null;
             return (
                 <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm">
@@ -305,9 +307,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const LegalModal = ({ docType, onClose }) => {
+        function LegalModal({ docType, onClose }) {
             if (!docType) return null;
             
             const content = {
@@ -340,7 +342,7 @@
                     </div>
                 </div>
             );
-        };
+        }
 
         function App() {
             const [posts, setPosts] = useState([]);
@@ -352,13 +354,13 @@
             useEffect(() => {
                 const initAuth = async () => {
                     try {
-                        if (typeof window.__initial_auth_token !== 'undefined' && window.__initial_auth_token) {
-                            try { await signInWithCustomToken(auth, window.__initial_auth_token); } 
-                            catch (e) { await signInAnonymously(auth); }
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (e) { console.error("Auth init error:", e); }
+                        // Since you are using your own custom Firebase project, 
+                        // the Canvas environment's auto-generated token will cause a 'custom-token-mismatch' error.
+                        // Instead, we skip the token check and directly use anonymous authentication.
+                        await signInAnonymously(auth);
+                    } catch (e) { 
+                        console.error("Auth init error:", e); 
+                    }
                 };
                 initAuth();
                 return onAuthStateChanged(auth, setUser);
