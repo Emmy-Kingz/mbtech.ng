@@ -357,6 +357,7 @@
         </div>
     </footer>
 
+    <!-- Vanilla JS Logic -->
     <script>
         // Set Year
         document.getElementById('currentYear').innerText = new Date().getFullYear();
@@ -413,7 +414,35 @@
             document.getElementById('legalModal').classList.add('hidden');
         }
 
-        // Google Sheets Form Submission
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+    </script>
+
+    <!-- FIREBASE AND FORM SUBMISSION SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+            authDomain: "mbtechstore-17984.firebaseapp.com",
+            projectId: "mbtechstore-17984",
+            storageBucket: "mbtechstore-17984.firebasestorage.app",
+            messagingSenderId: "1083008774596",
+            appId: "1:1083008774596:web:110b651c6426116ed43491"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'mbtech-public-store';
+
+        // Connect anonymously so Database rules accept writes
+        signInAnonymously(auth).catch(e => console.error("Firebase auth error:", e));
+
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzQ2aQj2n4s3W_NfJ1Ua2_o_v5z/exec";
 
         document.getElementById('connectForm').addEventListener('submit', async function(e) {
@@ -427,8 +456,22 @@
             formData.append('FormType', 'MBTECH Connect Signup');
             formData.append('Timestamp', new Date().toLocaleString());
 
+            // 1. Save to Firebase Database
             try {
-                // Using mode: 'no-cors' allows submission to Google Apps Script without Cross-Origin blocking
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
+                    name: formData.get('Name'),
+                    email: formData.get('Email'),
+                    phone: formData.get('Phone'),
+                    status: formData.get('Status'),
+                    skill: formData.get('Skill'),
+                    createdAt: serverTimestamp()
+                });
+            } catch (err) {
+                console.error("Firestore sync error:", err);
+            }
+
+            // 2. Save to Google Sheets
+            try {
                 await fetch(GOOGLE_SHEETS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -447,10 +490,6 @@
                 document.getElementById('loadingBtn').classList.add('hidden');
             }
         });
-
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
-        }
     </script>
     <script src="promo-bot.js"></script>
 </body>
