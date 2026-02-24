@@ -61,7 +61,10 @@
         "imports": {
             "react": "https://esm.sh/react@18.2.0",
             "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "lucide-react": "https://esm.sh/lucide-react@0.294.0"
+            "lucide-react": "https://esm.sh/lucide-react@0.294.0",
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
         }
     }
     </script>
@@ -147,11 +150,30 @@
             FileKey, ShieldCheck, RefreshCcw, Plug
         } from 'lucide-react';
 
+        // --- FIREBASE IMPORTS ---
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+        import { getFirestore, collection, onSnapshot, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+
         // ==========================================
-        // CONFIGURATION: GOOGLE SCRIPT URL
+        // CONFIGURATION: GOOGLE SCRIPT URL & FIREBASE
         // ==========================================
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzQ2aQj2n4s3W_NfJ1Ua2_o_v5z/exec"; 
         
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+            authDomain: "mbtechstore-17984.firebaseapp.com",
+            projectId: "mbtechstore-17984",
+            storageBucket: "mbtechstore-17984.firebasestorage.app",
+            messagingSenderId: "1083008774596",
+            appId: "1:1083008774596:web:110b651c6426116ed43491"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'mbtech-public-store'; // Matches Store/Admin
+
         const WHATSAPP_NUMBER = "2347084672771";
         
         const NAV_ITEMS = [
@@ -161,9 +183,6 @@
             { name: 'Connect', url: 'connect.html', icon: <Users size={18} /> }
         ];
 
-        // ==========================================
-        // SOCIAL MEDIA LINKS (Update URLs here)
-        // ==========================================
         const SOCIAL_LINKS = [
             { name: 'Facebook', icon: Facebook, url: 'https://facebook.com/mbtech.ng' },
             { name: 'Twitter', icon: Twitter, url: 'https://x.com/mbtech_ng' },
@@ -171,31 +190,29 @@
             { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/company/mbtech-ng' }
         ];
 
-        const CATEGORIES = ["All Courses", "Tech", "Design", "Engineering"];
-
         // PRICING & DURATIONS: Design = 50k (6wks), Tech = 100k (8wks), Engineering = 150k (10wks)
-        const COURSES = [
+        const FALLBACK_COURSES = [
             // --- DESIGN COURSES (50k, 6 Weeks) ---
             {
-                id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Palette size={24} />,
+                id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Palette",
                 image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800",
                 description: "Learn how to design intuitive, beautiful, and user-friendly digital products using Figma. Transform complex problems into elegant user interfaces.",
                 curriculum: ["Design Thinking & User Research", "Wireframing & Prototyping", "Figma Mastery", "Color Theory & Typography", "Building a Professional Case Study"]
             },
             {
-                id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Monitor size={24} />,
+                id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Monitor",
                 image: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800", 
                 description: "Master Adobe Photoshop, Illustrator, and CorelDraw to create stunning visual identities, flyers, and branding materials.",
                 curriculum: ["Principles of Visual Design", "Adobe Photoshop Mastery", "Vector Graphics in Illustrator", "Logo Design & Branding", "Print vs Digital Design Setup"]
             },
             {
-                id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Video size={24} />,
+                id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Video",
                 image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800",
                 description: "Learn professional video editing using Premiere Pro, After Effects, and CapCut. Create engaging content for YouTube, Social Media, and corporate clients.",
                 curriculum: ["Timeline & Sequence Management", "Color Grading & Correction", "Audio Mixing & Sound Design", "Motion Graphics & Text Animation", "Exporting for Various Platforms"]
             },
             {
-                id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, icon: <Megaphone size={24} />,
+                id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Megaphone",
                 image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&q=80&w=800",
                 description: "Master SEO, Social Media Marketing, and Paid Advertising (Facebook/Google Ads) to drive sales and grow brands online.",
                 curriculum: ["Search Engine Optimization (SEO)", "Social Media Strategy & Management", "Running Profitable Ad Campaigns", "Email Marketing Fundamentals", "Analytics & Conversion Tracking"]
@@ -203,25 +220,25 @@
 
             // --- TECH COURSES (100k, 8 Weeks) ---
             {
-                id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, icon: <Code size={24} />,
+                id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "Code",
                 image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800",
                 description: "Learn to build responsive, modern, and interactive websites from scratch. Master the tools used by top tech companies globally.",
                 curriculum: ["HTML5, CSS3 & Responsive Design", "JavaScript Essentials & DOM", "Version Control with Git & GitHub", "React.js Framework", "Tailwind CSS & APIs"]
             },
             {
-                id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", level: "Intermediate", price: 100000, icon: <Database size={24} />,
+                id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", level: "Intermediate", price: 100000, iconName: "Database",
                 image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
                 description: "Master server-side programming. Learn to build robust APIs, manage databases, and handle user authentication securely.",
                 curriculum: ["Node.js & Express Framework", "RESTful API Development", "Database Management (MongoDB/SQL)", "User Authentication (JWT)", "Server Deployment & Hosting"]
             },
             {
-                id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, icon: <FileText size={24} />,
+                id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "FileText",
                 image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
                 description: "Extract actionable insights from raw data. Learn to clean data, perform complex analysis, and create stunning visual dashboards.",
                 curriculum: ["Excel for Data Analytics", "SQL Database Querying", "Python Programming for Data", "Data Visualization with PowerBI/Tableau", "Predictive Modeling Basics"]
             },
             {
-                id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, icon: <Shield size={24} />,
+                id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "Shield",
                 image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800",
                 description: "Protect systems and networks from digital attacks. Learn how hackers think so you can secure infrastructures effectively.",
                 curriculum: ["Networking Fundamentals", "Linux Essentials & Command Line", "Vulnerability Assessment", "Penetration Testing (Ethical Hacking)", "Incident Response & Mitigation"]
@@ -229,30 +246,58 @@
 
             // --- ENGINEERING COURSES (150k, 10 Weeks) ---
             {
-                id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, icon: <Zap size={24} />,
+                id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "Zap",
                 image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=800",
                 description: "Master the complete process of sizing, installing, and maintaining solar energy systems and hybrid inverters. 100% practical field training.",
                 curriculum: ["Introduction to Renewable Energy & Safety", "Load Calculation & Solar Panel Sizing", "Battery Technologies (Lithium/Tubular)", "Inverter Configurations & Wiring", "Live Practical Installation Projects"]
             },
             {
-                id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, icon: <ShieldAlert size={24} />,
+                id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "ShieldAlert",
                 image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=800",
                 description: "Become a security systems engineer. Learn to design, wire, configure, and troubleshoot modern surveillance and intercom systems.",
                 curriculum: ["Types of Cameras (IP vs Analog)", "DVR/NVR Setup & Configuration", "Cabling, Crimping & Power Supply", "Network Setup for Mobile Viewing", "Intercom & Access Control Basics"]
             },
             {
-                id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, icon: <Settings size={24} />,
+                id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "Settings",
                 image: "https://images.unsplash.com/photo-1629654291663-b91ad427698f?auto=format&fit=crop&q=80&w=800", 
                 description: "Master full PC diagnostics, component replacements, OS installations, and advanced driver management. Become a certified computer technician.",
                 curriculum: ["PC Architecture & Disassembly", "Motherboard Diagnostics & Repair", "OS Installation (Windows/macOS)", "Driver Management & Software Troubleshooting", "Data Backup, Recovery & Optimization"]
             },
             {
-                id: "e4", title: "Electrical Installation & Troubleshooting", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, icon: <Plug size={24} />,
+                id: "e4", title: "Electrical Installation & Troubleshooting", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "Plug",
                 image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=800",
                 description: "Master residential and commercial electrical wiring, fault finding, load balancing, and advanced safety standards.",
                 curriculum: ["Electrical Safety & Standard Codes", "Residential & Commercial Wiring Techniques", "Circuit Breakers & Distribution Boards", "Fault Diagnostics & Troubleshooting", "Earthing, Bonding & Power Management"]
             }
         ];
+
+        // Converts String Icon Names from DB to actual React Icons
+        const getIcon = (iconName) => {
+            const icons = {
+                Palette: <Palette size={24} />,
+                Monitor: <Monitor size={24} />,
+                Video: <Video size={24} />,
+                Megaphone: <Megaphone size={24} />,
+                Code: <Code size={24} />,
+                Database: <Database size={24} />,
+                FileText: <FileText size={24} />,
+                Shield: <Shield size={24} />,
+                Zap: <Zap size={24} />,
+                ShieldAlert: <ShieldAlert size={24} />,
+                Settings: <Settings size={24} />,
+                Plug: <Plug size={24} />
+            };
+            return icons[iconName] || <BookOpen size={24} />;
+        };
+
+        const getCategoryColor = (category) => {
+            const colors = {
+                'Design': 'bg-pink-500',
+                'Tech': 'bg-brand-blue',
+                'Engineering': 'bg-brand-orange'
+            };
+            return colors[category] || 'bg-brand-blue';
+        };
 
         // --- UTILS: Submit to Google Sheets via pure FormData ---
         const submitToGoogleSheets = async (data) => {
@@ -276,7 +321,7 @@
 
         // --- COMPONENTS ---
 
-        const Navbar = ({ onOpenAssignment }) => {
+        function Navbar({ onOpenAssignment }) {
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const [scrolled, setScrolled] = useState(false);
 
@@ -369,59 +414,61 @@
                     </div>
                 </>
             );
-        };
+        }
 
-        const Hero = ({ onOpenAssignment }) => (
-            <div className="relative bg-brand-dark text-white overflow-hidden sm:mb-0 mb-6 pt-20">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-orange/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
-                
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 flex flex-col md:flex-row items-center gap-12">
-                    <div className="md:w-1/2 text-center md:text-left">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/30 text-blue-300 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
-                            <GraduationCap size={14} /> Transform Your Career
-                        </div>
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
-                            Master Skills That <br className="hidden sm:block"/>
-                            <span className="text-brand-orange">Matter Today.</span>
-                        </h1>
-                        <p className="text-lg text-slate-300 mb-8 max-w-lg mx-auto md:mx-0 leading-relaxed">
-                            100% Practical-based training in Tech, Design, and Hardware Engineering. Plus, get expert help for your academic & technical assignments.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                            <a href="#courses" className="px-8 py-4 bg-brand-blue hover:bg-brand-blueHover text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
-                                Explore Courses <ArrowRight size={18} />
-                            </a>
-                            <button onClick={onOpenAssignment} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white font-bold rounded-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
-                                Get Assignment Help
-                            </button>
-                        </div>
-                    </div>
+        function Hero({ onOpenAssignment }) {
+            return (
+                <div className="relative bg-brand-dark text-white overflow-hidden sm:mb-0 mb-6 pt-20">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-orange/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
                     
-                    <div className="md:w-1/2 relative w-full hidden md:block">
-                        <div className="grid grid-cols-2 gap-4 animate-float">
-                            <div className="space-y-4 mt-8">
-                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-48 w-full" alt="Students" />
-                                <div className="bg-slate-800/80 backdrop-blur p-5 rounded-2xl border border-slate-700/50 shadow-xl border-l-4 border-l-brand-orange">
-                                    <h3 className="text-brand-orange font-extrabold text-2xl mb-1">95%</h3>
-                                    <p className="text-xs text-slate-300 font-bold uppercase tracking-wider">Completion Rate</p>
-                                </div>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 flex flex-col md:flex-row items-center gap-12">
+                        <div className="md:w-1/2 text-center md:text-left">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/30 text-blue-300 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                                <GraduationCap size={14} /> Transform Your Career
                             </div>
-                            <div className="space-y-4">
-                                <div className="bg-brand-blue/20 backdrop-blur p-5 rounded-2xl border border-brand-blue/30 shadow-xl flex flex-col items-center justify-center h-32 text-center border-b-4 border-b-brand-blue">
-                                    <UserCheck size={32} className="text-blue-300 mb-2"/>
-                                    <p className="text-xs text-blue-100 font-bold uppercase tracking-wider">Expert Mentors</p>
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+                                Master Skills That <br className="hidden sm:block"/>
+                                <span className="text-brand-orange">Matter Today.</span>
+                            </h1>
+                            <p className="text-lg text-slate-300 mb-8 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                                100% Practical-based training in Tech, Design, and Hardware Engineering. Plus, get expert help for your academic & technical assignments.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                                <a href="#courses" className="px-8 py-4 bg-brand-blue hover:bg-brand-blueHover text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                                    Explore Courses <ArrowRight size={18} />
+                                </a>
+                                <button onClick={onOpenAssignment} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white font-bold rounded-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
+                                    Get Assignment Help
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div className="md:w-1/2 relative w-full hidden md:block">
+                            <div className="grid grid-cols-2 gap-4 animate-float">
+                                <div className="space-y-4 mt-8">
+                                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-48 w-full" alt="Students" />
+                                    <div className="bg-slate-800/80 backdrop-blur p-5 rounded-2xl border border-slate-700/50 shadow-xl border-l-4 border-l-brand-orange">
+                                        <h3 className="text-brand-orange font-extrabold text-2xl mb-1">95%</h3>
+                                        <p className="text-xs text-slate-300 font-bold uppercase tracking-wider">Completion Rate</p>
+                                    </div>
                                 </div>
-                                <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-56 w-full" alt="Solar Practical" />
+                                <div className="space-y-4">
+                                    <div className="bg-brand-blue/20 backdrop-blur p-5 rounded-2xl border border-brand-blue/30 shadow-xl flex flex-col items-center justify-center h-32 text-center border-b-4 border-b-brand-blue">
+                                        <UserCheck size={32} className="text-blue-300 mb-2"/>
+                                        <p className="text-xs text-blue-100 font-bold uppercase tracking-wider">Expert Mentors</p>
+                                    </div>
+                                    <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-56 w-full" alt="Solar Practical" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
 
-        const EnrollModal = ({ course, isOpen, onClose }) => {
+        function EnrollModal({ course, isOpen, onClose }) {
             const [loading, setLoading] = useState(false);
 
             if (!isOpen || !course) return null;
@@ -464,7 +511,7 @@
                             <button onClick={onClose} className="md:hidden absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm text-slate-500"><X size={20}/></button>
                             
                             <div className="w-12 h-12 bg-blue-100 text-brand-blue rounded-2xl flex items-center justify-center mb-6">
-                                {course.icon}
+                                {getIcon(course.iconName)}
                             </div>
                             <h2 className="text-2xl font-extrabold text-brand-dark mb-2 leading-tight">{course.title}</h2>
                             <p className="text-slate-500 text-sm mb-6 leading-relaxed">{course.description}</p>
@@ -538,9 +585,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const AssignmentModal = ({ isOpen, onClose, notify }) => {
+        function AssignmentModal({ isOpen, onClose, notify }) {
             const [loading, setLoading] = useState(false);
 
             if (!isOpen) return null;
@@ -615,9 +662,9 @@
                     </div>
                 </div>
             );
-        };
+        }
 
-        const LegalModal = ({ docType, onClose }) => {
+        function LegalModal({ docType, onClose }) {
             if (!docType) return null;
             
             const content = {
@@ -650,7 +697,7 @@
                     </div>
                 </div>
             );
-        };
+        }
 
         function App() {
             const [filter, setFilter] = useState('All Courses');
@@ -658,12 +705,74 @@
             const [assignmentOpen, setAssignmentOpen] = useState(false);
             const [notification, setNotification] = useState(null);
             const [legalDoc, setLegalDoc] = useState(null);
+            const [courses, setCourses] = useState(FALLBACK_COURSES);
+            const [user, setUser] = useState(null);
+
+            // --- FIREBASE AUTHENTICATION ---
+            useEffect(() => {
+                const initAuth = async () => {
+                    try {
+                        // Skip custom token for our own Firebase project, just sign in silently
+                        await signInAnonymously(auth);
+                    } catch (e) { 
+                        console.error("Auth init error:", e); 
+                    }
+                };
+                initAuth();
+                return onAuthStateChanged(auth, setUser);
+            }, []);
+
+            // --- LOAD DYNAMIC COURSES AND AUTO-SEED IF EMPTY ---
+            useEffect(() => {
+                if (!user) return;
+                
+                const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses');
+                const unsubscribe = onSnapshot(q, async (snapshot) => {
+                    if (!snapshot.empty) {
+                        let fetchedCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setCourses(fetchedCourses);
+                    } else {
+                        // Database is empty. Show fallback locally so the UI looks complete...
+                        setCourses(FALLBACK_COURSES);
+                        
+                        // ...And seamlessly auto-seed the database in the background so Admin can manage them!
+                        try {
+                            for (const course of FALLBACK_COURSES) {
+                                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses', course.id);
+                                await setDoc(docRef, {
+                                    title: course.title,
+                                    category: course.category,
+                                    duration: course.duration,
+                                    level: course.level,
+                                    price: course.price,
+                                    iconName: course.iconName,
+                                    image: course.image,
+                                    description: course.description,
+                                    curriculum: course.curriculum,
+                                    published: true,
+                                    createdAt: serverTimestamp()
+                                });
+                            }
+                        } catch (err) {
+                            console.error("Auto-seeding error:", err);
+                        }
+                    }
+                }, (error) => {
+                    console.error("Firestore Error:", error);
+                    setCourses(FALLBACK_COURSES);
+                });
+
+                return () => unsubscribe();
+            }, [user]);
 
             const notify = (msg, type='success') => { setNotification({ msg, type }); setTimeout(() => setNotification(null), 3500); };
 
+            // Dynamically derive the categories from available courses to populate filter tabs
+            const dynamicCategories = ["All Courses", ...Array.from(new Set(courses.map(c => c.category)))];
+
             const filteredCourses = filter === 'All Courses' 
-                ? COURSES 
-                : COURSES.filter(c => c.category === filter);
+                ? courses 
+                : courses.filter(c => c.category === filter);
 
             return (
                 <div className="min-h-screen flex flex-col font-sans text-slate-800 bg-[#f8fafc]">
@@ -686,9 +795,9 @@
                             <p className="text-slate-500 max-w-2xl mx-auto">Choose from our intensive, project-based training programs designed to make you industry-ready. Select a category below to filter.</p>
                         </div>
 
-                        {/* Filters */}
+                        {/* Dynamic Filters */}
                         <div className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory gap-2 sm:gap-4 justify-start md:justify-center mb-12 pb-2">
-                            {CATEGORIES.map(c => (
+                            {dynamicCategories.map(c => (
                                 <button key={c} onClick={() => setFilter(c)} className={`snap-start px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all border ${filter === c ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-blue-500/20' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
                                     {c}
                                 </button>
@@ -700,15 +809,15 @@
                             {filteredCourses.map(course => (
                                 <div key={course.id} className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col">
                                     <div className="relative h-56 overflow-hidden bg-slate-100">
-                                        <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                                        <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onError={(e)=>{e.target.src='https://placehold.co/800x400?text=Course'}} />
                                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
                                         <div className="absolute top-4 right-4">
                                             <span className="bg-white/90 backdrop-blur text-brand-dark text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
-                                                ₦{course.price.toLocaleString()}
+                                                ₦{(course.price || 0).toLocaleString()}
                                             </span>
                                         </div>
                                         <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                                            <span className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${course.category === 'Design' ? 'bg-pink-500' : course.category === 'Tech' ? 'bg-brand-blue' : 'bg-brand-orange'}`}>
+                                            <span className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${getCategoryColor(course.category)}`}>
                                                 {course.category}
                                             </span>
                                         </div>
