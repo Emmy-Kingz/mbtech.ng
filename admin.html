@@ -77,12 +77,12 @@
             LayoutDashboard, Store as StoreIcon, Calendar as Event, FileText as Info, 
             BookOpen as Course, Users, Settings, Plus, Edit, Trash2 as Delete, X as Close, 
             LogOut, Lock, Check, RefreshCcw as Sync, MapPin as Location, Phone, Mail, ShieldAlert,
-            Loader2 // <-- Added Loader2 here
+            Loader2 
         } from 'lucide-react';
 
         // --- FIREBASE IMPORTS ---
         import { initializeApp } from 'firebase/app';
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
         import { getFirestore, collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 
         // --- FIREBASE CONFIGURATION ---
@@ -225,7 +225,8 @@
         function App() {
             const [hasAdminAccess, setHasAdminAccess] = useState(false);
             const [showLoginForm, setShowLoginForm] = useState(false);
-            const [passcode, setPasscode] = useState('');
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
             const [authError, setAuthError] = useState('');
             const [activeTab, setActiveTab] = useState('dashboard');
             const [toast, setToast] = useState(null);
@@ -274,9 +275,7 @@
                     
                     const unsub = onSnapshot(q, (snapshot) => {
                         const arr = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        // Sort newest first based on createdAt
                         arr.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                        
                         setData(prev => ({ ...prev, [tab]: arr }));
                         
                         if (loadedCount < totalCollections) {
@@ -295,7 +294,6 @@
                     unsubscribes.push(unsub);
                 });
 
-                // Fallback timeout to stop syncing animation
                 const timeoutId = setTimeout(() => { setIsSyncing(false); setSyncProgress(100); }, 8000);
 
                 return () => {
@@ -307,8 +305,10 @@
             // Google Login specific to Admin Email
             const handleGoogleLogin = async () => {
                 setIsAuthenticating(true);
+                setAuthError(''); // Clear previous errors
                 try {
                     const provider = new GoogleAuthProvider();
+                    provider.setCustomParameters({ prompt: 'select_account' }); // Force account selection
                     const result = await signInWithPopup(auth, provider);
                     
                     // Allow the exact requested email address (including the potential typo version provided)
@@ -319,48 +319,54 @@
                         setShowLoginForm(false);
                         setAuthError('');
                     } else {
-                        setAuthError('Unauthorized Account. You do not have admin privileges.');
+                        setAuthError(`Unauthorized Account (${result.user.email}). You do not have admin privileges.`);
                         await auth.signOut();
                         await signInAnonymously(auth); // Re-establish public connection
                     }
                 } catch (err) {
-                    setAuthError(err.message.replace('Firebase: ', ''));
+                    console.error("Google Auth Error Object:", err);
+                    
+                    // Detailed Error Handling for better debugging
+                    if (err.code === 'auth/unauthorized-domain') {
+                        setAuthError('Error: This domain is not authorized. Add it in Firebase Console -> Auth -> Settings -> Authorized domains.');
+                    } else if (err.code === 'auth/operation-not-supported-in-this-environment') {
+                        setAuthError('Error: Cannot run Google Login on file://. Please use a local web server (like VS Code Live Server).');
+                    } else if (err.code === 'auth/popup-closed-by-user') {
+                        setAuthError('Sign-in cancelled. The popup was closed before finishing.');
+                    } else if (err.code === 'auth/popup-blocked') {
+                         setAuthError('Error: Popup blocked by browser. Please allow popups for this site.');
+                    } else {
+                        setAuthError(err.message.replace('Firebase: ', ''));
+                    }
                 }
                 setIsAuthenticating(false);
             };
 
-            // Passcode Login with Anti-Bot protection
-            const handlePasscodeLogin = async (e) => {
+            // Email and Password Login
+            const handleEmailLogin = async (e) => {
                 e.preventDefault();
                 setIsAuthenticating(true);
-
-                // Check Lockout
-                const attempts = parseInt(localStorage.getItem('mbtech_admin_attempts') || '0');
-                const lockTime = parseInt(localStorage.getItem('mbtech_admin_lock_time') || '0');
+                setAuthError('');
                 
-                if (Date.now() < lockTime) {
-                    setAuthError(`Too many attempts. Try again in ${Math.ceil((lockTime - Date.now())/1000)} seconds.`);
-                    setIsAuthenticating(false);
-                    return;
-                }
-
-                const inputHash = await sha256(passcode);
-                const expectedDefaultHash = await sha256('emmy-admin%%');
-                const storedHash = localStorage.getItem('mbtech_admin_hash') || expectedDefaultHash;
-                
-                if (inputHash === storedHash) {
-                    localStorage.setItem('mbtech_admin_attempts', '0');
-                    setHasAdminAccess(true);
-                    setShowLoginForm(false);
-                    setAuthError('');
-                } else {
-                    const newAttempts = attempts + 1;
-                    localStorage.setItem('mbtech_admin_attempts', newAttempts);
-                    if (newAttempts >= 5) {
-                        localStorage.setItem('mbtech_admin_lock_time', Date.now() + 30000); // 30s lockout
-                        setAuthError('Too many attempts. Locked out for 30 seconds.');
+                try {
+                    const result = await signInWithEmailAndPassword(auth, email, password);
+                    const allowedEmails = ['emmanuel.amobi03@gmail.com', 'emmanuel.amobi03@gmai.com', 'mesobest2000@gmail.com'];
+                    
+                    if (result.user.email && allowedEmails.includes(result.user.email.toLowerCase())) {
+                        setHasAdminAccess(true);
+                        setShowLoginForm(false);
+                        setAuthError('');
                     } else {
-                        setAuthError(`Invalid passcode. ${5 - newAttempts} attempts remaining.`);
+                        setAuthError(`Unauthorized Account (${result.user.email}). You do not have admin privileges.`);
+                        await auth.signOut();
+                        await signInAnonymously(auth); // Re-establish public connection
+                    }
+                } catch (err) {
+                    console.error("Email Auth Error:", err);
+                    if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+                        setAuthError('Invalid email or password.');
+                    } else {
+                        setAuthError(err.message.replace('Firebase: ', ''));
                     }
                 }
                 setIsAuthenticating(false);
@@ -369,7 +375,8 @@
             const handleLogout = () => { 
                 setHasAdminAccess(false); 
                 setShowLoginForm(false); 
-                setPasscode(''); 
+                setEmail(''); 
+                setPassword(''); 
             };
 
             const showToast = (message, type = 'success') => setToast({ message, type });
@@ -381,12 +388,10 @@
                 const payload = Object.fromEntries(formData.entries());
                 Object.assign(payload, extraData);
                 
-                // Conversions
                 if (payload.price) payload.price = parseFloat(payload.price);
                 if (payload.oldPrice) payload.oldPrice = parseFloat(payload.oldPrice);
                 if (payload.stock) payload.stock = parseInt(payload.stock);
 
-                // Specific handling for complex structures (like Courses Curriculum)
                 if (tabName === 'courses' && payload.curriculumRaw) {
                     payload.curriculum = payload.curriculumRaw.split('\n').map(s => s.trim()).filter(s => s);
                     delete payload.curriculumRaw;
@@ -435,16 +440,6 @@
                 }
             };
 
-            const handleChangePasscode = async (e) => {
-                e.preventDefault();
-                const newPass = e.target.newPasscode.value;
-                if(newPass.length < 6) { showToast('Passcode must be at least 6 characters', 'error'); return; }
-                const hash = await sha256(newPass);
-                localStorage.setItem('mbtech_admin_hash', hash);
-                showToast('Admin passcode updated securely!');
-                setSettingsModalOpen(false);
-            };
-
             const openModal = (item, setModalOpen) => {
                 setCurrentItem(item);
                 setModalOpen(true);
@@ -459,7 +454,6 @@
                 );
             };
 
-            // Calculate active dashboard stats
             const activeEventsCount = data.events.filter(e => e.status === 'Active').length;
             const dashboardStats = [
                 { label: 'Products in Store', val: data.store.length, icon: StoreIcon, color: 'text-emerald-600', bg: 'bg-emerald-50' },
@@ -534,18 +528,28 @@
 
                                 <div className="flex items-center gap-3 mb-5">
                                     <div className="h-px bg-slate-200 flex-1"></div>
-                                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Or enter passcode</span>
+                                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Or use email & password</span>
                                     <div className="h-px bg-slate-200 flex-1"></div>
                                 </div>
 
-                                <form onSubmit={handlePasscodeLogin} className="space-y-6">
+                                <form onSubmit={handleEmailLogin} className="space-y-4">
                                     <div>
                                         <input 
+                                            type="email" 
+                                            value={email} 
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Admin Email" 
+                                            className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none text-slate-800 transition-all font-medium"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-6">
+                                        <input 
                                             type="password" 
-                                            value={passcode} 
-                                            onChange={(e) => setPasscode(e.target.value)}
-                                            placeholder="••••••••" 
-                                            className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none text-center text-xl tracking-[0.5em] text-slate-800 transition-all"
+                                            value={password} 
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="Password" 
+                                            className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none text-slate-800 transition-all font-medium tracking-wide"
                                             required
                                         />
                                     </div>
@@ -1120,22 +1124,16 @@
 
                     {/* Settings Modal */}
                     <Modal isOpen={isSettingsModalOpen} onClose={() => setSettingsModalOpen(false)} title="Security Settings">
-                        <form onSubmit={handleChangePasscode} className="space-y-4">
+                        <div className="space-y-4">
                             <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-3 text-brand-700 text-sm font-medium mb-4">
                                 <Info className="shrink-0 mt-0.5"/>
-                                <p>Change the master passcode used to access this admin portal. If you forget it, clear your browser local storage.</p>
+                                <p>Admin accounts and passwords are now managed securely via Firebase Authentication.</p>
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">New Passcode</label>
-                                <input name="newPasscode" type="password" required minLength="6" placeholder="Enter new passcode" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 transition-all tracking-widest font-bold" />
-                            </div>
+                            <p className="text-slate-600 text-sm leading-relaxed">To add a new administrator, change a password, or revoke access, please log in to your <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="text-brand-600 font-bold hover:underline">Firebase Console</a> and navigate to the <strong>Authentication</strong> tab.</p>
                             <div className="pt-6 flex justify-end gap-3 border-t border-slate-100 mt-4">
-                                <button type="button" onClick={() => setSettingsModalOpen(false)} className="px-5 py-3 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl font-bold transition-colors">Cancel</button>
-                                <button type="submit" className="px-6 py-3 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-bold shadow-lg shadow-brand-500/30 transition-all hover:-translate-y-0.5 flex items-center gap-2">
-                                    <Lock size={16} /> Save Encrypted Passcode
-                                </button>
+                                <button type="button" onClick={() => setSettingsModalOpen(false)} className="px-5 py-3 text-slate-600 hover:text-slate-900 bg-slate-100 border border-transparent hover:border-slate-200 rounded-xl font-bold transition-all">Close Window</button>
                             </div>
-                        </form>
+                        </div>
                     </Modal>
 
                     {/* Toasts */}
