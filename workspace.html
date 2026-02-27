@@ -59,16 +59,25 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js" defer></script>
 
     <style>
-        /* Smooth Mobile Scrolling for Data Tables */
+        /* Smooth Mobile Scrolling & App Feel */
         .smooth-scroll {
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
         }
         
+        .app-touch {
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Safe area handling for modern phones */
+        .pb-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)); }
+
         /* Animations */
-        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
-        .animate-fade-in-up { animation: fadeInUp 0.4s ease-out; }
-        .animate-scale-in { animation: scaleIn 0.3s ease-out; }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        .animate-fade-in-up { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -80,25 +89,12 @@
             100% { transform: translateX(100%) scaleX(0.2); }
         }
         .animate-progress { animation: indeterminate 1.5s infinite linear; }
-        
-        /* Initial Loader Spinner */
-        @keyframes spinFast { to { transform: rotate(360deg); } }
-        .native-loader-spinner {
-            width: 48px; height: 48px;
-            border: 4px solid #e2e8f0; border-top-color: #0056b3;
-            border-radius: 50%; animation: spinFast 1s linear infinite;
-        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased overflow-hidden">
     
-    <!-- Root Container with Instant Feedback Pre-loader -->
-    <div id="root">
-        <div style="display: flex; height: 100vh; width: 100vw; align-items: center; justify-content: center; background-color: #f8fafc; font-family: sans-serif; flex-direction: column; gap: 16px;">
-            <div class="native-loader-spinner"></div>
-            <p style="color: #64748b; font-weight: 600; font-size: 14px; letter-spacing: 0.5px;">Loading Unified Workspace...</p>
-        </div>
-    </div>
+    <!-- Root Container (Instant Mount) -->
+    <div id="root" class="h-screen w-screen bg-slate-50"></div>
 
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useMemo, Suspense } from 'react';
@@ -106,7 +102,7 @@
         import { 
             LayoutDashboard, Users, ShoppingCart, Send, Settings, LogOut, 
             Search, Filter, Mail, Lock, AlertCircle, ArrowRight,
-            CheckCircle, Clock, XCircle, Menu, X, Trash2, Package, MessageSquare, Plus, Edit, Eye
+            CheckCircle, Clock, XCircle, Package, MessageSquare, Plus, Edit, Eye, RefreshCw
         } from 'lucide-react';
 
         // Firebase Setup
@@ -158,12 +154,34 @@
 
             const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-500' : 'bg-brand-blue';
             return (
-                <div className={`fixed bottom-6 right-6 left-6 sm:left-auto ${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up`}>
+                // Elevated higher on mobile (bottom-24) to clear the bottom nav bar
+                <div className={`fixed bottom-24 lg:bottom-6 right-4 left-4 sm:left-auto sm:right-6 ${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up`}>
                     {type === 'success' ? <CheckCircle size={20} className="shrink-0"/> : <AlertCircle size={20} className="shrink-0"/>}
                     <span className="font-bold text-sm flex-1">{message}</span>
                     <button type="button" onClick={onClose} className="ml-2 hover:opacity-75 transition-opacity p-1"><X size={18}/></button>
                 </div>
             );
+        };
+
+        const MobileTab = ({ id, icon, label, badge, activeTab, setActiveTab }) => {
+            const isActive = activeTab === id;
+            return (
+                <button
+                    type="button"
+                    onClick={() => setActiveTab(id)}
+                    className={`flex flex-col items-center justify-center w-full py-1.5 active:scale-95 transition-transform app-touch ${isActive ? 'text-brand-blue' : 'text-slate-400 hover:text-slate-500'}`}
+                >
+                    <div className="relative">
+                        {icon}
+                        {badge > 0 && (
+                            <span className="absolute -top-1.5 -right-2 bg-brand-orange text-white text-[9px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full border-2 border-white">
+                                {badge > 99 ? '99+' : badge}
+                            </span>
+                        )}
+                    </div>
+                    <span className={`text-[10px] mt-1.5 ${isActive ? 'font-extrabold' : 'font-bold'}`}>{label}</span>
+                </button>
+            )
         };
 
         const OrderDetailsModal = ({ order, onClose, onUpdateStatus, onUpdatePaymentStatus }) => {
@@ -234,7 +252,7 @@
         };
 
         const GlobalFooter = () => (
-            <footer className="py-6 mt-auto text-center text-slate-500 text-sm font-medium border-t border-slate-200 bg-white flex flex-col items-center justify-center gap-1 z-20">
+            <footer className="py-6 mt-auto text-center text-slate-500 text-sm font-medium border-t border-slate-200 bg-white flex flex-col items-center justify-center gap-1 z-20 pb-safe">
                 <p>&copy; {new Date().getFullYear()} MBTECH. All rights reserved.</p>
                 <p>Designed by <a href="https://wa.me/2347044318043" target="_blank" rel="noopener noreferrer" className="text-brand-orange font-bold hover:underline transition-all p-1">Emmy Kingz</a></p>
             </footer>
@@ -275,7 +293,7 @@
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4 app-touch">
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 mb-2">Admin Email</label>
                                 <div className="relative">
@@ -307,7 +325,7 @@
                             <button 
                                 type="submit" 
                                 disabled={loading}
-                                className="w-full bg-brand-dark hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex justify-center items-center gap-2 text-base mt-2 disabled:opacity-70 disabled:hover:translate-y-0"
+                                className="w-full bg-brand-dark hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98] flex justify-center items-center gap-2 text-base mt-2 disabled:opacity-70 disabled:hover:translate-y-0"
                             >
                                 {loading ? 'Authenticating...' : 'Secure Login'} <ArrowRight size={18} />
                             </button>
@@ -316,7 +334,7 @@
                             <button 
                                 type="button" 
                                 onClick={onPreview}
-                                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2 text-base mt-2"
+                                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all active:scale-[0.98] flex justify-center items-center gap-2 text-base mt-2"
                             >
                                 Preview Dashboard (Read Only) <Eye size={18} />
                             </button>
@@ -338,13 +356,15 @@
         const App = () => {
             const [user, setUser] = useState(null);
             const [userEmail, setUserEmail] = useState('');
-            const [authChecked, setAuthChecked] = useState(false);
             const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-            const [showLoginModal, setShowLoginModal] = useState(true);
+            const [showLoginModal, setShowLoginModal] = useState(false); // Start in preview mode directly
+
+            // Simulated sync for visual "realtime" effect on initial load
+            const [initialSyncing, setInitialSyncing] = useState(true);
 
             // Advanced Activity-based syncing state
             const [syncQueue, setSyncQueue] = useState(new Set());
-            const isSyncing = syncQueue.size > 0;
+            const isSyncing = syncQueue.size > 0 || initialSyncing;
             const [activeListeners, setActiveListeners] = useState({
                 orders: false, customers: false, products: false, messages: false
             });
@@ -360,11 +380,28 @@
             const [selectedOrder, setSelectedOrder] = useState(null);
             const [toast, setToast] = useState(null);
             const [selectedEmails, setSelectedEmails] = useState(new Set());
-            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
             // Allowed Roles
             const SUPER_ADMIN_EMAIL = 'emmanuel.amobi03@gmail.com';
             const ALLOWED_ADMINS = [SUPER_ADMIN_EMAIL, 'mesobest2000@gmail.com', 'mesobest.technology.org@gmail.com'];
+
+            // 60-Second Auto Login Pop-up
+            useEffect(() => {
+                if (!user) {
+                    const timer = setTimeout(() => {
+                        setShowLoginModal(true);
+                    }, 60000); // 60 seconds
+                    return () => clearTimeout(timer);
+                }
+            }, [user]);
+
+            // Simulate initial fetching visual effect
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    setInitialSyncing(false);
+                }, 2500); // 2.5 seconds
+                return () => clearTimeout(timer);
+            }, []);
 
             useEffect(() => {
                 const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -378,7 +415,6 @@
                         } else {
                             setUser(null);
                             signOut(auth);
-                            setShowLoginModal(true);
                         }
                     } else {
                         // Reset to mock data for Preview Mode when logged out
@@ -390,7 +426,6 @@
                         setProducts(initialProducts);
                         setMessages(initialMessages);
                     }
-                    setAuthChecked(true);
                 });
                 return () => unsubscribe();
             }, []);
@@ -403,7 +438,7 @@
                 }
                 setActiveListeners(prev => {
                     const next = { ...prev };
-                    if (activeTab === 'dashboard') { next.orders = true; next.customers = true; next.messages = true; }
+                    if (activeTab === 'dashboard') { next.orders = true; next.customers = true; next.products = true; next.messages = true; }
                     if (activeTab === 'orders') next.orders = true;
                     if (activeTab === 'customers') next.customers = true;
                     if (activeTab === 'products') next.products = true;
@@ -414,7 +449,7 @@
 
             // Modular, lazy-loaded Firestore Syncs (Quick & Secure execution based on activity)
             useEffect(() => {
-                if (!user || !activeListeners.orders) return;
+                if (!activeListeners.orders) return;
                 setSyncQueue(prev => new Set(prev).add('orders'));
                 const ref = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
                 const unsub = onSnapshot(ref, (snapshot) => {
@@ -423,10 +458,10 @@
                     setSyncQueue(prev => { const n = new Set(prev); n.delete('orders'); return n; });
                 }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('orders'); return n; }); });
                 return () => unsub();
-            }, [user, activeListeners.orders, isSuperAdmin]);
+            }, [activeListeners.orders, isSuperAdmin]);
 
             useEffect(() => {
-                if (!user || !activeListeners.customers) return;
+                if (!activeListeners.customers) return;
                 setSyncQueue(prev => new Set(prev).add('customers'));
                 const ref = collection(db, 'artifacts', appId, 'public', 'data', 'customers');
                 const unsub = onSnapshot(ref, (snapshot) => {
@@ -435,10 +470,10 @@
                     setSyncQueue(prev => { const n = new Set(prev); n.delete('customers'); return n; });
                 }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('customers'); return n; }); });
                 return () => unsub();
-            }, [user, activeListeners.customers, isSuperAdmin]);
+            }, [activeListeners.customers, isSuperAdmin]);
 
             useEffect(() => {
-                if (!user || !activeListeners.products) return;
+                if (!activeListeners.products) return;
                 setSyncQueue(prev => new Set(prev).add('products'));
                 const ref = collection(db, 'artifacts', appId, 'public', 'data', 'products');
                 const unsub = onSnapshot(ref, (snapshot) => {
@@ -447,10 +482,10 @@
                     setSyncQueue(prev => { const n = new Set(prev); n.delete('products'); return n; });
                 }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('products'); return n; }); });
                 return () => unsub();
-            }, [user, activeListeners.products, isSuperAdmin]);
+            }, [activeListeners.products, isSuperAdmin]);
 
             useEffect(() => {
-                if (!user || !activeListeners.messages) return;
+                if (!activeListeners.messages) return;
                 setSyncQueue(prev => new Set(prev).add('messages'));
                 const ref = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
                 const unsub = onSnapshot(ref, (snapshot) => {
@@ -459,7 +494,7 @@
                     setSyncQueue(prev => { const n = new Set(prev); n.delete('messages'); return n; });
                 }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('messages'); return n; }); });
                 return () => unsub();
-            }, [user, activeListeners.messages, isSuperAdmin]);
+            }, [activeListeners.messages, isSuperAdmin]);
 
             const handleLogin = async (email, password) => {
                 try {
@@ -548,26 +583,13 @@
             const totalRevenue = useMemo(() => orders.reduce((sum, o) => o.payment === 'Paid' ? sum + o.total : sum, 0), [orders]);
             const unreadMessagesCount = useMemo(() => messages.filter(m => m.status === 'Unread').length, [messages]);
 
-            if (!authChecked) {
-                // Return null to let the native HTML spinner in <div id="root"> keep showing
-                return null; 
-            }
-
             return (
-                <div className="flex h-screen overflow-hidden bg-slate-50 font-sans relative">
+                <div className="flex h-[100dvh] overflow-hidden bg-slate-50 font-sans relative app-touch">
                     {/* Data Sync Progress Bar */}
                     {isSyncing && (
                         <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 z-50 overflow-hidden">
                             <div className="h-full bg-brand-orange animate-progress w-full origin-left"></div>
                         </div>
-                    )}
-
-                    {/* Mobile Menu Backdrop */}
-                    {mobileMenuOpen && (
-                        <div 
-                            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 lg:hidden transition-opacity animate-fade-in"
-                            onClick={() => setMobileMenuOpen(false)}
-                        />
                     )}
 
                     {/* Login Modal Overlay */}
@@ -578,36 +600,32 @@
                         />
                     )}
 
-                    {/* Sidebar Navigation */}
-                    <aside className={`fixed inset-y-0 left-0 bg-brand-dark text-white w-64 shadow-2xl transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 z-40 flex flex-col`}>
+                    {/* Desktop Sidebar Navigation */}
+                    <aside className="hidden lg:flex fixed inset-y-0 left-0 bg-brand-dark text-white w-64 shadow-2xl z-40 flex-col app-touch">
                         <div className="p-6 flex items-center justify-between border-b border-slate-800 mt-1">
                             <div className="text-2xl font-extrabold tracking-tight">MBTECH<span className="text-brand-orange">.NG</span></div>
-                            <button type="button" className="lg:hidden text-slate-400 hover:text-white p-2 -mr-2" onClick={() => setMobileMenuOpen(false)}>
-                                <X size={24}/>
-                            </button>
                         </div>
                         
                         <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto smooth-scroll">
                             <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Analytics & CRM</p>
-                            <button type="button" onClick={() => {setActiveTab('dashboard'); setMobileMenuOpen(false);}} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                            <button type="button" onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                                 <LayoutDashboard size={20} /> Dashboard Overview
                             </button>
-                            <button type="button" onClick={() => {setActiveTab('orders'); setMobileMenuOpen(false);}} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'orders' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                            <button type="button" onClick={() => setActiveTab('orders')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'orders' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                                 <ShoppingCart size={20} /> Orders & Fulfillment
                             </button>
-                            <button type="button" onClick={() => {setActiveTab('customers'); setMobileMenuOpen(false);}} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'customers' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                            <button type="button" onClick={() => setActiveTab('customers')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'customers' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                                 <Users size={20} /> Customers & Marketing
                             </button>
 
                             <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-6">Store Admin</p>
-                            <button type="button" onClick={() => {setActiveTab('products'); setMobileMenuOpen(false);}} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'products' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                            <button type="button" onClick={() => setActiveTab('products')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'products' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                                 <Package size={20} /> Products & Courses
                             </button>
-                            <button type="button" onClick={() => {setActiveTab('messages'); setMobileMenuOpen(false);}} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'messages' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+                            <button type="button" onClick={() => setActiveTab('messages')} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'messages' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
                                 <div className="flex items-center gap-3"><MessageSquare size={20} /> Leads & Connect</div>
                                 {unreadMessagesCount > 0 && <span className="bg-brand-orange text-white text-xs px-2 py-0.5 rounded-full">{unreadMessagesCount}</span>}
                             </button>
-
                         </nav>
 
                         <div className="p-4 border-t border-slate-800 bg-slate-900/50">
@@ -634,93 +652,127 @@
                         </div>
                     </aside>
 
+                    {/* Mobile Native-Style Bottom Navigation */}
+                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center px-1 py-1 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)] app-touch">
+                        <MobileTab id="dashboard" icon={<LayoutDashboard size={22}/>} label="Home" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <MobileTab id="orders" icon={<ShoppingCart size={22}/>} label="Orders" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <MobileTab id="customers" icon={<Users size={22}/>} label="Users" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <MobileTab id="products" icon={<Package size={22}/>} label="Store" activeTab={activeTab} setActiveTab={setActiveTab} />
+                        <MobileTab id="messages" icon={<MessageSquare size={22}/>} label="Leads" badge={unreadMessagesCount} activeTab={activeTab} setActiveTab={setActiveTab} />
+                    </nav>
+
                     {/* Main Content Area */}
                     <div className="flex-1 flex flex-col min-w-0 lg:ml-64 relative h-full">
+                        
                         {/* Topbar */}
-                        <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
-                            <div className="flex items-center justify-between px-4 sm:px-8 py-4 mt-1">
-                                <div className="flex items-center gap-4">
-                                    <button type="button" className="lg:hidden text-slate-600 bg-slate-100 p-2.5 rounded-lg active:scale-95 transition-transform" onClick={() => setMobileMenuOpen(true)}>
-                                        <Menu size={22} />
-                                    </button>
-                                    <h2 className="text-xl sm:text-2xl font-extrabold text-brand-dark capitalize truncate">
+                        <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20 app-touch">
+                            <div className="flex items-center justify-between px-4 sm:px-8 py-3.5 mt-1">
+                                <div className="flex items-center gap-3">
+                                    <div className="lg:hidden text-2xl font-extrabold tracking-tight text-brand-dark">MB<span className="text-brand-orange">.</span></div>
+                                    <div className="hidden lg:block lg:w-px lg:h-6 lg:bg-slate-200"></div>
+                                    <h2 className="text-lg sm:text-2xl font-extrabold text-brand-dark capitalize truncate">
                                         {activeTab === 'customers' ? 'CRM & Marketing' : activeTab.replace('-', ' ')}
                                     </h2>
                                 </div>
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-3">
+                                    {isSyncing && (
+                                        <div className="hidden sm:flex items-center gap-2 text-brand-orange text-xs font-bold animate-pulse">
+                                            <RefreshCw size={14} className="animate-spin" /> Syncing...
+                                        </div>
+                                    )}
                                     {!user && !showLoginModal && (
-                                        <div className="flex items-center gap-2 px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-bold rounded-lg border border-orange-200">
+                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-bold rounded-lg border border-orange-200">
                                             <Eye size={14} className="shrink-0" /> <span className="hidden sm:inline">Preview Mode</span><span className="sm:hidden">Preview</span>
                                         </div>
                                     )}
                                     <div className="relative hidden md:block">
                                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                        <input type="text" placeholder="Search data..." className="pl-10 pr-4 py-2.5 bg-slate-100 border border-transparent rounded-xl focus:border-brand-blue focus:bg-white focus:ring-4 focus:ring-brand-blue/10 transition-all text-sm font-medium w-64 lg:w-80 outline-none" />
+                                        <input type="text" placeholder="Search data..." className="pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl focus:border-brand-blue focus:bg-white focus:ring-4 focus:ring-brand-blue/10 transition-all text-sm font-medium w-64 lg:w-80 outline-none" />
+                                    </div>
+                                    {/* Mobile Auth Button in Header */}
+                                    <div className="lg:hidden flex items-center ml-1">
+                                        {!user ? (
+                                            <button type="button" onClick={() => setShowLoginModal(true)} className="p-2 bg-brand-blue text-white rounded-lg shadow-sm active:scale-95 transition-transform">
+                                                <Lock size={18} />
+                                            </button>
+                                        ) : (
+                                            <button type="button" onClick={handleLogout} className="p-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg shadow-sm active:scale-95 transition-transform">
+                                                <LogOut size={18} />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </header>
 
-                        {/* Views */}
-                        <main className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50/50 smooth-scroll">
+                        {/* Views - Added pb-24 for mobile to avoid bottom nav overlap */}
+                        <main className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50/50 smooth-scroll pb-24 lg:pb-8">
                             
                             {/* --- DASHBOARD TAB --- */}
                             {activeTab === 'dashboard' && (
                                 <div className="space-y-6 sm:space-y-8 animate-fade-in pb-8">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-16 h-16 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center shadow-inner shrink-0"><ShoppingCart size={32}/></div>
+                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center shadow-inner shrink-0"><Package size={28}/></div>
                                             <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-sm mb-1 truncate">Total Orders</p>
-                                                <h4 className="text-3xl font-extrabold text-brand-dark">{orders.length}</h4>
+                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Products & Courses</p>
+                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
+                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : products.length}
+                                                </h4>
                                             </div>
                                         </div>
-                                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shadow-inner shrink-0"><Settings size={32}/></div>
+                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-50 text-brand-orange rounded-2xl flex items-center justify-center shadow-inner shrink-0"><Users size={28}/></div>
                                             <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-sm mb-1 truncate">Total Revenue</p>
-                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark truncate">₦{totalRevenue.toLocaleString()}</h4>
+                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Active Users</p>
+                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
+                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : customers.length}
+                                                </h4>
                                             </div>
                                         </div>
-                                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-16 h-16 bg-orange-50 text-brand-orange rounded-2xl flex items-center justify-center shadow-inner shrink-0"><Users size={32}/></div>
+                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center shadow-inner shrink-0"><MessageSquare size={28}/></div>
                                             <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-sm mb-1 truncate">Customers</p>
-                                                <h4 className="text-3xl font-extrabold text-brand-dark">{customers.length}</h4>
+                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Info & Leads</p>
+                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
+                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : messages.length}
+                                                </h4>
                                             </div>
                                         </div>
-                                        <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-16 h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center shadow-inner shrink-0"><MessageSquare size={32}/></div>
+                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shadow-inner shrink-0"><ShoppingCart size={28}/></div>
                                             <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-sm mb-1 truncate">New Leads</p>
-                                                <h4 className="text-3xl font-extrabold text-brand-dark">{unreadMessagesCount}</h4>
+                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Total Orders</p>
+                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
+                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : orders.length}
+                                                </h4>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                                         <div className="p-5 sm:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                            <h3 className="text-lg font-extrabold text-brand-dark">Recent Transactions</h3>
-                                            <button type="button" onClick={() => setActiveTab('orders')} className="text-sm font-bold text-brand-blue hover:text-brand-blueHover px-4 py-2 bg-blue-50 rounded-lg transition-colors">View All</button>
+                                            <h3 className="text-base sm:text-lg font-extrabold text-brand-dark">Recent Transactions</h3>
+                                            <button type="button" onClick={() => setActiveTab('orders')} className="text-xs sm:text-sm font-bold text-brand-blue hover:text-brand-blueHover px-4 py-2 bg-blue-50 rounded-lg transition-colors">View All</button>
                                         </div>
                                         <div className="overflow-x-auto smooth-scroll">
                                             <table className="w-full text-left border-collapse min-w-[600px]">
                                                 <thead>
-                                                    <tr className="bg-white text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
+                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
                                                         <th className="p-4 sm:p-5 font-bold">Order ID</th>
                                                         <th className="p-4 sm:p-5 font-bold">Customer Name</th>
                                                         <th className="p-4 sm:p-5 font-bold">Amount</th>
                                                         <th className="p-4 sm:p-5 font-bold">Status</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="text-sm font-semibold text-slate-700">
+                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
                                                     {orders.slice(0, 5).map(order => (
-                                                        <tr key={order.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer" onClick={() => setSelectedOrder(order)}>
+                                                        <tr key={order.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer active:bg-slate-100" onClick={() => setSelectedOrder(order)}>
                                                             <td className="p-4 sm:p-5 text-brand-blue font-extrabold">{order.id}</td>
                                                             <td className="p-4 sm:p-5">{order.customer}</td>
                                                             <td className="p-4 sm:p-5">₦{order.total.toLocaleString()}</td>
                                                             <td className="p-4 sm:p-5">
-                                                                <span className={`px-3 py-1.5 rounded-lg text-xs font-bold inline-block whitespace-nowrap ${
+                                                                <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold inline-block whitespace-nowrap ${
                                                                     order.status === 'Completed' ? 'bg-green-100 text-green-700' :
                                                                     order.status === 'Processing' ? 'bg-blue-100 text-blue-700' :
                                                                     'bg-orange-100 text-orange-700'
@@ -730,8 +782,8 @@
                                                             </td>
                                                         </tr>
                                                     ))}
-                                                    {orders.length === 0 && !isSyncing && (
-                                                        <tr><td colSpan="4" className="p-8 text-center text-slate-500 font-medium">No recent transactions found.</td></tr>
+                                                    {orders.length === 0 && !initialSyncing && (
+                                                        <tr><td colSpan="4" className="p-8 text-center text-slate-500 font-medium text-sm">No recent transactions found.</td></tr>
                                                     )}
                                                 </tbody>
                                             </table>
@@ -747,43 +799,43 @@
                                         <div className="p-5 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
                                             <div>
                                                 <h3 className="text-lg font-extrabold text-brand-dark">All Orders</h3>
-                                                <p className="text-sm text-slate-500 font-medium mt-1">Manage and track customer fulfillment.</p>
+                                                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Manage and track customer fulfillment.</p>
                                             </div>
                                         </div>
                                         <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[900px]">
+                                            <table className="w-full text-left border-collapse min-w-[800px]">
                                                 <thead>
-                                                    <tr className="bg-white text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-5 font-bold pl-6">Order Details</th>
-                                                        <th className="p-5 font-bold">Customer Info</th>
-                                                        <th className="p-5 font-bold">Amount</th>
-                                                        <th className="p-5 font-bold">Payment</th>
-                                                        <th className="p-5 font-bold">Status</th>
-                                                        <th className="p-5 font-bold text-right pr-6">Action</th>
+                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
+                                                        <th className="p-4 sm:p-5 font-bold pl-4 sm:pl-6">Order Details</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Customer Info</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Amount</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Payment</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Status</th>
+                                                        <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="text-sm font-semibold text-slate-700">
+                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
                                                     {orders.map(order => (
                                                         <tr key={order.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                            <td className="p-5 pl-6">
+                                                            <td className="p-4 sm:p-5 pl-4 sm:pl-6">
                                                                 <div className="font-extrabold text-brand-dark">{order.id}</div>
-                                                                <div className="text-xs text-slate-500 mt-1">{order.date}</div>
+                                                                <div className="text-[10px] sm:text-xs text-slate-500 mt-1">{order.date}</div>
                                                             </td>
-                                                            <td className="p-5">
+                                                            <td className="p-4 sm:p-5">
                                                                 <div className="font-bold">{order.customer}</div>
-                                                                <div className="text-xs text-slate-500 font-medium mt-1">{order.email}</div>
+                                                                <div className="text-[10px] sm:text-xs text-slate-500 font-medium mt-1">{order.email}</div>
                                                             </td>
-                                                            <td className="p-5 font-extrabold">₦{order.total.toLocaleString()}</td>
-                                                            <td className="p-5">
-                                                                <span className={`px-2.5 py-1 rounded-md text-xs font-bold inline-flex items-center gap-1 whitespace-nowrap ${
+                                                            <td className="p-4 sm:p-5 font-extrabold">₦{order.total.toLocaleString()}</td>
+                                                            <td className="p-4 sm:p-5">
+                                                                <span className={`px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 whitespace-nowrap ${
                                                                     order.payment === 'Paid' ? 'text-green-700 bg-green-50 border border-green-200' : 'text-orange-700 bg-orange-50 border border-orange-200'
                                                                 }`}>
                                                                     {order.payment === 'Paid' ? <CheckCircle size={12}/> : <Clock size={12}/>}
                                                                     {order.payment}
                                                                 </span>
                                                             </td>
-                                                            <td className="p-5">
-                                                                <span className={`px-3 py-1.5 rounded-lg text-xs font-bold inline-block whitespace-nowrap ${
+                                                            <td className="p-4 sm:p-5">
+                                                                <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold inline-block whitespace-nowrap ${
                                                                     order.status === 'Completed' ? 'bg-green-100 text-green-700' :
                                                                     order.status === 'Processing' ? 'bg-blue-100 text-blue-700' :
                                                                     'bg-orange-100 text-orange-700'
@@ -791,19 +843,19 @@
                                                                     {order.status}
                                                                 </span>
                                                             </td>
-                                                            <td className="p-5 text-right flex items-center justify-end gap-2 pr-6">
-                                                                <button type="button" onClick={() => setSelectedOrder(order)} className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors whitespace-nowrap">
-                                                                    Edit / Manage
+                                                            <td className="p-4 sm:p-5 text-right flex items-center justify-end gap-2 pr-4 sm:pr-6">
+                                                                <button type="button" onClick={() => setSelectedOrder(order)} className="px-4 py-2 sm:px-5 sm:py-2.5 bg-slate-100 text-slate-700 rounded-lg text-[10px] sm:text-sm font-bold hover:bg-slate-200 transition-colors whitespace-nowrap active:scale-95">
+                                                                    Edit
                                                                 </button>
                                                                 {isSuperAdmin && (
-                                                                    <button type="button" onClick={() => deleteItem('orders', order.id, 'Order')} className="p-2.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors" title="Delete permanently">
-                                                                        <Trash2 size={18} />
+                                                                    <button type="button" onClick={() => deleteItem('orders', order.id, 'Order')} className="p-2 sm:p-2.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
+                                                                        <Trash2 size={16} />
                                                                     </button>
                                                                 )}
                                                             </td>
                                                         </tr>
                                                     ))}
-                                                    {orders.length === 0 && !isSyncing && (
+                                                    {orders.length === 0 && !initialSyncing && (
                                                         <tr><td colSpan="6" className="p-8 text-center text-slate-500 font-medium">No orders found.</td></tr>
                                                     )}
                                                 </tbody>
@@ -819,40 +871,40 @@
                                     <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                                         <div className="p-5 sm:p-8 border-b border-slate-100 bg-slate-50/50">
                                             <h3 className="text-lg font-extrabold text-brand-dark mb-1">Customer Database</h3>
-                                            <p className="text-sm text-slate-500 font-medium">Select users below to bulk-send email marketing campaigns or promos.</p>
+                                            <p className="text-xs sm:text-sm text-slate-500 font-medium">Select users below to bulk-send email marketing campaigns or promos.</p>
                                         </div>
                                         
                                         <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[900px]">
+                                            <table className="w-full text-left border-collapse min-w-[800px]">
                                                 <thead>
-                                                    <tr className="bg-white text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-5 w-16 text-center pl-6">
+                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
+                                                        <th className="p-4 sm:p-5 w-16 text-center pl-4 sm:pl-6">
                                                             <input 
                                                                 type="checkbox" 
-                                                                className="w-4.5 h-4.5 rounded border-slate-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
+                                                                className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded border-slate-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
                                                                 checked={selectedEmails.size === customers.length && customers.length > 0}
                                                                 onChange={selectAllEmails}
                                                             />
                                                         </th>
-                                                        <th className="p-5 font-bold">Customer Name</th>
-                                                        <th className="p-5 font-bold">Email Address</th>
-                                                        <th className="p-5 font-bold text-center">Orders</th>
-                                                        <th className="p-5 font-bold">Total Spent</th>
-                                                        {isSuperAdmin && <th className="p-5 font-bold text-right pr-6">Action</th>}
+                                                        <th className="p-4 sm:p-5 font-bold">Customer Name</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Email Address</th>
+                                                        <th className="p-4 sm:p-5 font-bold text-center">Orders</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Total Spent</th>
+                                                        {isSuperAdmin && <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>}
                                                     </tr>
                                                 </thead>
-                                                <tbody className="text-sm font-semibold text-slate-700">
+                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
                                                     {customers.map(customer => (
                                                         <tr key={customer.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                            <td className="p-5 text-center pl-6">
+                                                            <td className="p-4 sm:p-5 text-center pl-4 sm:pl-6">
                                                                 <input 
                                                                     type="checkbox" 
-                                                                    className="w-4.5 h-4.5 rounded border-slate-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
+                                                                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded border-slate-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
                                                                     checked={selectedEmails.has(customer.email)}
                                                                     onChange={() => toggleEmailSelection(customer.email)}
                                                                 />
                                                             </td>
-                                                            <td className="p-5">
+                                                            <td className="p-4 sm:p-5">
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
                                                                         {customer.name.charAt(0)}
@@ -860,35 +912,35 @@
                                                                     <span className="font-bold text-brand-dark whitespace-nowrap">{customer.name}</span>
                                                                 </div>
                                                             </td>
-                                                            <td className="p-5 text-slate-500">{customer.email}</td>
-                                                            <td className="p-5 text-center">
-                                                                <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">{customer.totalOrders}</span>
+                                                            <td className="p-4 sm:p-5 text-slate-500">{customer.email}</td>
+                                                            <td className="p-4 sm:p-5 text-center">
+                                                                <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">{customer.totalOrders}</span>
                                                             </td>
-                                                            <td className="p-5 font-extrabold text-brand-blue">₦{customer.spent.toLocaleString()}</td>
+                                                            <td className="p-4 sm:p-5 font-extrabold text-brand-blue">₦{customer.spent.toLocaleString()}</td>
                                                             
                                                             {isSuperAdmin && (
-                                                                <td className="p-5 text-right pr-6">
-                                                                    <button type="button" onClick={() => deleteItem('customers', customer.id, 'Customer')} className="p-2.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors" title="Delete customer">
-                                                                        <Trash2 size={18} />
+                                                                <td className="p-4 sm:p-5 text-right pr-4 sm:pr-6">
+                                                                    <button type="button" onClick={() => deleteItem('customers', customer.id, 'Customer')} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
+                                                                        <Trash2 size={16} />
                                                                     </button>
                                                                 </td>
                                                             )}
                                                         </tr>
                                                     ))}
-                                                    {customers.length === 0 && !isSyncing && (
+                                                    {customers.length === 0 && !initialSyncing && (
                                                         <tr><td colSpan={isSuperAdmin ? "6" : "5"} className="p-8 text-center text-slate-500 font-medium">No customers found.</td></tr>
                                                     )}
                                                 </tbody>
                                             </table>
                                         </div>
                                         
-                                        <div className="p-5 sm:p-8 bg-slate-50 border-t border-slate-100">
+                                        <div className="p-4 sm:p-8 bg-slate-50 border-t border-slate-100">
                                             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-                                                <div className="text-sm font-bold text-slate-500 flex items-center gap-2">
-                                                    <Users size={18} className="text-brand-blue"/> {selectedEmails.size} Recipients Selected
+                                                <div className="text-[10px] sm:text-sm font-bold text-slate-500 flex items-center gap-2">
+                                                    <Users size={16} className="text-brand-blue"/> {selectedEmails.size} Recipients Selected
                                                 </div>
-                                                <button type="button" onClick={handleEmailCampaign} className="w-full sm:w-auto px-8 py-4 bg-brand-dark text-white rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
-                                                    <Send size={18}/> Launch AI Promo Campaign
+                                                <button type="button" onClick={handleEmailCampaign} className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 bg-brand-dark text-white rounded-xl text-sm sm:text-base font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-95">
+                                                    <Send size={16}/> Launch AI Promo Campaign
                                                 </button>
                                             </div>
                                         </div>
@@ -903,51 +955,51 @@
                                         <div className="p-5 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
                                             <div>
                                                 <h3 className="text-lg font-extrabold text-brand-dark">Store Catalog</h3>
-                                                <p className="text-sm text-slate-500 font-medium mt-1">Manage physical products and digital courses.</p>
+                                                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Manage physical products and digital courses.</p>
                                             </div>
-                                            <button type="button" onClick={() => checkAuth() && showToast('Add functionality coming soon.', 'success')} className="flex justify-center items-center gap-2 px-5 py-2.5 bg-brand-blue text-white rounded-xl font-bold text-sm hover:bg-brand-blueHover shadow-md transition-all">
+                                            <button type="button" onClick={() => checkAuth() && showToast('Add functionality coming soon.', 'success')} className="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-3 sm:py-2.5 bg-brand-blue text-white rounded-xl font-bold text-sm hover:bg-brand-blueHover shadow-md transition-all active:scale-95">
                                                 <Plus size={16} /> Add Product
                                             </button>
                                         </div>
                                         <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[900px]">
+                                            <table className="w-full text-left border-collapse min-w-[800px]">
                                                 <thead>
-                                                    <tr className="bg-white text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-5 font-bold pl-6">Product Code</th>
-                                                        <th className="p-5 font-bold">Item Name</th>
-                                                        <th className="p-5 font-bold">Category</th>
-                                                        <th className="p-5 font-bold">Price</th>
-                                                        <th className="p-5 font-bold">Status</th>
-                                                        <th className="p-5 font-bold text-right pr-6">Action</th>
+                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
+                                                        <th className="p-4 sm:p-5 font-bold pl-4 sm:pl-6">Product Code</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Item Name</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Category</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Price</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Status</th>
+                                                        <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="text-sm font-semibold text-slate-700">
+                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
                                                     {products.map(product => (
                                                         <tr key={product.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                            <td className="p-5 pl-6 font-extrabold text-brand-dark">{product.id}</td>
-                                                            <td className="p-5 font-bold">{product.name}</td>
-                                                            <td className="p-5 text-slate-500">{product.category}</td>
-                                                            <td className="p-5 font-extrabold text-brand-blue">₦{product.price.toLocaleString()}</td>
-                                                            <td className="p-5">
-                                                                <span className={`px-3 py-1.5 rounded-lg text-xs font-bold inline-block whitespace-nowrap ${
+                                                            <td className="p-4 sm:p-5 pl-4 sm:pl-6 font-extrabold text-brand-dark">{product.id}</td>
+                                                            <td className="p-4 sm:p-5 font-bold">{product.name}</td>
+                                                            <td className="p-4 sm:p-5 text-slate-500">{product.category}</td>
+                                                            <td className="p-4 sm:p-5 font-extrabold text-brand-blue">₦{product.price.toLocaleString()}</td>
+                                                            <td className="p-4 sm:p-5">
+                                                                <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold inline-block whitespace-nowrap ${
                                                                     product.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                                                 }`}>
                                                                     {product.status} {product.status === 'Active' ? `(${product.stock})` : ''}
                                                                 </span>
                                                             </td>
-                                                            <td className="p-5 text-right flex items-center justify-end gap-2 pr-6">
-                                                                <button type="button" onClick={() => checkAuth() && showToast('Edit interface coming soon.', 'success')} className="p-2.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors" title="Edit">
-                                                                    <Edit size={18} />
+                                                            <td className="p-4 sm:p-5 text-right flex items-center justify-end gap-2 pr-4 sm:pr-6">
+                                                                <button type="button" onClick={() => checkAuth() && showToast('Edit interface coming soon.', 'success')} className="p-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors active:scale-95" title="Edit">
+                                                                    <Edit size={16} />
                                                                 </button>
                                                                 {isSuperAdmin && (
-                                                                    <button type="button" onClick={() => deleteItem('products', product.id, 'Product')} className="p-2.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors" title="Delete">
-                                                                        <Trash2 size={18} />
+                                                                    <button type="button" onClick={() => deleteItem('products', product.id, 'Product')} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
+                                                                        <Trash2 size={16} />
                                                                     </button>
                                                                 )}
                                                             </td>
                                                         </tr>
                                                     ))}
-                                                    {products.length === 0 && !isSyncing && (
+                                                    {products.length === 0 && !initialSyncing && (
                                                         <tr><td colSpan="6" className="p-8 text-center text-slate-500 font-medium">No products available.</td></tr>
                                                     )}
                                                 </tbody>
@@ -964,46 +1016,46 @@
                                         <div className="p-5 sm:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                                             <div>
                                                 <h3 className="text-lg font-extrabold text-brand-dark">Connect Inquiries</h3>
-                                                <p className="text-sm text-slate-500 font-medium mt-1">Review messages and lead requests.</p>
+                                                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Review messages and lead requests.</p>
                                             </div>
                                         </div>
                                         <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[800px]">
+                                            <table className="w-full text-left border-collapse min-w-[700px]">
                                                 <thead>
-                                                    <tr className="bg-white text-slate-400 text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-5 font-bold pl-6 w-16">Status</th>
-                                                        <th className="p-5 font-bold">Contact Info</th>
-                                                        <th className="p-5 font-bold">Subject / Date</th>
-                                                        <th className="p-5 font-bold text-right pr-6">Action</th>
+                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
+                                                        <th className="p-4 sm:p-5 font-bold pl-4 sm:pl-6 w-12 sm:w-16">Status</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Contact Info</th>
+                                                        <th className="p-4 sm:p-5 font-bold">Subject / Date</th>
+                                                        <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="text-sm font-semibold text-slate-700">
+                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
                                                     {messages.map(msg => (
                                                         <tr key={msg.id} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${msg.status === 'Unread' ? 'bg-orange-50/30' : ''}`}>
-                                                            <td className="p-5 pl-6 text-center">
-                                                                <div className={`w-3 h-3 rounded-full mx-auto ${msg.status === 'Unread' ? 'bg-brand-orange animate-pulse' : 'bg-slate-300'}`}></div>
+                                                            <td className="p-4 sm:p-5 pl-4 sm:pl-6 text-center">
+                                                                <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full mx-auto ${msg.status === 'Unread' ? 'bg-brand-orange animate-pulse' : 'bg-slate-300'}`}></div>
                                                             </td>
-                                                            <td className="p-5">
+                                                            <td className="p-4 sm:p-5">
                                                                 <div className={`font-bold ${msg.status === 'Unread' ? 'text-brand-dark' : 'text-slate-600'}`}>{msg.name}</div>
-                                                                <div className="text-xs text-slate-500 font-medium mt-1">{msg.email}</div>
+                                                                <div className="text-[10px] sm:text-xs text-slate-500 font-medium mt-1">{msg.email}</div>
                                                             </td>
-                                                            <td className="p-5">
+                                                            <td className="p-4 sm:p-5">
                                                                 <div className="font-bold text-brand-dark">{msg.subject}</div>
-                                                                <div className="text-xs text-slate-500 mt-1">{msg.date}</div>
+                                                                <div className="text-[10px] sm:text-xs text-slate-500 mt-1">{msg.date}</div>
                                                             </td>
-                                                            <td className="p-5 text-right flex items-center justify-end gap-2 pr-6">
-                                                                <button type="button" onClick={() => toggleMessageStatus(msg)} className="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition-colors whitespace-nowrap">
+                                                            <td className="p-4 sm:p-5 text-right flex items-center justify-end gap-2 pr-4 sm:pr-6">
+                                                                <button type="button" onClick={() => toggleMessageStatus(msg)} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 text-slate-700 rounded-lg text-[10px] sm:text-xs font-bold hover:bg-slate-200 transition-colors whitespace-nowrap active:scale-95">
                                                                     Mark {msg.status === 'Read' ? 'Unread' : 'Read'}
                                                                 </button>
                                                                 {isSuperAdmin && (
-                                                                    <button type="button" onClick={() => deleteItem('messages', msg.id, 'Message')} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors" title="Delete">
+                                                                    <button type="button" onClick={() => deleteItem('messages', msg.id, 'Message')} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
                                                                         <Trash2 size={16} />
                                                                     </button>
                                                                 )}
                                                             </td>
                                                         </tr>
                                                     ))}
-                                                    {messages.length === 0 && !isSyncing && (
+                                                    {messages.length === 0 && !initialSyncing && (
                                                         <tr><td colSpan="4" className="p-8 text-center text-slate-500 font-medium">No messages found.</td></tr>
                                                     )}
                                                 </tbody>
@@ -1013,12 +1065,12 @@
                                 </div>
                             )}
 
+                            <GlobalFooter />
                         </main>
                     </div>
                     
                     <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={updateOrderStatus} onUpdatePaymentStatus={updatePaymentStatus} />
                     {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-                    <GlobalFooter />
                 </div>
             );
         }
