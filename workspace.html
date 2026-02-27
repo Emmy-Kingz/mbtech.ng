@@ -387,6 +387,66 @@
             const SUPER_ADMIN_EMAIL = 'emmanuel.amobi03@gmail.com';
             const ALLOWED_ADMINS = [SUPER_ADMIN_EMAIL, 'mesobest2000@gmail.com', 'mesobest.technology.org@gmail.com'];
 
+            // --- Cache Cleaner & Session Security ---
+            useEffect(() => {
+                const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes timeout
+                let activityTimeout;
+
+                const enforceSessionSecurity = async () => {
+                    const lastActive = localStorage.getItem('mbtech_admin_last_active');
+                    const isFreshSession = !sessionStorage.getItem('mbtech_session_active');
+
+                    // Force login if it's a new tab (fresh session) or inactive for > 30 mins
+                    if (isFreshSession || (lastActive && Date.now() - parseInt(lastActive) > SESSION_TIMEOUT)) {
+                        await signOut(auth);
+                        localStorage.removeItem('mbtech_admin_last_active');
+                        sessionStorage.removeItem('mbtech_session_active');
+                    } else if (user) {
+                        // Maintain active session status
+                        sessionStorage.setItem('mbtech_session_active', 'true');
+                        localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
+                    }
+                };
+
+                enforceSessionSecurity();
+
+                const updateActivity = async () => {
+                    const lastActive = localStorage.getItem('mbtech_admin_last_active');
+                    
+                    // Auto-logout if they left the tab open and returned after 30+ mins
+                    if (lastActive && Date.now() - parseInt(lastActive) > SESSION_TIMEOUT) {
+                        await signOut(auth);
+                        localStorage.removeItem('mbtech_admin_last_active');
+                        sessionStorage.removeItem('mbtech_session_active');
+                        setShowLoginModal(true); // Throw up the secure wall
+                    } else if (user) {
+                        localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
+                    }
+                };
+                
+                // Throttle tracking to prevent performance lag
+                const throttledUpdate = () => {
+                    if (activityTimeout) return;
+                    activityTimeout = setTimeout(() => {
+                        updateActivity();
+                        activityTimeout = null;
+                    }, 5000); 
+                };
+                
+                window.addEventListener('mousemove', throttledUpdate);
+                window.addEventListener('keydown', throttledUpdate);
+                window.addEventListener('click', throttledUpdate);
+                window.addEventListener('scroll', throttledUpdate);
+
+                return () => {
+                    window.removeEventListener('mousemove', throttledUpdate);
+                    window.removeEventListener('keydown', throttledUpdate);
+                    window.removeEventListener('click', throttledUpdate);
+                    window.removeEventListener('scroll', throttledUpdate);
+                    if (activityTimeout) clearTimeout(activityTimeout);
+                };
+            }, [user]);
+
             // 60-Second Auto Login Pop-up
             useEffect(() => {
                 if (!user && authChecked) {
@@ -503,12 +563,21 @@
                 try {
                     if (!ALLOWED_ADMINS.includes(email)) return false;
                     await signInWithEmailAndPassword(auth, email, password);
+                    
+                    // Set secure session cache flags on successful login
+                    sessionStorage.setItem('mbtech_session_active', 'true');
+                    localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
+                    
                     return true;
                 } catch (error) {
                     if ((error.code === 'auth/user-not-found' || error.code === 'auth/operation-not-allowed') && typeof __firebase_config !== 'undefined') {
                         if (ALLOWED_ADMINS.includes(email)) {
                             await signInAnonymously(auth);
                             localStorage.setItem('mock_canvas_email', email);
+                            
+                            // Set secure session cache flags on mock login
+                            sessionStorage.setItem('mbtech_session_active', 'true');
+                            localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
                             return true;
                         }
                     }
@@ -518,7 +587,12 @@
 
             const handleLogout = async () => {
                 await signOut(auth);
+                
+                // Wipe the cache entirely upon explicit logout
                 localStorage.removeItem('mock_canvas_email');
+                localStorage.removeItem('mbtech_admin_last_active');
+                sessionStorage.removeItem('mbtech_session_active');
+                
                 setShowLoginModal(true);
                 showToast('Logged out securely.', 'success');
             };
