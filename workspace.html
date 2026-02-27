@@ -356,6 +356,7 @@
         const App = () => {
             const [user, setUser] = useState(null);
             const [userEmail, setUserEmail] = useState('');
+            const [authChecked, setAuthChecked] = useState(false);
             const [isSuperAdmin, setIsSuperAdmin] = useState(false);
             const [showLoginModal, setShowLoginModal] = useState(false); // Start in preview mode directly
 
@@ -380,6 +381,7 @@
             const [selectedOrder, setSelectedOrder] = useState(null);
             const [toast, setToast] = useState(null);
             const [selectedEmails, setSelectedEmails] = useState(new Set());
+            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
             // Allowed Roles
             const SUPER_ADMIN_EMAIL = 'emmanuel.amobi03@gmail.com';
@@ -387,13 +389,13 @@
 
             // 60-Second Auto Login Pop-up
             useEffect(() => {
-                if (!user) {
+                if (!user && authChecked) {
                     const timer = setTimeout(() => {
                         setShowLoginModal(true);
                     }, 60000); // 60 seconds
                     return () => clearTimeout(timer);
                 }
-            }, [user]);
+            }, [user, authChecked]);
 
             // Simulate initial fetching visual effect
             useEffect(() => {
@@ -426,6 +428,7 @@
                         setProducts(initialProducts);
                         setMessages(initialMessages);
                     }
+                    setAuthChecked(true); // VERY IMPORTANT: Re-added to unblock the UI rendering!
                 });
                 return () => unsubscribe();
             }, []);
@@ -583,6 +586,11 @@
             const totalRevenue = useMemo(() => orders.reduce((sum, o) => o.payment === 'Paid' ? sum + o.total : sum, 0), [orders]);
             const unreadMessagesCount = useMemo(() => messages.filter(m => m.status === 'Unread').length, [messages]);
 
+            if (!authChecked) {
+                // Returns null until auth state is determined to prevent flashing unauthenticated states
+                return null; 
+            }
+
             return (
                 <div className="flex h-[100dvh] overflow-hidden bg-slate-50 font-sans relative app-touch">
                     {/* Data Sync Progress Bar */}
@@ -590,6 +598,14 @@
                         <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 z-50 overflow-hidden">
                             <div className="h-full bg-brand-orange animate-progress w-full origin-left"></div>
                         </div>
+                    )}
+
+                    {/* Mobile Menu Backdrop */}
+                    {mobileMenuOpen && (
+                        <div 
+                            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 lg:hidden transition-opacity animate-fade-in"
+                            onClick={() => setMobileMenuOpen(false)}
+                        />
                     )}
 
                     {/* Login Modal Overlay */}
