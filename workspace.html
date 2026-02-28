@@ -106,7 +106,7 @@
                 <button id="submitLoginBtn" type="submit" class="w-full bg-brand-dark hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] flex justify-center items-center gap-2">
                     Secure Login
                 </button>
-                <button type="button" onclick="ui.closeLoginModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+                <button type="button" onclick="window.closeLoginModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all active:scale-[0.98] flex justify-center items-center gap-2">
                     Preview Mode <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
                 </button>
             </form>
@@ -123,25 +123,25 @@
             </div>
             <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto smooth-scroll">
                 <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Analytics</p>
-                <button onclick="ui.switchTab('dashboard')" id="nav-dashboard-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                <button onclick="window.handleTabSwitch('dashboard')" id="nav-dashboard-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z"/></svg> Dashboard
                 </button>
-                <button onclick="ui.switchTab('orders')" id="nav-orders-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                <button onclick="window.handleTabSwitch('orders')" id="nav-orders-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg> Orders
                 </button>
-                <button onclick="ui.switchTab('customers')" id="nav-customers-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                <button onclick="window.handleTabSwitch('customers')" id="nav-customers-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75"/></svg> Customers
                 </button>
 
                 <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-6">Management</p>
-                <button onclick="ui.switchTab('products')" id="nav-products-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                <button onclick="window.handleTabSwitch('products')" id="nav-products-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg> Courses & Store
                 </button>
-                <button onclick="ui.switchTab('messages')" id="nav-messages-desk" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                <button onclick="window.handleTabSwitch('messages')" id="nav-messages-desk" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                     <div class="flex items-center gap-3"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Info & Connect</div>
                     <span id="deskBadge" class="hidden bg-brand-orange text-white text-[10px] px-2 py-0.5 rounded-full font-extrabold">0</span>
                 </button>
-                <button onclick="ui.switchTab('ai')" id="nav-ai-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                <button onclick="window.handleTabSwitch('ai')" id="nav-ai-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> AI Tools
                 </button>
             </nav>
@@ -152,27 +152,31 @@
 
         <!-- Mobile Bottom Nav App-Feel -->
         <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-between px-2 py-1.5 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-            <button onclick="ui.switchTab('dashboard')" id="nav-dashboard-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z"/></svg>
+            <button onclick="window.handleTabSwitch('dashboard')" id="nav-dashboard-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z"/></svg>
                 <span class="text-[9px] mt-1 font-bold">Home</span>
             </button>
-            <button onclick="ui.switchTab('orders')" id="nav-orders-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+            <button onclick="window.handleTabSwitch('orders')" id="nav-orders-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
                 <span class="text-[9px] mt-1 font-bold">Orders</span>
             </button>
-            <button onclick="ui.switchTab('products')" id="nav-products-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg>
+            <button onclick="window.handleTabSwitch('customers')" id="nav-customers-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span class="text-[9px] mt-1 font-bold">Users</span>
+            </button>
+            <button onclick="window.handleTabSwitch('products')" id="nav-products-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg>
                 <span class="text-[9px] mt-1 font-bold">Store</span>
             </button>
-            <button onclick="ui.switchTab('messages')" id="nav-messages-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400 relative">
+            <button onclick="window.handleTabSwitch('messages')" id="nav-messages-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400 relative">
                 <div class="relative">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <svg class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     <span id="mobBadge" class="hidden absolute -top-1.5 -right-2 bg-brand-orange text-white text-[8px] font-extrabold min-w-[14px] h-[14px] px-1 flex items-center justify-center rounded-full border border-white">0</span>
                 </div>
                 <span class="text-[9px] mt-1 font-bold">Leads</span>
             </button>
-            <button onclick="ui.switchTab('ai')" id="nav-ai-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <button onclick="window.handleTabSwitch('ai')" id="nav-ai-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                 <span class="text-[9px] mt-1 font-bold">AI Bot</span>
             </button>
         </nav>
@@ -218,7 +222,7 @@
                     <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                         <div class="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                             <h3 class="font-extrabold text-brand-dark">Recent Transactions</h3>
-                            <button onclick="ui.switchTab('orders')" class="text-xs font-bold text-brand-blue bg-blue-50 px-3 py-1.5 rounded-lg active:scale-95">View All</button>
+                            <button onclick="window.handleTabSwitch('orders')" class="text-xs font-bold text-brand-blue bg-blue-50 px-3 py-1.5 rounded-lg active:scale-95">View All</button>
                         </div>
                         <div class="overflow-x-auto smooth-scroll">
                             <table class="w-full text-left min-w-[500px]">
@@ -290,10 +294,10 @@
                     <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                         <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
                             <div>
-                                <h3 class="font-extrabold text-brand-dark text-lg">Store & Courses Catalog</h3>
+                                <h3 class="font-extrabold text-brand-dark text-lg">Store & Courses</h3>
                                 <p class="text-xs sm:text-sm text-slate-500 font-medium">Manage physical products and digital classes.</p>
                             </div>
-                            <button onclick="ui.showToast('Add interface launching soon', 'success')" class="px-4 py-2 bg-brand-blue text-white rounded-xl text-xs font-bold flex gap-1 active:scale-95 shadow-sm">
+                            <button onclick="window.showToast('Add interface launching soon', 'success')" class="px-4 py-2 bg-brand-blue text-white rounded-xl text-xs font-bold flex gap-1 active:scale-95 shadow-sm">
                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14 M5 12h14"/></svg> Add
                             </button>
                         </div>
@@ -352,12 +356,12 @@
                                 <div class="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md hover:bg-white/10 transition-colors">
                                     <h4 class="font-bold text-brand-orange mb-1">Store / Course Receipts</h4>
                                     <p class="text-xs text-slate-400 mb-4">Send instant order confirmations.</p>
-                                    <button onclick="ui.showToast('Backend connection required.')" class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all active:scale-95">Configure Bot</button>
+                                    <button onclick="window.showToast('Backend connection required.', 'error')" class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all active:scale-95">Configure Bot</button>
                                 </div>
                                 <div class="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md hover:bg-white/10 transition-colors">
                                     <h4 class="font-bold text-brand-orange mb-1">Lead Nurturing</h4>
                                     <p class="text-xs text-slate-400 mb-4">Auto-reply to Connect inquiries.</p>
-                                    <button onclick="ui.showToast('Backend connection required.')" class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all active:scale-95">Configure Bot</button>
+                                    <button onclick="window.showToast('Backend connection required.', 'error')" class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all active:scale-95">Configure Bot</button>
                                 </div>
                             </div>
                         </div>
@@ -375,20 +379,31 @@
     <!-- Global Toast Container -->
     <div id="toastContainer" class="fixed bottom-24 lg:bottom-6 right-4 sm:right-6 z-[100] flex flex-col gap-2"></div>
 
+    <!-- Core Logic via ES Modules -->
     <script type="module">
-        // ==========================================
-        // SECURE FIREBASE & DATA ENGINE
-        // ==========================================
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { getFirestore, collection, onSnapshot, doc, deleteDoc, setDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        // TOP LEVEL IMPORTS REQUIRED FOR FIREBASE
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc, setDoc } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js';
 
-        // Security Configuration
+        // --- Application State ---
+        const state = {
+            user: null,
+            isSuperAdmin: false,
+            isFirebaseActive: false,
+            db: null,
+            auth: null,
+            activeTab: 'dashboard',
+            fetched: { dashboard: false, orders: false, customers: false, products: false, messages: false },
+            unsubs: {}
+        };
+
         const ALLOWED_EMAILS = ['emmanuel.amobi03@gmail.com', 'mesobest2000@gmail.com', 'mesobest.technology.org@gmail.com'];
         const SUPER_ADMIN = 'emmanuel.amobi03@gmail.com';
-        const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+        const SESSION_TIMEOUT = 30 * 60 * 1000;
         
-        let appData = {
+        // Mock Data for fallback & testing
+        const appData = {
             orders: [
                 { id: 'ORD-1023', customer: 'John Doe', email: 'john@example.com', date: '2026-02-26', total: 45000, status: 'Completed', payment: 'Paid' },
                 { id: 'ORD-1024', customer: 'Sarah Smith', email: 'sarah@example.com', date: '2026-02-27', total: 120000, status: 'Processing', payment: 'Pending' }
@@ -407,42 +422,28 @@
             ]
         };
 
-        const state = {
-            user: null,
-            isSuperAdmin: false,
-            isFirebaseActive: false,
-            db: null, auth: null, appId: 'mbtech-crm',
-            activeTab: 'dashboard',
-            fetched: { dashboard: false, orders: false, customers: false, products: false, messages: false },
-            unsubs: {}
+        // --- Firebase Initialization ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+            authDomain: "mbtechstore-17984.firebaseapp.com",
+            projectId: "mbtechstore-17984",
+            storageBucket: "mbtechstore-17984.firebasestorage.app",
+            messagingSenderId: "1083008774596",
+            appId: "1:1083008774596:web:110b651c6426116ed43491",
+            measurementId: "G-213C6T6EJ0"
         };
 
-        window.ui = {}; // Expose to global scope for HTML inline onclicks
-
-        // 1. Core initialization
         try {
-            const fbConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-                apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
-                authDomain: "mbtechstore-17984.firebaseapp.com",
-                projectId: "mbtechstore-17984",
-                storageBucket: "mbtechstore-17984.firebasestorage.app",
-                messagingSenderId: "1083008774596",
-                appId: "1:1083008774596:web:110b651c6426116ed43491",
-                measurementId: "G-213C6T6EJ0"
-            };
-            if (fbConfig && fbConfig.apiKey && fbConfig.apiKey.trim() !== '') {
-                const fbApp = initializeApp(fbConfig);
-                state.auth = getAuth(fbApp);
-                state.db = getFirestore(fbApp);
-                state.appId = typeof __app_id !== 'undefined' ? __app_id : 'mbtech-crm';
-                state.isFirebaseActive = true;
-            }
-        } catch (e) { console.warn("Firebase offline. Running fast Local Mock Mode."); }
+            const fbApp = initializeApp(firebaseConfig);
+            state.auth = getAuth(fbApp);
+            state.db = getFirestore(fbApp);
+            state.isFirebaseActive = true;
+        } catch (e) { 
+            console.warn("Firebase failed to initialize. Running in Local Mode."); 
+        }
 
-        // ==========================================
-        // UI & RENDER LOGIC
-        // ==========================================
-        ui.showToast = (msg, type = 'success') => {
+        // --- UI Rendering Engine ---
+        window.showToast = (msg, type = 'success') => {
             const c = document.getElementById('toastContainer');
             const t = document.createElement('div');
             const bg = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-500' : 'bg-brand-blue';
@@ -452,44 +453,13 @@
             setTimeout(() => { t.classList.add('toast-exit'); setTimeout(() => t.remove(), 300); }, 3000);
         };
 
-        ui.setSyncBar = (active) => {
+        const setSyncBar = (active) => {
             const bar = document.getElementById('syncProgress');
             if (active) bar.classList.add('active');
-            else setTimeout(() => bar.classList.remove('active'), 400); // Visual buffer
+            else setTimeout(() => bar.classList.remove('active'), 400);
         };
 
-        ui.openLoginModal = () => document.getElementById('loginModal').classList.add('active');
-        ui.closeLoginModal = () => document.getElementById('loginModal').classList.remove('active');
-
-        ui.renderAuthHeaders = () => {
-            const deskPanel = document.getElementById('deskAuthPanel');
-            const headActions = document.getElementById('headerActions');
-            
-            if (!state.user) {
-                deskPanel.innerHTML = `<button onclick="ui.openLoginModal()" class="w-full flex justify-center items-center gap-2 px-4 py-3.5 bg-brand-blue text-white rounded-xl font-bold transition-all hover:bg-brand-blueHover"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg> Admin Login</button>`;
-                headActions.innerHTML = `
-                    <div class="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 text-orange-700 text-[10px] sm:text-xs font-bold rounded-lg border border-orange-200">
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg> <span class="hidden sm:inline">Preview Mode</span><span class="sm:hidden">Preview</span>
-                    </div>
-                    <button onclick="ui.openLoginModal()" class="lg:hidden p-2 bg-brand-blue text-white rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
-                `;
-            } else {
-                deskPanel.innerHTML = `
-                    <div class="flex items-center gap-3 px-4 py-2 mb-3">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0 shadow-inner ${state.isSuperAdmin ? 'bg-brand-orange' : 'bg-brand-blue'}">${state.isSuperAdmin ? 'SA' : 'AD'}</div>
-                        <div class="overflow-hidden"><p class="text-sm font-bold text-white truncate">${state.isSuperAdmin ? 'Super Admin' : 'Workspace Admin'}</p><p class="text-[10px] text-slate-400 truncate">${state.user}</p></div>
-                    </div>
-                    <button onclick="authLogic.logout()" class="w-full flex justify-center items-center gap-2 px-4 py-3 bg-slate-800 text-slate-300 hover:bg-red-500 hover:text-white rounded-xl font-bold transition-all"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg> Secure Logout</button>
-                `;
-                headActions.innerHTML = `
-                    <div class="hidden sm:block relative"><input type="text" placeholder="Search data..." class="pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl text-sm font-medium w-64 outline-none focus:bg-white focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all" /></div>
-                    <button onclick="authLogic.logout()" class="lg:hidden p-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg></button>
-                `;
-            }
-        };
-
-        ui.renderTables = () => {
-            // Stats
+        const renderTables = () => {
             document.getElementById('stat-products').innerText = appData.products.length;
             document.getElementById('stat-users').innerText = appData.customers.length;
             document.getElementById('stat-leads').innerText = appData.messages.length;
@@ -502,7 +472,6 @@
                 else { b.classList.add('hidden'); }
             });
 
-            // Dashboard
             document.getElementById('dashboard-recent').innerHTML = appData.orders.slice(0,5).map(o => `
                 <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                     <td class="p-4 sm:p-5 text-brand-blue font-extrabold">${o.id}</td>
@@ -512,7 +481,6 @@
                 </tr>
             `).join('') || `<tr><td colSpan="4" class="p-6 text-center text-slate-500 font-medium">No recent activity.</td></tr>`;
 
-            // Orders
             document.getElementById('table-orders').innerHTML = appData.orders.map(o => `
                 <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                     <td class="p-4 sm:p-5 pl-4 sm:pl-6"><div class="font-extrabold text-brand-dark">${o.id}</div><div class="text-[10px] text-slate-500">${o.date}</div></td>
@@ -521,13 +489,12 @@
                     <td class="p-4 sm:p-5"><span class="text-[10px] px-2 py-1 rounded bg-slate-100 font-bold">${o.payment}</span></td>
                     <td class="p-4 sm:p-5"><span class="text-[10px] px-2 py-1 rounded bg-slate-100 font-bold">${o.status}</span></td>
                     <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2">
-                        <button onclick="ui.enforceAuth() && ui.showToast('Edit via Admin panel only.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
-                        ${state.isSuperAdmin ? `<button onclick="dbLogic.delete('orders', '${o.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
+                        <button onclick="window.showToast('Edit via Admin panel only.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
+                        ${state.isSuperAdmin ? `<button onclick="window.handleDelete('orders', '${o.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
                     </td>
                 </tr>
             `).join('') || `<tr><td colSpan="6" class="p-6 text-center text-slate-500 font-medium">No orders found.</td></tr>`;
 
-            // Customers
             const thCust = document.getElementById('th-cust-action');
             if(thCust) thCust.style.display = state.isSuperAdmin ? 'table-cell' : 'none';
             document.getElementById('table-customers').innerHTML = appData.customers.map(c => `
@@ -536,11 +503,10 @@
                     <td class="p-4 sm:p-5 text-slate-500">${c.email}</td>
                     <td class="p-4 sm:p-5 font-bold text-center"><span class="bg-slate-100 px-3 py-1 rounded-full text-[10px]">${c.totalOrders}</span></td>
                     <td class="p-4 sm:p-5 font-extrabold text-brand-blue">₦${c.spent.toLocaleString()}</td>
-                    ${state.isSuperAdmin ? `<td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end"><button onclick="dbLogic.delete('customers', '${c.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button></td>` : ''}
+                    ${state.isSuperAdmin ? `<td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end"><button onclick="window.handleDelete('customers', '${c.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button></td>` : ''}
                 </tr>
             `).join('') || `<tr><td colSpan="${state.isSuperAdmin?5:4}" class="p-6 text-center text-slate-500 font-medium">No customers found.</td></tr>`;
 
-            // Products (Syncs with Store & Courses)
             document.getElementById('table-products').innerHTML = appData.products.map(p => `
                 <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                     <td class="p-4 sm:p-5 pl-4 sm:pl-6 font-bold text-brand-dark">${p.name}</td>
@@ -548,93 +514,97 @@
                     <td class="p-4 sm:p-5 font-extrabold text-brand-blue">₦${p.price.toLocaleString()}</td>
                     <td class="p-4 sm:p-5"><span class="text-[10px] px-2 py-1 rounded bg-slate-100 font-bold">${p.status}</span></td>
                     <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2">
-                        <button onclick="ui.enforceAuth() && ui.showToast('Edit mode locked.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
-                        ${state.isSuperAdmin ? `<button onclick="dbLogic.delete('products', '${p.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
+                        <button onclick="window.showToast('Edit mode locked.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
+                        ${state.isSuperAdmin ? `<button onclick="window.handleDelete('products', '${p.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
                     </td>
                 </tr>
             `).join('') || `<tr><td colSpan="5" class="p-6 text-center text-slate-500 font-medium">No products listed.</td></tr>`;
 
-            // Messages (Syncs with Connect / Info)
             document.getElementById('table-messages').innerHTML = appData.messages.map(m => `
                 <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors ${m.status === 'Unread' ? 'bg-orange-50/30' : ''}">
                     <td class="p-4 sm:p-5 pl-4 sm:pl-6 text-center"><div class="w-2.5 h-2.5 rounded-full mx-auto ${m.status === 'Unread' ? 'bg-brand-orange animate-pulse' : 'bg-slate-300'}"></div></td>
                     <td class="p-4 sm:p-5"><div class="font-bold text-brand-dark">${m.name}</div><div class="text-[10px] text-slate-500">${m.email}</div></td>
                     <td class="p-4 sm:p-5 font-bold">${m.subject}</td>
                     <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2">
-                        <button onclick="ui.enforceAuth() && ui.showToast('Message status toggled.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Read</button>
-                        ${state.isSuperAdmin ? `<button onclick="dbLogic.delete('messages', '${m.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
+                        <button onclick="window.showToast('Message Read.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Read</button>
+                        ${state.isSuperAdmin ? `<button onclick="window.handleDelete('messages', '${m.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
                     </td>
                 </tr>
             `).join('') || `<tr><td colSpan="4" class="p-6 text-center text-slate-500 font-medium">No connect leads.</td></tr>`;
         };
 
-        // --- Activity-Based Fetching & Lazy Logic ---
-        const dbLogic = {
-            syncCollection: (colName) => {
-                if (!state.isFirebaseActive || !state.db || !state.user) {
-                    ui.setSyncBar(false);
-                    ui.renderTables();
-                    return;
-                }
-                const ref = collection(state.db, 'artifacts', state.appId, 'public', 'data', colName);
-                state.unsubs[colName] = onSnapshot(ref, (snap) => {
-                    if(snap.empty && state.isSuperAdmin) {
-                        // Seed empty DB automatically on first load if Super Admin
-                        appData[colName].forEach(item => setDoc(doc(ref, item.id), item));
-                    } else if (!snap.empty) {
-                        appData[colName] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    }
-                    ui.renderTables();
-                    ui.setSyncBar(false);
-                }, (err) => { console.error(err); ui.setSyncBar(false); });
-            },
-
-            triggerActivityFetch: (tabId) => {
-                if (!state.user) return; // Prevent DB calls if anonymous
-                
-                ui.setSyncBar(true);
-                
-                // Dashboard needs aggregate data, so we fetch the big 4 silently
-                if (tabId === 'dashboard' && !state.fetched.dashboard) {
-                    ['orders', 'customers', 'products', 'messages'].forEach(col => {
-                        if(!state.fetched[col]) { dbLogic.syncCollection(col); state.fetched[col] = true; }
-                    });
-                    state.fetched.dashboard = true;
-                } 
-                // Other tabs lazy load their specific data precisely when clicked
-                else if (['orders', 'customers', 'products', 'messages'].includes(tabId)) {
-                    if (!state.fetched[tabId]) {
-                        dbLogic.syncCollection(tabId);
-                        state.fetched[tabId] = true;
-                    } else {
-                        ui.setSyncBar(false); // Already tracking realtime
-                    }
-                } else {
-                    ui.setSyncBar(false); // e.g., AI Tab
-                }
-            },
-
-            delete: async (colName, id) => {
-                if(!state.user) return ui.openLoginModal();
-                if(!state.isSuperAdmin) return ui.showToast('Permission Denied. Super Admin only.', 'error');
-                
-                if (state.isFirebaseActive && state.db) {
-                    try {
-                        await deleteDoc(doc(state.db, 'artifacts', state.appId, 'public', 'data', colName, id));
-                        ui.showToast('Item permanently deleted.', 'success');
-                    } catch(e) { ui.showToast('Failed to delete.', 'error'); }
-                } else {
-                    appData[colName] = appData[colName].filter(i => i.id !== id);
-                    ui.showToast('Item deleted (Local Simulation).');
-                    ui.renderTables();
-                }
+        const renderAuthHeaders = () => {
+            const deskPanel = document.getElementById('deskAuthPanel');
+            const headActions = document.getElementById('headerActions');
+            
+            if (!state.user) {
+                deskPanel.innerHTML = `<button onclick="window.openLoginModal()" class="w-full flex justify-center items-center gap-2 px-4 py-3.5 bg-brand-blue text-white rounded-xl font-bold transition-all hover:bg-brand-blueHover"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg> Admin Login</button>`;
+                headActions.innerHTML = `
+                    <div class="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 text-orange-700 text-[10px] sm:text-xs font-bold rounded-lg border border-orange-200">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg> <span class="hidden sm:inline">Preview Mode</span><span class="sm:hidden">Preview</span>
+                    </div>
+                    <button onclick="window.openLoginModal()" class="lg:hidden p-2 bg-brand-blue text-white rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+                `;
+            } else {
+                deskPanel.innerHTML = `
+                    <div class="flex items-center gap-3 px-4 py-2 mb-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0 shadow-inner ${state.isSuperAdmin ? 'bg-brand-orange' : 'bg-brand-blue'}">${state.isSuperAdmin ? 'SA' : 'AD'}</div>
+                        <div class="overflow-hidden"><p class="text-sm font-bold text-white truncate">${state.isSuperAdmin ? 'Super Admin' : 'Workspace Admin'}</p><p class="text-[10px] text-slate-400 truncate">${state.user}</p></div>
+                    </div>
+                    <button onclick="window.handleLogout()" class="w-full flex justify-center items-center gap-2 px-4 py-3 bg-slate-800 text-slate-300 hover:bg-red-500 hover:text-white rounded-xl font-bold transition-all"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg> Secure Logout</button>
+                `;
+                headActions.innerHTML = `
+                    <div class="hidden sm:block relative"><input type="text" placeholder="Search data..." class="pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl text-sm font-medium w-64 outline-none focus:bg-white focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all" /></div>
+                    <button onclick="window.handleLogout()" class="lg:hidden p-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg></button>
+                `;
             }
         };
 
-        window.dbLogic = dbLogic;
+        // --- Data Fetching Logic (Lazy Loading) ---
+        const syncCollection = (colName) => {
+            if (!state.isFirebaseActive || !state.db || !state.user) {
+                setTimeout(() => { renderTables(); setSyncBar(false); }, 500);
+                return;
+            }
+            const ref = collection(state.db, colName);
+            state.unsubs[colName] = onSnapshot(ref, (snap) => {
+                if(snap.empty && state.isSuperAdmin) {
+                    appData[colName].forEach(item => setDoc(doc(ref, item.id), item));
+                } else if (!snap.empty) {
+                    appData[colName] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                }
+                renderTables();
+                setSyncBar(false);
+            }, (err) => { console.error(err); setSyncBar(false); });
+        };
 
-        // --- Navigation Controller ---
-        ui.switchTab = (tabId) => {
+        const triggerActivityFetch = (tabId) => {
+            if (!state.user) return; // Guests don't fetch real DB
+            setSyncBar(true);
+            
+            if (tabId === 'dashboard' && !state.fetched.dashboard) {
+                ['orders', 'customers', 'products', 'messages'].forEach(col => {
+                    if(!state.fetched[col]) { syncCollection(col); state.fetched[col] = true; }
+                });
+                state.fetched.dashboard = true;
+            } 
+            else if (['orders', 'customers', 'products', 'messages'].includes(tabId)) {
+                if (!state.fetched[tabId]) {
+                    syncCollection(tabId);
+                    state.fetched[tabId] = true;
+                } else {
+                    setSyncBar(false); 
+                }
+            } else {
+                setSyncBar(false); // AI Tab
+            }
+        };
+
+        // --- Public Global Functions ---
+        window.openLoginModal = () => document.getElementById('loginModal').classList.add('active');
+        window.closeLoginModal = () => document.getElementById('loginModal').classList.remove('active');
+
+        window.handleTabSwitch = (tabId) => {
             state.activeTab = tabId;
 
             // UI Adjustments
@@ -652,18 +622,61 @@
             const titles = { dashboard: 'Dashboard Overview', orders: 'Orders & Fulfillment', customers: 'Customer Database', products: 'Store & Courses', messages: 'Leads & Connect', ai: 'AI Automations' };
             document.getElementById('headerTitle').innerText = titles[tabId];
             
-            // Fire Database Trigger
-            dbLogic.triggerActivityFetch(tabId);
+            triggerActivityFetch(tabId);
         };
 
-        ui.enforceAuth = () => {
-            if (!state.user) { ui.openLoginModal(); ui.showToast('Admin access required.', 'error'); return false; }
-            return true;
+        window.handleDelete = async (colName, id) => {
+            if(!state.user) return window.openLoginModal();
+            if(!state.isSuperAdmin) return window.showToast('Permission Denied. Super Admin only.', 'error');
+            
+            if (state.isFirebaseActive && state.db) {
+                try {
+                    await deleteDoc(doc(state.db, colName, id));
+                    window.showToast('Item permanently deleted.', 'success');
+                } catch(e) { window.showToast('Failed to delete.', 'error'); }
+            } else {
+                appData[colName] = appData[colName].filter(i => i.id !== id);
+                window.showToast('Item deleted (Local Simulation).');
+                renderTables();
+            }
         };
 
-        // --- Authentication Engine ---
-        const authLogic = {
-            login: async (e) => {
+        window.handleLogout = async () => {
+            if (state.isFirebaseActive && state.auth) await signOut(state.auth);
+            state.user = null;
+            state.isSuperAdmin = false;
+            localStorage.removeItem('mbtech_admin_last_active');
+            sessionStorage.removeItem('mbtech_session_active');
+            
+            Object.keys(state.fetched).forEach(k => state.fetched[k] = false);
+            Object.values(state.unsubs).forEach(unsub => unsub && unsub());
+            
+            renderAuthHeaders();
+            renderTables();
+            window.openLoginModal();
+            window.showToast('Logged out securely');
+        };
+
+        const completeLogin = () => {
+            window.closeLoginModal();
+            renderAuthHeaders();
+            window.showToast('Authenticated Successfully');
+            
+            // Fetch Dashboard Data immediately
+            triggerActivityFetch('dashboard');
+            
+            // Guarantee Orders are fetched
+            setTimeout(() => {
+                if(state.activeTab === 'dashboard' && !state.fetched.orders) { 
+                    syncCollection('orders'); 
+                    state.fetched.orders = true; 
+                }
+            }, 500); 
+        };
+
+        // --- Form Submission & Boot Logic ---
+        window.addEventListener('load', () => {
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const email = document.getElementById('adminEmail').value;
                 const password = document.getElementById('adminPassword').value;
@@ -678,110 +691,54 @@
                     if (state.isFirebaseActive && state.auth) {
                         await signInWithEmailAndPassword(state.auth, email, password);
                     } else {
-                        // Safe Local Fallback Execution
                         state.user = email;
                         state.isSuperAdmin = email === SUPER_ADMIN;
                         sessionStorage.setItem('mbtech_session_active', 'true');
-                        authLogic.completeLogin();
+                        completeLogin();
                     }
                 } catch(error) {
                     err.innerText = "Authentication failed. Check credentials."; err.classList.remove('hidden');
                     btn.innerHTML = 'Secure Login'; btn.disabled = false;
                 }
-            },
-            
-            logout: async () => {
-                if (state.isFirebaseActive && state.auth) await signOut(state.auth);
-                state.user = null;
-                state.isSuperAdmin = false;
-                localStorage.removeItem('mbtech_admin_last_active');
-                sessionStorage.removeItem('mbtech_session_active');
-                
-                // Clear state to force re-fetch on next login
-                Object.keys(state.fetched).forEach(k => state.fetched[k] = false);
-                Object.values(state.unsubs).forEach(unsub => unsub && unsub());
-                
-                ui.renderAuthHeaders();
-                ui.renderTables();
-                ui.openLoginModal();
-                ui.showToast('Logged out securely');
-            },
+            });
 
-            completeLogin: () => {
-                ui.closeLoginModal();
-                ui.renderAuthHeaders();
-                ui.showToast('Authenticated Successfully');
-                
-                // Action Sequence Request 1: Fetch Accurate Dashboard Data First
-                dbLogic.triggerActivityFetch('dashboard');
-                
-                // Action Sequence Request 2: Fetch Orders as Most Essential
-                setTimeout(() => {
-                    if(state.activeTab === 'dashboard') {
-                        // Pre-fetch orders explicitly so it's instantly ready
-                        if(!state.fetched.orders) { dbLogic.syncCollection('orders'); state.fetched.orders = true; }
-                    }
-                }, 500); 
-            },
+            const trackActivity = () => { if(state.user) localStorage.setItem('mbtech_admin_last_active', Date.now().toString()); }
+            let actTimeout;
+            const throttledAct = () => { if(!actTimeout) { actTimeout = setTimeout(() => { trackActivity(); actTimeout = null; }, 5000); } };
+            ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => window.addEventListener(evt, throttledAct));
 
-            enforceSession: () => {
-                const lastActive = localStorage.getItem('mbtech_admin_last_active');
-                const isFresh = !sessionStorage.getItem('mbtech_session_active');
-                
-                if (isFresh || (lastActive && Date.now() - parseInt(lastActive) > SESSION_TIMEOUT)) {
-                    authLogic.logout();
-                }
-            },
-
-            trackActivity: () => { if(state.user) localStorage.setItem('mbtech_admin_last_active', Date.now().toString()); }
-        };
-
-        window.authLogic = authLogic;
-
-        // DOM Wiring
-        document.getElementById('loginForm').addEventListener('submit', authLogic.login);
-        
-        let actTimeout;
-        const throttledAct = () => { if(!actTimeout) { actTimeout = setTimeout(() => { authLogic.trackActivity(); actTimeout = null; }, 5000); } };
-        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => window.addEventListener(evt, throttledAct));
-
-        // --- System Boot ---
-        window.onload = () => {
-            // Remove preloader smoothly
+            // Remove preloader
             const preloader = document.getElementById('appPreloader');
-            preloader.style.opacity = '0';
-            setTimeout(() => preloader.remove(), 500);
+            if(preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => preloader.remove(), 500);
+            }
 
-            // Establish Firebase Auth Listener (If active)
             if (state.isFirebaseActive && state.auth) {
                 onAuthStateChanged(state.auth, (fbUser) => {
                     if (fbUser && ALLOWED_EMAILS.includes(fbUser.email)) {
                         state.user = fbUser.email;
                         state.isSuperAdmin = fbUser.email === SUPER_ADMIN;
                         sessionStorage.setItem('mbtech_session_active', 'true');
-                        authLogic.completeLogin();
-                        authLogic.enforceSession();
+                        completeLogin();
                     } else {
                         if(fbUser) signOut(state.auth);
                         state.user = null;
-                        ui.renderAuthHeaders();
-                        if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(ui.openLoginModal, 60000); // 60s Guest timeout
+                        renderAuthHeaders();
+                        if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(window.openLoginModal, 60000);
                     }
                 });
             } else {
-                // Local Mode Initialization
-                ui.renderAuthHeaders();
-                if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(ui.openLoginModal, 60000); // 60s Guest timeout
+                renderAuthHeaders();
+                if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(window.openLoginModal, 60000);
             }
 
-            // Init Default View
-            ui.switchTab('dashboard');
-            ui.renderTables();
+            window.handleTabSwitch('dashboard');
+            renderTables();
             
-            // Visual simulated loading for aesthetic
-            ui.setSyncBar(true);
-            setTimeout(() => ui.setSyncBar(false), 1500);
-        };
+            setSyncBar(true);
+            setTimeout(() => setSyncBar(false), 1500);
+        });
     </script>
 </body>
 </html>
