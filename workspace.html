@@ -3,23 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MBTECH | Unified Admin & CRM Portal</title>
+    <title>MBTECH | Secure Admin Workspace</title>
     
-    <!-- Strict Anti-Indexing Tags to hide from Google & Search Engines -->
+    <!-- Search Engine Stealth -->
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
-    
     <link rel="icon" type="image/png" href="favicon.png">
 
-    <!-- Preconnect for performance optimization -->
-    <link rel="preconnect" href="https://esm.sh" crossorigin />
-    <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://esm.sh" />
-    <link rel="dns-prefetch" href="https://www.gstatic.com" />
-
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
@@ -30,1143 +23,765 @@
                 extend: {
                     fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
                     colors: { 
-                        brand: { 
-                            blue: '#0056b3', 
-                            blueHover: '#004494', 
-                            orange: '#f97316',
-                            dark: '#0f172a'
-                        } 
+                        brand: { blue: '#0056b3', blueHover: '#004494', orange: '#f97316', dark: '#0f172a' } 
                     }
                 }
             }
         }
     </script>
 
-    <!-- Import Map for React, Icons, and Firebase -->
-    <script type="importmap">
-    {
-        "imports": {
-            "react": "https://esm.sh/react@18.2.0",
-            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "lucide-react": "https://esm.sh/lucide-react@0.292.0?bundle",
-            "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
-            "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
-        }
-    }
-    </script>
-    <!-- Babel standalone for in-browser JSX compilation -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js" defer></script>
-
     <style>
         /* Smooth Mobile Scrolling & App Feel */
-        .smooth-scroll {
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-        }
-        
-        .app-touch {
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-        }
-
-        /* Safe area handling for modern phones */
+        .smooth-scroll { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+        .app-touch { user-select: none; -webkit-user-select: none; touch-action: manipulation; }
         .pb-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)); }
+        
+        /* Tab Management */
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .tab-content.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
+        
+        /* Modals */
+        .modal-overlay { display: none; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease forwards; }
+        .modal-content { transform: scale(0.95); opacity: 0; }
+        .modal-overlay.active .modal-content { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
         /* Animations */
-        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
-        .animate-fade-in-up { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        
         @keyframes indeterminate {
             0% { transform: translateX(-100%) scaleX(0.2); }
             50% { transform: translateX(0) scaleX(0.5); }
             100% { transform: translateX(100%) scaleX(0.2); }
         }
+        
+        .toast-enter { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-exit { opacity: 0; transition: opacity 0.3s ease; }
+        
+        .sync-bar { display: none; }
+        .sync-bar.active { display: block; }
         .animate-progress { animation: indeterminate 1.5s infinite linear; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased overflow-hidden">
-    
-    <!-- Root Container (Instant Mount) -->
-    <div id="root" class="h-screen w-screen bg-slate-50"></div>
+<body class="bg-slate-50 text-slate-800 antialiased overflow-hidden app-touch">
 
-    <script type="text/babel" data-type="module">
-        import React, { useState, useEffect, useMemo, Suspense } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { 
-            LayoutDashboard, Users, ShoppingCart, Send, Settings, LogOut, 
-            Search, Filter, Mail, Lock, AlertCircle, ArrowRight,
-            CheckCircle, Clock, XCircle, Package, MessageSquare, Plus, Edit, Eye, RefreshCw
-        } from 'lucide-react';
+    <!-- Top Progress Bar (Visual Sync Indicator) -->
+    <div id="syncProgress" class="sync-bar absolute top-0 left-0 w-full h-[3px] bg-slate-200 z-[100] overflow-hidden">
+        <div class="h-full bg-brand-orange animate-progress w-full origin-left"></div>
+    </div>
 
-        // Firebase Setup
-        import { initializeApp } from 'firebase/app';
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, signInAnonymously } from 'firebase/auth';
-        import { getFirestore, collection, onSnapshot, doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+    <!-- Preloader (To prevent blank screens instantly) -->
+    <div id="appPreloader" class="fixed inset-0 bg-slate-50 z-[999] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-12 h-12 border-4 border-slate-200 border-t-brand-orange rounded-full animate-spin mb-4"></div>
+        <p class="text-slate-500 font-bold text-sm">Booting Workspace...</p>
+    </div>
 
-        // Configuration setup
-        let firebaseConfig = {};
-        try {
-            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-                apiKey: "", authDomain: "", projectId: "", storageBucket: "", messagingSenderId: "", appId: ""
-            };
-        } catch (e) {}
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mbtech-crm';
-
-        // --- Mock Data (For Database Seeding & Preview Mode) ---
-        const initialOrders = [
-            { id: 'ORD-1023', customer: 'John Doe', email: 'john@example.com', date: '2026-02-26', total: 45000, status: 'Completed', payment: 'Paid' },
-            { id: 'ORD-1024', customer: 'Sarah Smith', email: 'sarah@example.com', date: '2026-02-27', total: 120000, status: 'Processing', payment: 'Pending' }
-        ];
-
-        const initialCustomers = [
-            { id: 'CUST-01', name: 'John Doe', email: 'john@example.com', totalOrders: 5, spent: 250000, joinDate: '2025-11-10' },
-            { id: 'CUST-02', name: 'Sarah Smith', email: 'sarah@example.com', totalOrders: 2, spent: 120000, joinDate: '2026-01-15' }
-        ];
-
-        const initialProducts = [
-            { id: 'PROD-01', name: 'Advanced Web Development Course', price: 45000, stock: 999, status: 'Active', category: 'Course' },
-            { id: 'PROD-02', name: 'Premium UI/UX Masterclass', price: 65000, stock: 50, status: 'Active', category: 'Course' },
-            { id: 'PROD-03', name: 'MBTECH Branded Hoodie', price: 15000, stock: 0, status: 'Out of Stock', category: 'Merchandise' }
-        ];
-
-        const initialMessages = [
-            { id: 'MSG-01', name: 'David Okafor', email: 'david@example.com', subject: 'Inquiry about Web Course', date: '2026-02-27', status: 'Unread' },
-            { id: 'MSG-02', name: 'Grace Emmanuel', email: 'grace@example.com', subject: 'Partnership Proposal', date: '2026-02-26', status: 'Read' }
-        ];
-
-        // --- UI Components ---
-        const Toast = ({ message, type, onClose }) => {
-            useEffect(() => {
-                const timer = setTimeout(onClose, 3000);
-                return () => clearTimeout(timer);
-            }, [onClose]);
-
-            const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-500' : 'bg-brand-blue';
-            return (
-                // Elevated higher on mobile (bottom-24) to clear the bottom nav bar
-                <div className={`fixed bottom-24 lg:bottom-6 right-4 left-4 sm:left-auto sm:right-6 ${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-fade-in-up`}>
-                    {type === 'success' ? <CheckCircle size={20} className="shrink-0"/> : <AlertCircle size={20} className="shrink-0"/>}
-                    <span className="font-bold text-sm flex-1">{message}</span>
-                    <button type="button" onClick={onClose} className="ml-2 hover:opacity-75 transition-opacity p-1"><X size={18}/></button>
+    <!-- Login Modal Overlay -->
+    <div id="loginModal" class="modal-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-md p-4 z-[90]">
+        <div class="modal-content max-w-md w-full bg-white rounded-[2rem] shadow-2xl p-6 sm:p-10 border border-slate-100 relative">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-brand-blue rounded-2xl mb-5 shadow-lg shadow-brand-blue/30">
+                    <svg class="text-white w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </div>
-            );
-        };
+                <h1 class="text-2xl font-extrabold text-brand-dark">Admin Workspace</h1>
+                <p class="text-slate-500 mt-2 font-medium text-sm">Secure access required to manage MBTECH.</p>
+            </div>
+            
+            <div id="loginAlert" class="hidden mb-6 text-xs font-bold p-3 rounded-lg flex items-center gap-2"></div>
 
-        const MobileTab = ({ id, icon, label, badge, activeTab, setActiveTab }) => {
-            const isActive = activeTab === id;
-            return (
-                <button
-                    type="button"
-                    onClick={() => setActiveTab(id)}
-                    className={`flex flex-col items-center justify-center w-full py-1.5 active:scale-95 transition-transform app-touch ${isActive ? 'text-brand-blue' : 'text-slate-400 hover:text-slate-500'}`}
-                >
-                    <div className="relative">
-                        {icon}
-                        {badge > 0 && (
-                            <span className="absolute -top-1.5 -right-2 bg-brand-orange text-white text-[9px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full border-2 border-white">
-                                {badge > 99 ? '99+' : badge}
-                            </span>
-                        )}
+            <form id="loginForm" class="space-y-4">
+                <div class="relative">
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"/></svg>
                     </div>
-                    <span className={`text-[10px] mt-1.5 ${isActive ? 'font-extrabold' : 'font-bold'}`}>{label}</span>
+                    <input id="adminEmail" type="email" required placeholder="admin@mbtech.ng" class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-800" />
+                </div>
+                <div class="relative">
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <input id="adminPassword" type="password" required placeholder="••••••••" class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-800" />
+                </div>
+                <button id="submitLoginBtn" type="submit" class="w-full bg-brand-dark hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] flex justify-center items-center gap-2">
+                    Secure Login
                 </button>
-            )
-        };
+                <button type="button" onclick="ui.closeLoginModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+                    Preview Mode <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
 
-        const OrderDetailsModal = ({ order, onClose, onUpdateStatus, onUpdatePaymentStatus }) => {
-            if (!order) return null;
+    <!-- Main Layout -->
+    <div class="flex h-[100dvh] overflow-hidden">
+        
+        <!-- Desktop Sidebar -->
+        <aside class="hidden lg:flex fixed inset-y-0 left-0 bg-brand-dark text-white w-64 shadow-2xl z-40 flex-col">
+            <div class="p-6 flex items-center justify-between border-b border-slate-800">
+                <div class="text-2xl font-extrabold tracking-tight">MBTECH<span class="text-brand-orange">.NG</span></div>
+            </div>
+            <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto smooth-scroll">
+                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Analytics</p>
+                <button onclick="ui.switchTab('dashboard')" id="nav-dashboard-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z"/></svg> Dashboard
+                </button>
+                <button onclick="ui.switchTab('orders')" id="nav-orders-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg> Orders
+                </button>
+                <button onclick="ui.switchTab('customers')" id="nav-customers-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75"/></svg> Customers
+                </button>
 
-            return (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-scale-in max-h-[90vh] flex flex-col">
-                        <div className="p-5 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <h3 className="text-xl font-extrabold text-brand-dark truncate pr-4">Order {order.id}</h3>
-                            <button type="button" onClick={onClose} className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-all shrink-0">
-                                <X size={20} />
-                            </button>
+                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-6">Management</p>
+                <button onclick="ui.switchTab('products')" id="nav-products-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg> Courses & Store
+                </button>
+                <button onclick="ui.switchTab('messages')" id="nav-messages-desk" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                    <div class="flex items-center gap-3"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Info & Connect</div>
+                    <span id="deskBadge" class="hidden bg-brand-orange text-white text-[10px] px-2 py-0.5 rounded-full font-extrabold">0</span>
+                </button>
+                <button onclick="ui.switchTab('ai')" id="nav-ai-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> AI Tools
+                </button>
+            </nav>
+            <div class="p-4 border-t border-slate-800 bg-slate-900/50" id="deskAuthPanel">
+                <!-- User Profile / Auth Action Injected Here -->
+            </div>
+        </aside>
+
+        <!-- Mobile Bottom Nav App-Feel -->
+        <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-between px-2 py-1.5 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+            <button onclick="ui.switchTab('dashboard')" id="nav-dashboard-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z"/></svg>
+                <span class="text-[9px] mt-1 font-bold">Home</span>
+            </button>
+            <button onclick="ui.switchTab('orders')" id="nav-orders-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
+                <span class="text-[9px] mt-1 font-bold">Orders</span>
+            </button>
+            <button onclick="ui.switchTab('products')" id="nav-products-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg>
+                <span class="text-[9px] mt-1 font-bold">Store</span>
+            </button>
+            <button onclick="ui.switchTab('messages')" id="nav-messages-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400 relative">
+                <div class="relative">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span id="mobBadge" class="hidden absolute -top-1.5 -right-2 bg-brand-orange text-white text-[8px] font-extrabold min-w-[14px] h-[14px] px-1 flex items-center justify-center rounded-full border border-white">0</span>
+                </div>
+                <span class="text-[9px] mt-1 font-bold">Leads</span>
+            </button>
+            <button onclick="ui.switchTab('ai')" id="nav-ai-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span class="text-[9px] mt-1 font-bold">AI Bot</span>
+            </button>
+        </nav>
+
+        <!-- Dynamic Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 lg:ml-64 h-full relative">
+            <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
+                <div class="flex items-center justify-between px-4 sm:px-8 py-3.5">
+                    <div class="flex items-center gap-3">
+                        <div class="lg:hidden text-2xl font-extrabold text-brand-dark">MB<span class="text-brand-orange">.</span></div>
+                        <div class="hidden lg:block lg:w-px lg:h-6 lg:bg-slate-200"></div>
+                        <h2 id="headerTitle" class="text-lg sm:text-xl font-extrabold text-brand-dark capitalize truncate">Dashboard</h2>
+                    </div>
+                    <div class="flex items-center gap-3" id="headerActions">
+                        <!-- Top Header Actions Injected via JS -->
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-4 sm:p-8 smooth-scroll pb-24 lg:pb-8 relative">
+                
+                <!-- Tab: Dashboard -->
+                <div id="tab-dashboard" class="tab-content active">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-blue-50 text-brand-blue rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg></div>
+                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Store Items</p><h4 id="stat-products" class="text-xl sm:text-3xl font-extrabold text-brand-dark">...</h4></div>
                         </div>
-                        <div className="p-5 sm:p-6 space-y-6 overflow-y-auto">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-slate-50 p-4 rounded-xl">
-                                <div className="sm:col-span-2">
-                                    <p className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">Customer</p>
-                                    <p className="font-extrabold text-slate-800">{order.customer}</p>
-                                    <p className="text-sm text-slate-500 font-medium truncate">{order.email}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">Order Date</p>
-                                    <p className="font-bold text-slate-800">{order.date}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">Total Amount</p>
-                                    <p className="font-extrabold text-brand-blue text-lg">₦{order.total.toLocaleString()}</p>
-                                </div>
-                            </div>
-                            
-                            <div className="space-y-5">
-                                <div>
-                                    <label className="text-sm text-slate-700 font-bold mb-2 block">Update Order Status</label>
-                                    <select 
-                                        value={order.status}
-                                        onChange={(e) => onUpdateStatus(order.id, e.target.value)}
-                                        className="w-full p-3.5 rounded-xl border border-slate-200 bg-white font-medium focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all appearance-none cursor-pointer"
-                                    >
-                                        <option value="Pending">Pending Validation</option>
-                                        <option value="Processing">Processing Order</option>
-                                        <option value="Completed">Completed & Delivered</option>
-                                        <option value="Cancelled">Cancelled</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="text-sm text-slate-700 font-bold mb-2 block">Update Payment Status</label>
-                                    <select 
-                                        value={order.payment}
-                                        onChange={(e) => onUpdatePaymentStatus(order.id, e.target.value)}
-                                        className="w-full p-3.5 rounded-xl border border-slate-200 bg-white font-medium focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all appearance-none cursor-pointer"
-                                    >
-                                        <option value="Pending">Pending Payment</option>
-                                        <option value="Paid">Confirmed Paid</option>
-                                        <option value="Failed">Payment Failed</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-orange-50 text-brand-orange rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Customers</p><h4 id="stat-users" class="text-xl sm:text-3xl font-extrabold text-brand-dark">...</h4></div>
                         </div>
-                        <div className="p-5 border-t border-slate-100 bg-slate-50 flex justify-end">
-                            <button type="button" onClick={onClose} className="w-full sm:w-auto px-8 py-3.5 sm:py-3 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300 transition-colors">
-                                Done
-                            </button>
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-purple-50 text-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Leads</p><h4 id="stat-leads" class="text-xl sm:text-3xl font-extrabold text-brand-dark">...</h4></div>
+                        </div>
+                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-green-50 text-green-600 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></div>
+                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Orders</p><h4 id="stat-orders" class="text-xl sm:text-3xl font-extrabold text-brand-dark">...</h4></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <h3 class="font-extrabold text-brand-dark">Recent Transactions</h3>
+                            <button onclick="ui.switchTab('orders')" class="text-xs font-bold text-brand-blue bg-blue-50 px-3 py-1.5 rounded-lg active:scale-95">View All</button>
+                        </div>
+                        <div class="overflow-x-auto smooth-scroll">
+                            <table class="w-full text-left min-w-[500px]">
+                                <thead>
+                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
+                                        <th class="p-4 sm:p-5 font-bold">Order ID</th>
+                                        <th class="p-4 font-bold">Customer</th>
+                                        <th class="p-4 font-bold">Amount</th>
+                                        <th class="p-4 font-bold">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-recent" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-            );
+
+                <!-- Tab: Orders -->
+                <div id="tab-orders" class="tab-content">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="font-extrabold text-brand-dark text-lg">Fulfillment Queue</h3>
+                            <p class="text-xs sm:text-sm text-slate-500 font-medium">Manage and track customer purchases securely.</p>
+                        </div>
+                        <div class="overflow-x-auto smooth-scroll">
+                            <table class="w-full text-left min-w-[700px]">
+                                <thead>
+                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
+                                        <th class="p-4 sm:p-5 pl-4 sm:pl-6 font-bold">Order Details</th>
+                                        <th class="p-4 font-bold">Customer Info</th>
+                                        <th class="p-4 font-bold">Total</th>
+                                        <th class="p-4 font-bold">Payment</th>
+                                        <th class="p-4 font-bold">Status</th>
+                                        <th class="p-4 font-bold text-right pr-4 sm:pr-6">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-orders" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Customers -->
+                <div id="tab-customers" class="tab-content">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="font-extrabold text-brand-dark text-lg">CRM Database</h3>
+                            <p class="text-xs sm:text-sm text-slate-500 font-medium">Database of registered users across Store & Courses.</p>
+                        </div>
+                        <div class="overflow-x-auto smooth-scroll">
+                            <table class="w-full text-left min-w-[700px]">
+                                <thead>
+                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
+                                        <th class="p-4 pl-4 sm:pl-6 font-bold">Name</th>
+                                        <th class="p-4 font-bold">Email</th>
+                                        <th class="p-4 font-bold text-center">Orders</th>
+                                        <th class="p-4 font-bold">Total Spent</th>
+                                        <th id="th-cust-action" class="p-4 font-bold text-right pr-4 sm:pr-6 hidden">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-customers" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Products & Courses -->
+                <div id="tab-products" class="tab-content">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-extrabold text-brand-dark text-lg">Store & Courses Catalog</h3>
+                                <p class="text-xs sm:text-sm text-slate-500 font-medium">Manage physical products and digital classes.</p>
+                            </div>
+                            <button onclick="ui.showToast('Add interface launching soon', 'success')" class="px-4 py-2 bg-brand-blue text-white rounded-xl text-xs font-bold flex gap-1 active:scale-95 shadow-sm">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14 M5 12h14"/></svg> Add
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto smooth-scroll">
+                            <table class="w-full text-left min-w-[700px]">
+                                <thead>
+                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
+                                        <th class="p-4 pl-4 sm:pl-6 font-bold">Item Name</th>
+                                        <th class="p-4 font-bold">Type</th>
+                                        <th class="p-4 font-bold">Price</th>
+                                        <th class="p-4 font-bold">Status</th>
+                                        <th class="p-4 font-bold text-right pr-4 sm:pr-6">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-products" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Messages / Leads -->
+                <div id="tab-messages" class="tab-content">
+                    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50">
+                            <h3 class="font-extrabold text-brand-dark text-lg">Info & Connect Leads</h3>
+                            <p class="text-xs sm:text-sm text-slate-500 font-medium">Inquiries generated from Connect and Info pages.</p>
+                        </div>
+                        <div class="overflow-x-auto smooth-scroll">
+                            <table class="w-full text-left min-w-[600px]">
+                                <thead>
+                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
+                                        <th class="p-4 pl-4 sm:pl-6 font-bold w-12 text-center">New</th>
+                                        <th class="p-4 font-bold">Sender Info</th>
+                                        <th class="p-4 font-bold">Subject</th>
+                                        <th class="p-4 font-bold text-right pr-4 sm:pr-6">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-messages" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: AI Tools -->
+                <div id="tab-ai" class="tab-content">
+                    <div class="bg-gradient-to-br from-brand-dark to-slate-800 rounded-2xl sm:rounded-3xl shadow-lg border border-slate-700 p-6 sm:p-10 text-white relative overflow-hidden">
+                        <div class="absolute -top-24 -right-24 w-64 h-64 bg-brand-orange/20 rounded-full blur-3xl"></div>
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/10 shadow-inner">
+                                <svg class="w-8 h-8 text-brand-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">AI Email & Automations</h2>
+                            <p class="text-slate-300 mb-8 max-w-lg text-sm sm:text-base leading-relaxed">Configure your intelligent bot to automatically respond to Connect leads, send Course receipts, and broadcast targeted promos to Store customers.</p>
+                            
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div class="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md hover:bg-white/10 transition-colors">
+                                    <h4 class="font-bold text-brand-orange mb-1">Store / Course Receipts</h4>
+                                    <p class="text-xs text-slate-400 mb-4">Send instant order confirmations.</p>
+                                    <button onclick="ui.showToast('Backend connection required.')" class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all active:scale-95">Configure Bot</button>
+                                </div>
+                                <div class="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md hover:bg-white/10 transition-colors">
+                                    <h4 class="font-bold text-brand-orange mb-1">Lead Nurturing</h4>
+                                    <p class="text-xs text-slate-400 mb-4">Auto-reply to Connect inquiries.</p>
+                                    <button onclick="ui.showToast('Backend connection required.')" class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all active:scale-95">Configure Bot</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="mt-8 py-6 text-center text-slate-400 text-xs sm:text-sm font-medium border-t border-slate-200">
+                    <p>&copy; 2026 MBTECH Workspace.</p>
+                    <p class="mt-1">Designed by <a href="https://wa.me/2347044318043" target="_blank" class="text-brand-orange font-bold hover:underline">Emmy Kingz</a></p>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Global Toast Container -->
+    <div id="toastContainer" class="fixed bottom-24 lg:bottom-6 right-4 sm:right-6 z-[100] flex flex-col gap-2"></div>
+
+    <script type="module">
+        // ==========================================
+        // SECURE FIREBASE & DATA ENGINE
+        // ==========================================
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc, setDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // Security Configuration
+        const ALLOWED_EMAILS = ['emmanuel.amobi03@gmail.com', 'mesobest2000@gmail.com', 'mesobest.technology.org@gmail.com'];
+        const SUPER_ADMIN = 'emmanuel.amobi03@gmail.com';
+        const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+        
+        let appData = {
+            orders: [
+                { id: 'ORD-1023', customer: 'John Doe', email: 'john@example.com', date: '2026-02-26', total: 45000, status: 'Completed', payment: 'Paid' },
+                { id: 'ORD-1024', customer: 'Sarah Smith', email: 'sarah@example.com', date: '2026-02-27', total: 120000, status: 'Processing', payment: 'Pending' }
+            ],
+            customers: [
+                { id: 'CUST-01', name: 'John Doe', email: 'john@example.com', totalOrders: 5, spent: 250000 },
+                { id: 'CUST-02', name: 'Sarah Smith', email: 'sarah@example.com', totalOrders: 2, spent: 120000 }
+            ],
+            products: [
+                { id: 'PROD-01', name: 'Advanced Web Dev', price: 45000, stock: 999, status: 'Active', category: 'Course' },
+                { id: 'PROD-02', name: 'MBTECH Hoodie', price: 15000, stock: 0, status: 'Out of Stock', category: 'Merchandise' }
+            ],
+            messages: [
+                { id: 'MSG-01', name: 'David Okafor', email: 'david@example.com', subject: 'Inquiry', date: '2026-02-27', status: 'Unread' },
+                { id: 'MSG-02', name: 'Grace Emmanuel', email: 'grace@example.com', subject: 'Partnership Proposal', date: '2026-02-26', status: 'Read' }
+            ]
         };
 
-        const GlobalFooter = () => (
-            <footer className="py-6 mt-auto text-center text-slate-500 text-sm font-medium border-t border-slate-200 bg-white flex flex-col items-center justify-center gap-1 z-20 pb-safe">
-                <p>&copy; {new Date().getFullYear()} MBTECH. All rights reserved.</p>
-                <p>Designed by <a href="https://wa.me/2347044318043" target="_blank" rel="noopener noreferrer" className="text-brand-orange font-bold hover:underline transition-all p-1">Emmy Kingz</a></p>
-            </footer>
-        );
+        const state = {
+            user: null,
+            isSuperAdmin: false,
+            isFirebaseActive: false,
+            db: null, auth: null, appId: 'mbtech-crm',
+            activeTab: 'dashboard',
+            fetched: { dashboard: false, orders: false, customers: false, products: false, messages: false },
+            unsubs: {}
+        };
 
-        // --- Authentication / Login Modal (Overlay) ---
-        const LoginModal = ({ onLogin, onPreview }) => {
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [error, setError] = useState('');
-            const [loading, setLoading] = useState(false);
+        window.ui = {}; // Expose to global scope for HTML inline onclicks
 
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                setLoading(true);
-                setError('');
-                const success = await onLogin(email, password);
-                if (!success) {
-                    setError('Invalid access credentials. Please try again or check your account permissions.');
-                }
-                setLoading(false);
+        // 1. Core initialization
+        try {
+            const fbConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+                apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+                authDomain: "mbtechstore-17984.firebaseapp.com",
+                projectId: "mbtechstore-17984",
+                storageBucket: "mbtechstore-17984.firebasestorage.app",
+                messagingSenderId: "1083008774596",
+                appId: "1:1083008774596:web:110b651c6426116ed43491",
+                measurementId: "G-213C6T6EJ0"
             };
+            if (fbConfig && fbConfig.apiKey && fbConfig.apiKey.trim() !== '') {
+                const fbApp = initializeApp(fbConfig);
+                state.auth = getAuth(fbApp);
+                state.db = getFirestore(fbApp);
+                state.appId = typeof __app_id !== 'undefined' ? __app_id : 'mbtech-crm';
+                state.isFirebaseActive = true;
+            }
+        } catch (e) { console.warn("Firebase offline. Running fast Local Mock Mode."); }
 
-            return (
-                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
-                    <div className="max-w-md w-full bg-white rounded-[2rem] shadow-2xl p-6 sm:p-10 border border-slate-100 animate-scale-in">
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-blue rounded-2xl mb-5 shadow-lg shadow-brand-blue/30">
-                                <Lock className="text-white" size={32} />
-                            </div>
-                            <h1 className="text-2xl font-extrabold text-brand-dark">Unified Portal</h1>
-                            <p className="text-slate-500 mt-2 font-medium text-sm">Sign in to MBTECH CRM & Admin to manage your workspace.</p>
-                        </div>
-                        
-                        {error && (
-                            <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm mb-6 flex items-start sm:items-center gap-3 font-semibold animate-fade-in">
-                                <AlertCircle size={18} className="shrink-0 mt-0.5 sm:mt-0" /> <span className="flex-1">{error}</span>
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSubmit} className="space-y-4 app-touch">
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Admin Email</label>
-                                <div className="relative">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                                    <input 
-                                        type="email" 
-                                        value={email} 
-                                        onChange={(e) => setEmail(e.target.value)} 
-                                        required 
-                                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-800" 
-                                        placeholder="admin@mbtech.ng" 
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Secure Password</label>
-                                <div className="relative">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                                    <input 
-                                        type="password" 
-                                        value={password} 
-                                        onChange={(e) => setPassword(e.target.value)} 
-                                        required 
-                                        className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-800" 
-                                        placeholder="••••••••" 
-                                    />
-                                </div>
-                            </div>
-                            <button 
-                                type="submit" 
-                                disabled={loading}
-                                className="w-full bg-brand-dark hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98] flex justify-center items-center gap-2 text-base mt-2 disabled:opacity-70 disabled:hover:translate-y-0"
-                            >
-                                {loading ? 'Authenticating...' : 'Secure Login'} <ArrowRight size={18} />
-                            </button>
-                            
-                            {/* Preview Mode Button */}
-                            <button 
-                                type="button" 
-                                onClick={onPreview}
-                                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-4 rounded-xl transition-all active:scale-[0.98] flex justify-center items-center gap-2 text-base mt-2"
-                            >
-                                Preview Dashboard (Read Only) <Eye size={18} />
-                            </button>
-                        </form>
-                        
-                        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">Authorized Users</p>
-                            <div className="text-xs text-slate-500 font-medium space-y-1 break-words">
-                                <p>Super Admin: emmanuel.amobi03@gmail.com</p>
-                                <p>Admins: mesobest2000@gmail.com <br className="sm:hidden"/> | mesobest.technology.org@gmail.com</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
+        // ==========================================
+        // UI & RENDER LOGIC
+        // ==========================================
+        ui.showToast = (msg, type = 'success') => {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            const bg = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-500' : 'bg-brand-blue';
+            t.className = `toast-enter ${bg} text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-bold`;
+            t.innerHTML = `<span>${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => { t.classList.add('toast-exit'); setTimeout(() => t.remove(), 300); }, 3000);
         };
 
-        // --- Main CRM Application ---
-        const App = () => {
-            const [user, setUser] = useState(null);
-            const [userEmail, setUserEmail] = useState('');
-            const [authChecked, setAuthChecked] = useState(false);
-            const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-            const [showLoginModal, setShowLoginModal] = useState(false); // Start in preview mode directly
+        ui.setSyncBar = (active) => {
+            const bar = document.getElementById('syncProgress');
+            if (active) bar.classList.add('active');
+            else setTimeout(() => bar.classList.remove('active'), 400); // Visual buffer
+        };
 
-            // Simulated sync for visual "realtime" effect on initial load
-            const [initialSyncing, setInitialSyncing] = useState(true);
+        ui.openLoginModal = () => document.getElementById('loginModal').classList.add('active');
+        ui.closeLoginModal = () => document.getElementById('loginModal').classList.remove('active');
 
-            // Advanced Activity-based syncing state
-            const [syncQueue, setSyncQueue] = useState(new Set());
-            const isSyncing = syncQueue.size > 0 || initialSyncing;
-            const [activeListeners, setActiveListeners] = useState({
-                orders: false, customers: false, products: false, messages: false
+        ui.renderAuthHeaders = () => {
+            const deskPanel = document.getElementById('deskAuthPanel');
+            const headActions = document.getElementById('headerActions');
+            
+            if (!state.user) {
+                deskPanel.innerHTML = `<button onclick="ui.openLoginModal()" class="w-full flex justify-center items-center gap-2 px-4 py-3.5 bg-brand-blue text-white rounded-xl font-bold transition-all hover:bg-brand-blueHover"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg> Admin Login</button>`;
+                headActions.innerHTML = `
+                    <div class="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 text-orange-700 text-[10px] sm:text-xs font-bold rounded-lg border border-orange-200">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg> <span class="hidden sm:inline">Preview Mode</span><span class="sm:hidden">Preview</span>
+                    </div>
+                    <button onclick="ui.openLoginModal()" class="lg:hidden p-2 bg-brand-blue text-white rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>
+                `;
+            } else {
+                deskPanel.innerHTML = `
+                    <div class="flex items-center gap-3 px-4 py-2 mb-3">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0 shadow-inner ${state.isSuperAdmin ? 'bg-brand-orange' : 'bg-brand-blue'}">${state.isSuperAdmin ? 'SA' : 'AD'}</div>
+                        <div class="overflow-hidden"><p class="text-sm font-bold text-white truncate">${state.isSuperAdmin ? 'Super Admin' : 'Workspace Admin'}</p><p class="text-[10px] text-slate-400 truncate">${state.user}</p></div>
+                    </div>
+                    <button onclick="authLogic.logout()" class="w-full flex justify-center items-center gap-2 px-4 py-3 bg-slate-800 text-slate-300 hover:bg-red-500 hover:text-white rounded-xl font-bold transition-all"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg> Secure Logout</button>
+                `;
+                headActions.innerHTML = `
+                    <div class="hidden sm:block relative"><input type="text" placeholder="Search data..." class="pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl text-sm font-medium w-64 outline-none focus:bg-white focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all" /></div>
+                    <button onclick="authLogic.logout()" class="lg:hidden p-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg></button>
+                `;
+            }
+        };
+
+        ui.renderTables = () => {
+            // Stats
+            document.getElementById('stat-products').innerText = appData.products.length;
+            document.getElementById('stat-users').innerText = appData.customers.length;
+            document.getElementById('stat-leads').innerText = appData.messages.length;
+            document.getElementById('stat-orders').innerText = appData.orders.length;
+
+            const unread = appData.messages.filter(m => m.status === 'Unread').length;
+            ['deskBadge', 'mobBadge'].forEach(id => {
+                const b = document.getElementById(id);
+                if (unread > 0) { b.innerText = unread > 99 ? '99+' : unread; b.classList.remove('hidden'); } 
+                else { b.classList.add('hidden'); }
             });
 
-            const [activeTab, setActiveTab] = useState('dashboard');
-            
-            // Initialize with Mock data to allow Previewing before logging in
-            const [orders, setOrders] = useState(initialOrders);
-            const [customers, setCustomers] = useState(initialCustomers);
-            const [products, setProducts] = useState(initialProducts);
-            const [messages, setMessages] = useState(initialMessages);
-            
-            const [selectedOrder, setSelectedOrder] = useState(null);
-            const [toast, setToast] = useState(null);
-            const [selectedEmails, setSelectedEmails] = useState(new Set());
-            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            // Dashboard
+            document.getElementById('dashboard-recent').innerHTML = appData.orders.slice(0,5).map(o => `
+                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                    <td class="p-4 sm:p-5 text-brand-blue font-extrabold">${o.id}</td>
+                    <td class="p-4 sm:p-5">${o.customer}</td>
+                    <td class="p-4 sm:p-5 font-bold">₦${o.total.toLocaleString()}</td>
+                    <td class="p-4 sm:p-5"><span class="px-2 py-1 bg-slate-100 rounded text-[10px] font-bold">${o.status}</span></td>
+                </tr>
+            `).join('') || `<tr><td colSpan="4" class="p-6 text-center text-slate-500 font-medium">No recent activity.</td></tr>`;
 
-            // Allowed Roles
-            const SUPER_ADMIN_EMAIL = 'emmanuel.amobi03@gmail.com';
-            const ALLOWED_ADMINS = [SUPER_ADMIN_EMAIL, 'mesobest2000@gmail.com', 'mesobest.technology.org@gmail.com'];
+            // Orders
+            document.getElementById('table-orders').innerHTML = appData.orders.map(o => `
+                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                    <td class="p-4 sm:p-5 pl-4 sm:pl-6"><div class="font-extrabold text-brand-dark">${o.id}</div><div class="text-[10px] text-slate-500">${o.date}</div></td>
+                    <td class="p-4 sm:p-5"><div class="font-bold">${o.customer}</div><div class="text-[10px] text-slate-500">${o.email}</div></td>
+                    <td class="p-4 sm:p-5 font-extrabold text-brand-blue">₦${o.total.toLocaleString()}</td>
+                    <td class="p-4 sm:p-5"><span class="text-[10px] px-2 py-1 rounded bg-slate-100 font-bold">${o.payment}</span></td>
+                    <td class="p-4 sm:p-5"><span class="text-[10px] px-2 py-1 rounded bg-slate-100 font-bold">${o.status}</span></td>
+                    <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2">
+                        <button onclick="ui.enforceAuth() && ui.showToast('Edit via Admin panel only.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
+                        ${state.isSuperAdmin ? `<button onclick="dbLogic.delete('orders', '${o.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colSpan="6" class="p-6 text-center text-slate-500 font-medium">No orders found.</td></tr>`;
 
-            // --- Cache Cleaner & Session Security ---
-            useEffect(() => {
-                const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes timeout
-                let activityTimeout;
+            // Customers
+            const thCust = document.getElementById('th-cust-action');
+            if(thCust) thCust.style.display = state.isSuperAdmin ? 'table-cell' : 'none';
+            document.getElementById('table-customers').innerHTML = appData.customers.map(c => `
+                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                    <td class="p-4 sm:p-5 pl-4 sm:pl-6 font-bold text-brand-dark">${c.name}</td>
+                    <td class="p-4 sm:p-5 text-slate-500">${c.email}</td>
+                    <td class="p-4 sm:p-5 font-bold text-center"><span class="bg-slate-100 px-3 py-1 rounded-full text-[10px]">${c.totalOrders}</span></td>
+                    <td class="p-4 sm:p-5 font-extrabold text-brand-blue">₦${c.spent.toLocaleString()}</td>
+                    ${state.isSuperAdmin ? `<td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end"><button onclick="dbLogic.delete('customers', '${c.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button></td>` : ''}
+                </tr>
+            `).join('') || `<tr><td colSpan="${state.isSuperAdmin?5:4}" class="p-6 text-center text-slate-500 font-medium">No customers found.</td></tr>`;
 
-                const enforceSessionSecurity = async () => {
-                    const lastActive = localStorage.getItem('mbtech_admin_last_active');
-                    const isFreshSession = !sessionStorage.getItem('mbtech_session_active');
+            // Products (Syncs with Store & Courses)
+            document.getElementById('table-products').innerHTML = appData.products.map(p => `
+                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                    <td class="p-4 sm:p-5 pl-4 sm:pl-6 font-bold text-brand-dark">${p.name}</td>
+                    <td class="p-4 sm:p-5 text-slate-500 text-xs font-bold">${p.category}</td>
+                    <td class="p-4 sm:p-5 font-extrabold text-brand-blue">₦${p.price.toLocaleString()}</td>
+                    <td class="p-4 sm:p-5"><span class="text-[10px] px-2 py-1 rounded bg-slate-100 font-bold">${p.status}</span></td>
+                    <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2">
+                        <button onclick="ui.enforceAuth() && ui.showToast('Edit mode locked.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
+                        ${state.isSuperAdmin ? `<button onclick="dbLogic.delete('products', '${p.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colSpan="5" class="p-6 text-center text-slate-500 font-medium">No products listed.</td></tr>`;
 
-                    // Force login if it's a new tab (fresh session) or inactive for > 30 mins
-                    if (isFreshSession || (lastActive && Date.now() - parseInt(lastActive) > SESSION_TIMEOUT)) {
-                        await signOut(auth);
-                        localStorage.removeItem('mbtech_admin_last_active');
-                        sessionStorage.removeItem('mbtech_session_active');
-                    } else if (user) {
-                        // Maintain active session status
-                        sessionStorage.setItem('mbtech_session_active', 'true');
-                        localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
-                    }
-                };
+            // Messages (Syncs with Connect / Info)
+            document.getElementById('table-messages').innerHTML = appData.messages.map(m => `
+                <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors ${m.status === 'Unread' ? 'bg-orange-50/30' : ''}">
+                    <td class="p-4 sm:p-5 pl-4 sm:pl-6 text-center"><div class="w-2.5 h-2.5 rounded-full mx-auto ${m.status === 'Unread' ? 'bg-brand-orange animate-pulse' : 'bg-slate-300'}"></div></td>
+                    <td class="p-4 sm:p-5"><div class="font-bold text-brand-dark">${m.name}</div><div class="text-[10px] text-slate-500">${m.email}</div></td>
+                    <td class="p-4 sm:p-5 font-bold">${m.subject}</td>
+                    <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2">
+                        <button onclick="ui.enforceAuth() && ui.showToast('Message status toggled.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Read</button>
+                        ${state.isSuperAdmin ? `<button onclick="dbLogic.delete('messages', '${m.id}')" class="bg-red-50 text-red-500 p-2 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
+                    </td>
+                </tr>
+            `).join('') || `<tr><td colSpan="4" class="p-6 text-center text-slate-500 font-medium">No connect leads.</td></tr>`;
+        };
 
-                enforceSessionSecurity();
-
-                const updateActivity = async () => {
-                    const lastActive = localStorage.getItem('mbtech_admin_last_active');
-                    
-                    // Auto-logout if they left the tab open and returned after 30+ mins
-                    if (lastActive && Date.now() - parseInt(lastActive) > SESSION_TIMEOUT) {
-                        await signOut(auth);
-                        localStorage.removeItem('mbtech_admin_last_active');
-                        sessionStorage.removeItem('mbtech_session_active');
-                        setShowLoginModal(true); // Throw up the secure wall
-                    } else if (user) {
-                        localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
-                    }
-                };
-                
-                // Throttle tracking to prevent performance lag
-                const throttledUpdate = () => {
-                    if (activityTimeout) return;
-                    activityTimeout = setTimeout(() => {
-                        updateActivity();
-                        activityTimeout = null;
-                    }, 5000); 
-                };
-                
-                window.addEventListener('mousemove', throttledUpdate);
-                window.addEventListener('keydown', throttledUpdate);
-                window.addEventListener('click', throttledUpdate);
-                window.addEventListener('scroll', throttledUpdate);
-
-                return () => {
-                    window.removeEventListener('mousemove', throttledUpdate);
-                    window.removeEventListener('keydown', throttledUpdate);
-                    window.removeEventListener('click', throttledUpdate);
-                    window.removeEventListener('scroll', throttledUpdate);
-                    if (activityTimeout) clearTimeout(activityTimeout);
-                };
-            }, [user]);
-
-            // 60-Second Auto Login Pop-up
-            useEffect(() => {
-                if (!user && authChecked) {
-                    const timer = setTimeout(() => {
-                        setShowLoginModal(true);
-                    }, 60000); // 60 seconds
-                    return () => clearTimeout(timer);
-                }
-            }, [user, authChecked]);
-
-            // Simulate initial fetching visual effect
-            useEffect(() => {
-                const timer = setTimeout(() => {
-                    setInitialSyncing(false);
-                }, 2500); // 2.5 seconds
-                return () => clearTimeout(timer);
-            }, []);
-
-            useEffect(() => {
-                const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-                    if (firebaseUser) {
-                        const email = firebaseUser.email || localStorage.getItem('mock_canvas_email');
-                        if (ALLOWED_ADMINS.includes(email)) {
-                            setUser(firebaseUser);
-                            setUserEmail(email);
-                            setIsSuperAdmin(email === SUPER_ADMIN_EMAIL);
-                            setShowLoginModal(false); // Hide login modal on successful auth
-                        } else {
-                            setUser(null);
-                            signOut(auth);
-                        }
-                    } else {
-                        // Reset to mock data for Preview Mode when logged out
-                        setUser(null);
-                        setUserEmail('');
-                        setIsSuperAdmin(false);
-                        setOrders(initialOrders);
-                        setCustomers(initialCustomers);
-                        setProducts(initialProducts);
-                        setMessages(initialMessages);
-                    }
-                    setAuthChecked(true); // VERY IMPORTANT: Re-added to unblock the UI rendering!
-                });
-                return () => unsubscribe();
-            }, []);
-
-            // Activity-based activation: Only trigger fetches for tabs that require them
-            useEffect(() => {
-                if (!user) {
-                    setActiveListeners({ orders: false, customers: false, products: false, messages: false });
+        // --- Activity-Based Fetching & Lazy Logic ---
+        const dbLogic = {
+            syncCollection: (colName) => {
+                if (!state.isFirebaseActive || !state.db || !state.user) {
+                    ui.setSyncBar(false);
+                    ui.renderTables();
                     return;
                 }
-                setActiveListeners(prev => {
-                    const next = { ...prev };
-                    if (activeTab === 'dashboard') { next.orders = true; next.customers = true; next.products = true; next.messages = true; }
-                    if (activeTab === 'orders') next.orders = true;
-                    if (activeTab === 'customers') next.customers = true;
-                    if (activeTab === 'products') next.products = true;
-                    if (activeTab === 'messages') next.messages = true;
-                    return next;
-                });
-            }, [activeTab, user]);
-
-            // Modular, lazy-loaded Firestore Syncs (Quick & Secure execution based on activity)
-            useEffect(() => {
-                if (!activeListeners.orders) return;
-                setSyncQueue(prev => new Set(prev).add('orders'));
-                const ref = collection(db, 'artifacts', appId, 'public', 'data', 'orders');
-                const unsub = onSnapshot(ref, (snapshot) => {
-                    if (snapshot.empty && isSuperAdmin) initialOrders.forEach(o => setDoc(doc(ref, o.id), o));
-                    else setOrders(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-                    setSyncQueue(prev => { const n = new Set(prev); n.delete('orders'); return n; });
-                }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('orders'); return n; }); });
-                return () => unsub();
-            }, [activeListeners.orders, isSuperAdmin]);
-
-            useEffect(() => {
-                if (!activeListeners.customers) return;
-                setSyncQueue(prev => new Set(prev).add('customers'));
-                const ref = collection(db, 'artifacts', appId, 'public', 'data', 'customers');
-                const unsub = onSnapshot(ref, (snapshot) => {
-                    if (snapshot.empty && isSuperAdmin) initialCustomers.forEach(c => setDoc(doc(ref, c.id), c));
-                    else setCustomers(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-                    setSyncQueue(prev => { const n = new Set(prev); n.delete('customers'); return n; });
-                }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('customers'); return n; }); });
-                return () => unsub();
-            }, [activeListeners.customers, isSuperAdmin]);
-
-            useEffect(() => {
-                if (!activeListeners.products) return;
-                setSyncQueue(prev => new Set(prev).add('products'));
-                const ref = collection(db, 'artifacts', appId, 'public', 'data', 'products');
-                const unsub = onSnapshot(ref, (snapshot) => {
-                    if (snapshot.empty && isSuperAdmin) initialProducts.forEach(p => setDoc(doc(ref, p.id), p));
-                    else setProducts(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-                    setSyncQueue(prev => { const n = new Set(prev); n.delete('products'); return n; });
-                }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('products'); return n; }); });
-                return () => unsub();
-            }, [activeListeners.products, isSuperAdmin]);
-
-            useEffect(() => {
-                if (!activeListeners.messages) return;
-                setSyncQueue(prev => new Set(prev).add('messages'));
-                const ref = collection(db, 'artifacts', appId, 'public', 'data', 'messages');
-                const unsub = onSnapshot(ref, (snapshot) => {
-                    if (snapshot.empty && isSuperAdmin) initialMessages.forEach(m => setDoc(doc(ref, m.id), m));
-                    else setMessages(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-                    setSyncQueue(prev => { const n = new Set(prev); n.delete('messages'); return n; });
-                }, (e) => { console.error(e); setSyncQueue(prev => { const n = new Set(prev); n.delete('messages'); return n; }); });
-                return () => unsub();
-            }, [activeListeners.messages, isSuperAdmin]);
-
-            const handleLogin = async (email, password) => {
-                try {
-                    if (!ALLOWED_ADMINS.includes(email)) return false;
-                    await signInWithEmailAndPassword(auth, email, password);
-                    
-                    // Set secure session cache flags on successful login
-                    sessionStorage.setItem('mbtech_session_active', 'true');
-                    localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
-                    
-                    return true;
-                } catch (error) {
-                    if ((error.code === 'auth/user-not-found' || error.code === 'auth/operation-not-allowed') && typeof __firebase_config !== 'undefined') {
-                        if (ALLOWED_ADMINS.includes(email)) {
-                            await signInAnonymously(auth);
-                            localStorage.setItem('mock_canvas_email', email);
-                            
-                            // Set secure session cache flags on mock login
-                            sessionStorage.setItem('mbtech_session_active', 'true');
-                            localStorage.setItem('mbtech_admin_last_active', Date.now().toString());
-                            return true;
-                        }
+                const ref = collection(state.db, 'artifacts', state.appId, 'public', 'data', colName);
+                state.unsubs[colName] = onSnapshot(ref, (snap) => {
+                    if(snap.empty && state.isSuperAdmin) {
+                        // Seed empty DB automatically on first load if Super Admin
+                        appData[colName].forEach(item => setDoc(doc(ref, item.id), item));
+                    } else if (!snap.empty) {
+                        appData[colName] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     }
-                    return false;
-                }
-            };
+                    ui.renderTables();
+                    ui.setSyncBar(false);
+                }, (err) => { console.error(err); ui.setSyncBar(false); });
+            },
 
-            const handleLogout = async () => {
-                await signOut(auth);
+            triggerActivityFetch: (tabId) => {
+                if (!state.user) return; // Prevent DB calls if anonymous
                 
-                // Wipe the cache entirely upon explicit logout
-                localStorage.removeItem('mock_canvas_email');
+                ui.setSyncBar(true);
+                
+                // Dashboard needs aggregate data, so we fetch the big 4 silently
+                if (tabId === 'dashboard' && !state.fetched.dashboard) {
+                    ['orders', 'customers', 'products', 'messages'].forEach(col => {
+                        if(!state.fetched[col]) { dbLogic.syncCollection(col); state.fetched[col] = true; }
+                    });
+                    state.fetched.dashboard = true;
+                } 
+                // Other tabs lazy load their specific data precisely when clicked
+                else if (['orders', 'customers', 'products', 'messages'].includes(tabId)) {
+                    if (!state.fetched[tabId]) {
+                        dbLogic.syncCollection(tabId);
+                        state.fetched[tabId] = true;
+                    } else {
+                        ui.setSyncBar(false); // Already tracking realtime
+                    }
+                } else {
+                    ui.setSyncBar(false); // e.g., AI Tab
+                }
+            },
+
+            delete: async (colName, id) => {
+                if(!state.user) return ui.openLoginModal();
+                if(!state.isSuperAdmin) return ui.showToast('Permission Denied. Super Admin only.', 'error');
+                
+                if (state.isFirebaseActive && state.db) {
+                    try {
+                        await deleteDoc(doc(state.db, 'artifacts', state.appId, 'public', 'data', colName, id));
+                        ui.showToast('Item permanently deleted.', 'success');
+                    } catch(e) { ui.showToast('Failed to delete.', 'error'); }
+                } else {
+                    appData[colName] = appData[colName].filter(i => i.id !== id);
+                    ui.showToast('Item deleted (Local Simulation).');
+                    ui.renderTables();
+                }
+            }
+        };
+
+        window.dbLogic = dbLogic;
+
+        // --- Navigation Controller ---
+        ui.switchTab = (tabId) => {
+            state.activeTab = tabId;
+
+            // UI Adjustments
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(el => { el.classList.remove('bg-brand-blue', 'text-white'); el.classList.add('text-slate-400'); });
+            const deskBtn = document.getElementById(`nav-${tabId}-desk`);
+            if(deskBtn) { deskBtn.classList.remove('text-slate-400'); deskBtn.classList.add('bg-brand-blue', 'text-white'); }
+
+            document.querySelectorAll('.nav-btn-mob').forEach(el => { el.classList.remove('text-brand-blue'); el.classList.add('text-slate-400'); el.querySelector('span').classList.remove('font-extrabold'); });
+            const mobBtn = document.getElementById(`nav-${tabId}-mob`);
+            if(mobBtn) { mobBtn.classList.remove('text-slate-400'); mobBtn.classList.add('text-brand-blue'); mobBtn.querySelector('span').classList.add('font-extrabold'); }
+
+            const titles = { dashboard: 'Dashboard Overview', orders: 'Orders & Fulfillment', customers: 'Customer Database', products: 'Store & Courses', messages: 'Leads & Connect', ai: 'AI Automations' };
+            document.getElementById('headerTitle').innerText = titles[tabId];
+            
+            // Fire Database Trigger
+            dbLogic.triggerActivityFetch(tabId);
+        };
+
+        ui.enforceAuth = () => {
+            if (!state.user) { ui.openLoginModal(); ui.showToast('Admin access required.', 'error'); return false; }
+            return true;
+        };
+
+        // --- Authentication Engine ---
+        const authLogic = {
+            login: async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('adminEmail').value;
+                const password = document.getElementById('adminPassword').value;
+                const btn = document.getElementById('submitLoginBtn');
+                const err = document.getElementById('loginAlert');
+                
+                if(!ALLOWED_EMAILS.includes(email)) { err.innerText = "Access Denied."; err.classList.remove('hidden'); return; }
+
+                btn.innerText = 'Authenticating...'; btn.disabled = true;
+
+                try {
+                    if (state.isFirebaseActive && state.auth) {
+                        await signInWithEmailAndPassword(state.auth, email, password);
+                    } else {
+                        // Safe Local Fallback Execution
+                        state.user = email;
+                        state.isSuperAdmin = email === SUPER_ADMIN;
+                        sessionStorage.setItem('mbtech_session_active', 'true');
+                        authLogic.completeLogin();
+                    }
+                } catch(error) {
+                    err.innerText = "Authentication failed. Check credentials."; err.classList.remove('hidden');
+                    btn.innerHTML = 'Secure Login'; btn.disabled = false;
+                }
+            },
+            
+            logout: async () => {
+                if (state.isFirebaseActive && state.auth) await signOut(state.auth);
+                state.user = null;
+                state.isSuperAdmin = false;
                 localStorage.removeItem('mbtech_admin_last_active');
                 sessionStorage.removeItem('mbtech_session_active');
                 
-                setShowLoginModal(true);
-                showToast('Logged out securely.', 'success');
-            };
+                // Clear state to force re-fetch on next login
+                Object.keys(state.fetched).forEach(k => state.fetched[k] = false);
+                Object.values(state.unsubs).forEach(unsub => unsub && unsub());
+                
+                ui.renderAuthHeaders();
+                ui.renderTables();
+                ui.openLoginModal();
+                ui.showToast('Logged out securely');
+            },
 
-            const showToast = (message, type = 'success') => setToast({ message, type });
+            completeLogin: () => {
+                ui.closeLoginModal();
+                ui.renderAuthHeaders();
+                ui.showToast('Authenticated Successfully');
+                
+                // Action Sequence Request 1: Fetch Accurate Dashboard Data First
+                dbLogic.triggerActivityFetch('dashboard');
+                
+                // Action Sequence Request 2: Fetch Orders as Most Essential
+                setTimeout(() => {
+                    if(state.activeTab === 'dashboard') {
+                        // Pre-fetch orders explicitly so it's instantly ready
+                        if(!state.fetched.orders) { dbLogic.syncCollection('orders'); state.fetched.orders = true; }
+                    }
+                }, 500); 
+            },
 
-            // Ensure actions require authentication
-            const checkAuth = () => {
-                if (!user) {
-                    setShowLoginModal(true);
-                    showToast('Please login as Admin to perform this action.', 'error');
-                    return false;
+            enforceSession: () => {
+                const lastActive = localStorage.getItem('mbtech_admin_last_active');
+                const isFresh = !sessionStorage.getItem('mbtech_session_active');
+                
+                if (isFresh || (lastActive && Date.now() - parseInt(lastActive) > SESSION_TIMEOUT)) {
+                    authLogic.logout();
                 }
-                return true;
-            };
+            },
 
-            const updateOrderStatus = async (id, newStatus) => {
-                if (!checkAuth()) return;
-                try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', id), { status: newStatus }); showToast(`Order status updated to ${newStatus}`); } 
-                catch (e) { showToast('Failed to update status', 'error'); }
-            };
+            trackActivity: () => { if(state.user) localStorage.setItem('mbtech_admin_last_active', Date.now().toString()); }
+        };
 
-            const updatePaymentStatus = async (id, newStatus) => {
-                if (!checkAuth()) return;
-                try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'orders', id), { payment: newStatus }); showToast(`Payment status updated to ${newStatus}`); } 
-                catch (e) { showToast('Failed to update payment', 'error'); }
-            };
+        window.authLogic = authLogic;
 
-            const toggleMessageStatus = async (msg) => {
-                if (!checkAuth()) return;
-                const newStatus = msg.status === 'Read' ? 'Unread' : 'Read';
-                try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'messages', msg.id), { status: newStatus }); } 
-                catch (e) { showToast('Failed to update message', 'error'); }
-            };
+        // DOM Wiring
+        document.getElementById('loginForm').addEventListener('submit', authLogic.login);
+        
+        let actTimeout;
+        const throttledAct = () => { if(!actTimeout) { actTimeout = setTimeout(() => { authLogic.trackActivity(); actTimeout = null; }, 5000); } };
+        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => window.addEventListener(evt, throttledAct));
 
-            const deleteItem = async (collectionName, id, label) => {
-                if (!checkAuth()) return;
-                if (!isSuperAdmin) return showToast("Permission denied.", "error");
-                try {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', collectionName, id));
-                    showToast(`${label} deleted successfully.`);
-                } catch (e) {
-                    showToast(`Failed to delete ${label.toLowerCase()}`, 'error');
-                }
-            };
+        // --- System Boot ---
+        window.onload = () => {
+            // Remove preloader smoothly
+            const preloader = document.getElementById('appPreloader');
+            preloader.style.opacity = '0';
+            setTimeout(() => preloader.remove(), 500);
 
-            const handleEmailCampaign = () => {
-                if (!checkAuth()) return;
-                if (selectedEmails.size === 0) return showToast('Please select at least one recipient to launch.', 'error');
-                showToast(`Campaign initiated! Sent to ${selectedEmails.size} recipients. AI Bot handler required for delivery.`, 'success');
-                setSelectedEmails(new Set());
-            };
-
-            const toggleEmailSelection = (email) => {
-                const newSet = new Set(selectedEmails);
-                if (newSet.has(email)) newSet.delete(email); else newSet.add(email);
-                setSelectedEmails(newSet);
-            };
-
-            const selectAllEmails = (e) => {
-                if (e.target.checked) setSelectedEmails(new Set(customers.map(c => c.email)));
-                else setSelectedEmails(new Set());
-            };
-
-            const totalRevenue = useMemo(() => orders.reduce((sum, o) => o.payment === 'Paid' ? sum + o.total : sum, 0), [orders]);
-            const unreadMessagesCount = useMemo(() => messages.filter(m => m.status === 'Unread').length, [messages]);
-
-            if (!authChecked) {
-                // Returns null until auth state is determined to prevent flashing unauthenticated states
-                return null; 
+            // Establish Firebase Auth Listener (If active)
+            if (state.isFirebaseActive && state.auth) {
+                onAuthStateChanged(state.auth, (fbUser) => {
+                    if (fbUser && ALLOWED_EMAILS.includes(fbUser.email)) {
+                        state.user = fbUser.email;
+                        state.isSuperAdmin = fbUser.email === SUPER_ADMIN;
+                        sessionStorage.setItem('mbtech_session_active', 'true');
+                        authLogic.completeLogin();
+                        authLogic.enforceSession();
+                    } else {
+                        if(fbUser) signOut(state.auth);
+                        state.user = null;
+                        ui.renderAuthHeaders();
+                        if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(ui.openLoginModal, 60000); // 60s Guest timeout
+                    }
+                });
+            } else {
+                // Local Mode Initialization
+                ui.renderAuthHeaders();
+                if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(ui.openLoginModal, 60000); // 60s Guest timeout
             }
 
-            return (
-                <div className="flex h-[100dvh] overflow-hidden bg-slate-50 font-sans relative app-touch">
-                    {/* Data Sync Progress Bar */}
-                    {isSyncing && (
-                        <div className="absolute top-0 left-0 w-full h-1 bg-slate-200 z-50 overflow-hidden">
-                            <div className="h-full bg-brand-orange animate-progress w-full origin-left"></div>
-                        </div>
-                    )}
-
-                    {/* Mobile Menu Backdrop */}
-                    {mobileMenuOpen && (
-                        <div 
-                            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-30 lg:hidden transition-opacity animate-fade-in"
-                            onClick={() => setMobileMenuOpen(false)}
-                        />
-                    )}
-
-                    {/* Login Modal Overlay */}
-                    {!user && showLoginModal && (
-                        <LoginModal 
-                            onLogin={handleLogin} 
-                            onPreview={() => setShowLoginModal(false)} 
-                        />
-                    )}
-
-                    {/* Desktop Sidebar Navigation */}
-                    <aside className="hidden lg:flex fixed inset-y-0 left-0 bg-brand-dark text-white w-64 shadow-2xl z-40 flex-col app-touch">
-                        <div className="p-6 flex items-center justify-between border-b border-slate-800 mt-1">
-                            <div className="text-2xl font-extrabold tracking-tight">MBTECH<span className="text-brand-orange">.NG</span></div>
-                        </div>
-                        
-                        <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto smooth-scroll">
-                            <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Analytics & CRM</p>
-                            <button type="button" onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'dashboard' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                                <LayoutDashboard size={20} /> Dashboard Overview
-                            </button>
-                            <button type="button" onClick={() => setActiveTab('orders')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'orders' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                                <ShoppingCart size={20} /> Orders & Fulfillment
-                            </button>
-                            <button type="button" onClick={() => setActiveTab('customers')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'customers' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                                <Users size={20} /> Customers & Marketing
-                            </button>
-
-                            <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-6">Store Admin</p>
-                            <button type="button" onClick={() => setActiveTab('products')} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'products' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                                <Package size={20} /> Products & Courses
-                            </button>
-                            <button type="button" onClick={() => setActiveTab('messages')} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all ${activeTab === 'messages' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
-                                <div className="flex items-center gap-3"><MessageSquare size={20} /> Leads & Connect</div>
-                                {unreadMessagesCount > 0 && <span className="bg-brand-orange text-white text-xs px-2 py-0.5 rounded-full">{unreadMessagesCount}</span>}
-                            </button>
-                        </nav>
-
-                        <div className="p-4 border-t border-slate-800 bg-slate-900/50">
-                            {!user ? (
-                                <button type="button" onClick={() => setShowLoginModal(true)} className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-brand-blue text-white hover:bg-brand-blueHover rounded-xl font-bold transition-all">
-                                    <Lock size={18} /> Admin Login
-                                </button>
-                            ) : (
-                                <>
-                                    <div className="flex items-center gap-3 px-4 py-3 mb-3">
-                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shadow-inner shrink-0 ${isSuperAdmin ? 'bg-brand-orange' : 'bg-brand-blue'}`}>
-                                            {isSuperAdmin ? 'SA' : 'AD'}
-                                        </div>
-                                        <div className="overflow-hidden">
-                                            <p className="text-sm font-bold text-white truncate">{isSuperAdmin ? 'Super Admin' : 'Admin'}</p>
-                                            <p className="text-xs font-medium text-slate-400 truncate">{userEmail}</p>
-                                        </div>
-                                    </div>
-                                    <button type="button" onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-slate-800 text-slate-300 hover:bg-red-500 hover:text-white rounded-xl font-bold transition-all">
-                                        <LogOut size={18} /> Secure Sign Out
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    </aside>
-
-                    {/* Mobile Native-Style Bottom Navigation */}
-                    <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-around items-center px-1 py-1 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)] app-touch">
-                        <MobileTab id="dashboard" icon={<LayoutDashboard size={22}/>} label="Home" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        <MobileTab id="orders" icon={<ShoppingCart size={22}/>} label="Orders" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        <MobileTab id="customers" icon={<Users size={22}/>} label="Users" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        <MobileTab id="products" icon={<Package size={22}/>} label="Store" activeTab={activeTab} setActiveTab={setActiveTab} />
-                        <MobileTab id="messages" icon={<MessageSquare size={22}/>} label="Leads" badge={unreadMessagesCount} activeTab={activeTab} setActiveTab={setActiveTab} />
-                    </nav>
-
-                    {/* Main Content Area */}
-                    <div className="flex-1 flex flex-col min-w-0 lg:ml-64 relative h-full">
-                        
-                        {/* Topbar */}
-                        <header className="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20 app-touch">
-                            <div className="flex items-center justify-between px-4 sm:px-8 py-3.5 mt-1">
-                                <div className="flex items-center gap-3">
-                                    <div className="lg:hidden text-2xl font-extrabold tracking-tight text-brand-dark">MB<span className="text-brand-orange">.</span></div>
-                                    <div className="hidden lg:block lg:w-px lg:h-6 lg:bg-slate-200"></div>
-                                    <h2 className="text-lg sm:text-2xl font-extrabold text-brand-dark capitalize truncate">
-                                        {activeTab === 'customers' ? 'CRM & Marketing' : activeTab.replace('-', ' ')}
-                                    </h2>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    {isSyncing && (
-                                        <div className="hidden sm:flex items-center gap-2 text-brand-orange text-xs font-bold animate-pulse">
-                                            <RefreshCw size={14} className="animate-spin" /> Syncing...
-                                        </div>
-                                    )}
-                                    {!user && !showLoginModal && (
-                                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-bold rounded-lg border border-orange-200">
-                                            <Eye size={14} className="shrink-0" /> <span className="hidden sm:inline">Preview Mode</span><span className="sm:hidden">Preview</span>
-                                        </div>
-                                    )}
-                                    <div className="relative hidden md:block">
-                                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                        <input type="text" placeholder="Search data..." className="pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl focus:border-brand-blue focus:bg-white focus:ring-4 focus:ring-brand-blue/10 transition-all text-sm font-medium w-64 lg:w-80 outline-none" />
-                                    </div>
-                                    {/* Mobile Auth Button in Header */}
-                                    <div className="lg:hidden flex items-center ml-1">
-                                        {!user ? (
-                                            <button type="button" onClick={() => setShowLoginModal(true)} className="p-2 bg-brand-blue text-white rounded-lg shadow-sm active:scale-95 transition-transform">
-                                                <Lock size={18} />
-                                            </button>
-                                        ) : (
-                                            <button type="button" onClick={handleLogout} className="p-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg shadow-sm active:scale-95 transition-transform">
-                                                <LogOut size={18} />
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </header>
-
-                        {/* Views - Added pb-24 for mobile to avoid bottom nav overlap */}
-                        <main className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50/50 smooth-scroll pb-24 lg:pb-8">
-                            
-                            {/* --- DASHBOARD TAB --- */}
-                            {activeTab === 'dashboard' && (
-                                <div className="space-y-6 sm:space-y-8 animate-fade-in pb-8">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center shadow-inner shrink-0"><Package size={28}/></div>
-                                            <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Products & Courses</p>
-                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
-                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : products.length}
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-50 text-brand-orange rounded-2xl flex items-center justify-center shadow-inner shrink-0"><Users size={28}/></div>
-                                            <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Active Users</p>
-                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
-                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : customers.length}
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center shadow-inner shrink-0"><MessageSquare size={28}/></div>
-                                            <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Info & Leads</p>
-                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
-                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : messages.length}
-                                                </h4>
-                                            </div>
-                                        </div>
-                                        <div className="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 hover:shadow-md transition-shadow">
-                                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center shadow-inner shrink-0"><ShoppingCart size={28}/></div>
-                                            <div className="overflow-hidden">
-                                                <p className="text-slate-500 font-bold text-xs sm:text-sm mb-1 truncate">Total Orders</p>
-                                                <h4 className="text-2xl sm:text-3xl font-extrabold text-brand-dark">
-                                                    {initialSyncing ? <span className="animate-pulse text-slate-300">...</span> : orders.length}
-                                                </h4>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="p-5 sm:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                            <h3 className="text-base sm:text-lg font-extrabold text-brand-dark">Recent Transactions</h3>
-                                            <button type="button" onClick={() => setActiveTab('orders')} className="text-xs sm:text-sm font-bold text-brand-blue hover:text-brand-blueHover px-4 py-2 bg-blue-50 rounded-lg transition-colors">View All</button>
-                                        </div>
-                                        <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[600px]">
-                                                <thead>
-                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-4 sm:p-5 font-bold">Order ID</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Customer Name</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Amount</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
-                                                    {orders.slice(0, 5).map(order => (
-                                                        <tr key={order.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer active:bg-slate-100" onClick={() => setSelectedOrder(order)}>
-                                                            <td className="p-4 sm:p-5 text-brand-blue font-extrabold">{order.id}</td>
-                                                            <td className="p-4 sm:p-5">{order.customer}</td>
-                                                            <td className="p-4 sm:p-5">₦{order.total.toLocaleString()}</td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold inline-block whitespace-nowrap ${
-                                                                    order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                                                    order.status === 'Processing' ? 'bg-blue-100 text-blue-700' :
-                                                                    'bg-orange-100 text-orange-700'
-                                                                }`}>
-                                                                    {order.status}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                    {orders.length === 0 && !initialSyncing && (
-                                                        <tr><td colSpan="4" className="p-8 text-center text-slate-500 font-medium text-sm">No recent transactions found.</td></tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* --- ORDERS TAB --- */}
-                            {activeTab === 'orders' && (
-                                <div className="space-y-6 animate-fade-in pb-8">
-                                    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="p-5 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
-                                            <div>
-                                                <h3 className="text-lg font-extrabold text-brand-dark">All Orders</h3>
-                                                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Manage and track customer fulfillment.</p>
-                                            </div>
-                                        </div>
-                                        <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[800px]">
-                                                <thead>
-                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-4 sm:p-5 font-bold pl-4 sm:pl-6">Order Details</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Customer Info</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Amount</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Payment</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Status</th>
-                                                        <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
-                                                    {orders.map(order => (
-                                                        <tr key={order.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                            <td className="p-4 sm:p-5 pl-4 sm:pl-6">
-                                                                <div className="font-extrabold text-brand-dark">{order.id}</div>
-                                                                <div className="text-[10px] sm:text-xs text-slate-500 mt-1">{order.date}</div>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <div className="font-bold">{order.customer}</div>
-                                                                <div className="text-[10px] sm:text-xs text-slate-500 font-medium mt-1">{order.email}</div>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5 font-extrabold">₦{order.total.toLocaleString()}</td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <span className={`px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold inline-flex items-center gap-1 whitespace-nowrap ${
-                                                                    order.payment === 'Paid' ? 'text-green-700 bg-green-50 border border-green-200' : 'text-orange-700 bg-orange-50 border border-orange-200'
-                                                                }`}>
-                                                                    {order.payment === 'Paid' ? <CheckCircle size={12}/> : <Clock size={12}/>}
-                                                                    {order.payment}
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold inline-block whitespace-nowrap ${
-                                                                    order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                                                    order.status === 'Processing' ? 'bg-blue-100 text-blue-700' :
-                                                                    'bg-orange-100 text-orange-700'
-                                                                }`}>
-                                                                    {order.status}
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5 text-right flex items-center justify-end gap-2 pr-4 sm:pr-6">
-                                                                <button type="button" onClick={() => setSelectedOrder(order)} className="px-4 py-2 sm:px-5 sm:py-2.5 bg-slate-100 text-slate-700 rounded-lg text-[10px] sm:text-sm font-bold hover:bg-slate-200 transition-colors whitespace-nowrap active:scale-95">
-                                                                    Edit
-                                                                </button>
-                                                                {isSuperAdmin && (
-                                                                    <button type="button" onClick={() => deleteItem('orders', order.id, 'Order')} className="p-2 sm:p-2.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
-                                                                        <Trash2 size={16} />
-                                                                    </button>
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                    {orders.length === 0 && !initialSyncing && (
-                                                        <tr><td colSpan="6" className="p-8 text-center text-slate-500 font-medium">No orders found.</td></tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* --- CUSTOMERS & CRM TAB --- */}
-                            {activeTab === 'customers' && (
-                                <div className="space-y-6 animate-fade-in pb-8">
-                                    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="p-5 sm:p-8 border-b border-slate-100 bg-slate-50/50">
-                                            <h3 className="text-lg font-extrabold text-brand-dark mb-1">Customer Database</h3>
-                                            <p className="text-xs sm:text-sm text-slate-500 font-medium">Select users below to bulk-send email marketing campaigns or promos.</p>
-                                        </div>
-                                        
-                                        <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[800px]">
-                                                <thead>
-                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-4 sm:p-5 w-16 text-center pl-4 sm:pl-6">
-                                                            <input 
-                                                                type="checkbox" 
-                                                                className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded border-slate-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
-                                                                checked={selectedEmails.size === customers.length && customers.length > 0}
-                                                                onChange={selectAllEmails}
-                                                            />
-                                                        </th>
-                                                        <th className="p-4 sm:p-5 font-bold">Customer Name</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Email Address</th>
-                                                        <th className="p-4 sm:p-5 font-bold text-center">Orders</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Total Spent</th>
-                                                        {isSuperAdmin && <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>}
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
-                                                    {customers.map(customer => (
-                                                        <tr key={customer.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                            <td className="p-4 sm:p-5 text-center pl-4 sm:pl-6">
-                                                                <input 
-                                                                    type="checkbox" 
-                                                                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded border-slate-300 text-brand-blue focus:ring-brand-blue cursor-pointer"
-                                                                    checked={selectedEmails.has(customer.email)}
-                                                                    onChange={() => toggleEmailSelection(customer.email)}
-                                                                />
-                                                            </td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
-                                                                        {customer.name.charAt(0)}
-                                                                    </div>
-                                                                    <span className="font-bold text-brand-dark whitespace-nowrap">{customer.name}</span>
-                                                                </div>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5 text-slate-500">{customer.email}</td>
-                                                            <td className="p-4 sm:p-5 text-center">
-                                                                <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">{customer.totalOrders}</span>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5 font-extrabold text-brand-blue">₦{customer.spent.toLocaleString()}</td>
-                                                            
-                                                            {isSuperAdmin && (
-                                                                <td className="p-4 sm:p-5 text-right pr-4 sm:pr-6">
-                                                                    <button type="button" onClick={() => deleteItem('customers', customer.id, 'Customer')} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
-                                                                        <Trash2 size={16} />
-                                                                    </button>
-                                                                </td>
-                                                            )}
-                                                        </tr>
-                                                    ))}
-                                                    {customers.length === 0 && !initialSyncing && (
-                                                        <tr><td colSpan={isSuperAdmin ? "6" : "5"} className="p-8 text-center text-slate-500 font-medium">No customers found.</td></tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        
-                                        <div className="p-4 sm:p-8 bg-slate-50 border-t border-slate-100">
-                                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
-                                                <div className="text-[10px] sm:text-sm font-bold text-slate-500 flex items-center gap-2">
-                                                    <Users size={16} className="text-brand-blue"/> {selectedEmails.size} Recipients Selected
-                                                </div>
-                                                <button type="button" onClick={handleEmailCampaign} className="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 bg-brand-dark text-white rounded-xl text-sm sm:text-base font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 active:scale-95">
-                                                    <Send size={16}/> Launch AI Promo Campaign
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* --- PRODUCTS & STORE ADMIN TAB --- */}
-                            {activeTab === 'products' && (
-                                <div className="space-y-6 animate-fade-in pb-8">
-                                    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="p-5 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
-                                            <div>
-                                                <h3 className="text-lg font-extrabold text-brand-dark">Store Catalog</h3>
-                                                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Manage physical products and digital courses.</p>
-                                            </div>
-                                            <button type="button" onClick={() => checkAuth() && showToast('Add functionality coming soon.', 'success')} className="w-full sm:w-auto flex justify-center items-center gap-2 px-5 py-3 sm:py-2.5 bg-brand-blue text-white rounded-xl font-bold text-sm hover:bg-brand-blueHover shadow-md transition-all active:scale-95">
-                                                <Plus size={16} /> Add Product
-                                            </button>
-                                        </div>
-                                        <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[800px]">
-                                                <thead>
-                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-4 sm:p-5 font-bold pl-4 sm:pl-6">Product Code</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Item Name</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Category</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Price</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Status</th>
-                                                        <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
-                                                    {products.map(product => (
-                                                        <tr key={product.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                            <td className="p-4 sm:p-5 pl-4 sm:pl-6 font-extrabold text-brand-dark">{product.id}</td>
-                                                            <td className="p-4 sm:p-5 font-bold">{product.name}</td>
-                                                            <td className="p-4 sm:p-5 text-slate-500">{product.category}</td>
-                                                            <td className="p-4 sm:p-5 font-extrabold text-brand-blue">₦{product.price.toLocaleString()}</td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold inline-block whitespace-nowrap ${
-                                                                    product.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                                                                }`}>
-                                                                    {product.status} {product.status === 'Active' ? `(${product.stock})` : ''}
-                                                                </span>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5 text-right flex items-center justify-end gap-2 pr-4 sm:pr-6">
-                                                                <button type="button" onClick={() => checkAuth() && showToast('Edit interface coming soon.', 'success')} className="p-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors active:scale-95" title="Edit">
-                                                                    <Edit size={16} />
-                                                                </button>
-                                                                {isSuperAdmin && (
-                                                                    <button type="button" onClick={() => deleteItem('products', product.id, 'Product')} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
-                                                                        <Trash2 size={16} />
-                                                                    </button>
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                    {products.length === 0 && !initialSyncing && (
-                                                        <tr><td colSpan="6" className="p-8 text-center text-slate-500 font-medium">No products available.</td></tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* --- LEADS & CONNECT TAB --- */}
-                            {activeTab === 'messages' && (
-                                <div className="space-y-6 animate-fade-in pb-8">
-                                    <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="p-5 sm:p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                            <div>
-                                                <h3 className="text-lg font-extrabold text-brand-dark">Connect Inquiries</h3>
-                                                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">Review messages and lead requests.</p>
-                                            </div>
-                                        </div>
-                                        <div className="overflow-x-auto smooth-scroll">
-                                            <table className="w-full text-left border-collapse min-w-[700px]">
-                                                <thead>
-                                                    <tr className="bg-white text-slate-400 text-[10px] sm:text-xs uppercase tracking-wider border-b border-slate-100">
-                                                        <th className="p-4 sm:p-5 font-bold pl-4 sm:pl-6 w-12 sm:w-16">Status</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Contact Info</th>
-                                                        <th className="p-4 sm:p-5 font-bold">Subject / Date</th>
-                                                        <th className="p-4 sm:p-5 font-bold text-right pr-4 sm:pr-6">Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="text-xs sm:text-sm font-semibold text-slate-700">
-                                                    {messages.map(msg => (
-                                                        <tr key={msg.id} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${msg.status === 'Unread' ? 'bg-orange-50/30' : ''}`}>
-                                                            <td className="p-4 sm:p-5 pl-4 sm:pl-6 text-center">
-                                                                <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full mx-auto ${msg.status === 'Unread' ? 'bg-brand-orange animate-pulse' : 'bg-slate-300'}`}></div>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <div className={`font-bold ${msg.status === 'Unread' ? 'text-brand-dark' : 'text-slate-600'}`}>{msg.name}</div>
-                                                                <div className="text-[10px] sm:text-xs text-slate-500 font-medium mt-1">{msg.email}</div>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5">
-                                                                <div className="font-bold text-brand-dark">{msg.subject}</div>
-                                                                <div className="text-[10px] sm:text-xs text-slate-500 mt-1">{msg.date}</div>
-                                                            </td>
-                                                            <td className="p-4 sm:p-5 text-right flex items-center justify-end gap-2 pr-4 sm:pr-6">
-                                                                <button type="button" onClick={() => toggleMessageStatus(msg)} className="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 text-slate-700 rounded-lg text-[10px] sm:text-xs font-bold hover:bg-slate-200 transition-colors whitespace-nowrap active:scale-95">
-                                                                    Mark {msg.status === 'Read' ? 'Unread' : 'Read'}
-                                                                </button>
-                                                                {isSuperAdmin && (
-                                                                    <button type="button" onClick={() => deleteItem('messages', msg.id, 'Message')} className="p-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors active:scale-95" title="Delete">
-                                                                        <Trash2 size={16} />
-                                                                    </button>
-                                                                )}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                    {messages.length === 0 && !initialSyncing && (
-                                                        <tr><td colSpan="4" className="p-8 text-center text-slate-500 font-medium">No messages found.</td></tr>
-                                                    )}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            <GlobalFooter />
-                        </main>
-                    </div>
-                    
-                    <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={updateOrderStatus} onUpdatePaymentStatus={updatePaymentStatus} />
-                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-                </div>
-            );
-        }
-
-        const root = createRoot(document.getElementById('root'));
-        root.render(<App />);
+            // Init Default View
+            ui.switchTab('dashboard');
+            ui.renderTables();
+            
+            // Visual simulated loading for aesthetic
+            ui.setSyncBar(true);
+            setTimeout(() => ui.setSyncBar(false), 1500);
+        };
     </script>
 </body>
 </html>
