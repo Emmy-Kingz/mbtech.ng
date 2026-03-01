@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MBTECH CRM | Admin Management</title>
+    
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: { 
+                        brand: { 
+                            blue: '#0056b3', 
+                            blueHover: '#004494', 
+                            orange: '#f97316',
+                            dark: '#0f172a',
+                            light: '#f8fafc'
+                        } 
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Import Map for React and Lucide -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.284.0"
+        }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-brand-light text-slate-800 font-sans antialiased overflow-x-hidden">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useMemo } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Users, ShoppingCart, Send, Mail, CheckCircle, Clock, XCircle, 
+            Search, Filter, LogOut, Lock, User, Menu, X, ChevronRight, FileText, 
+            CreditCard, ShieldCheck, MailWarning, BadgeCheck
+        } from 'lucide-react';
+
+        // --- Mock Data ---
+        const initialOrders = [
+            { id: 'ORD-7391', customerName: 'Emmanuel King', email: 'emmanuel@example.com', product: 'Web Dev Mastery', amount: 45000, status: 'Completed', paymentStatus: 'Paid', date: '2026-02-28' },
+            { id: 'ORD-7392', customerName: 'Sarah Johnson', email: 'sarah.j@example.com', product: 'UI/UX Course', amount: 35000, status: 'Pending', paymentStatus: 'Pending', date: '2026-03-01' },
+            { id: 'ORD-7393', customerName: 'David Adeleke', email: 'davido@example.com', product: 'Digital Marketing Bootcamp', amount: 25000, status: 'Completed', paymentStatus: 'Paid', date: '2026-02-25' },
+            { id: 'ORD-7394', customerName: 'Aisha Bello', email: 'aisha.b@example.com', product: 'Data Science Fundamentals', amount: 55000, status: 'Pending', paymentStatus: 'Pending', date: '2026-03-01' },
+            { id: 'ORD-7395', customerName: 'Chinedu Okoro', email: 'chinedu.o@example.com', product: 'Web Dev Mastery', amount: 45000, status: 'Failed', paymentStatus: 'Failed', date: '2026-02-20' },
+        ];
+
+        // --- Email Templates for Campaigns ---
+        const emailTemplates = {
+            custom: {
+                id: 'custom',
+                name: 'Custom Email',
+                subject: '',
+                body: '',
+                targetStatus: 'All'
+            },
+            payment_pending: {
+                id: 'payment_pending',
+                name: 'Payment Reminder (Pending)',
+                subject: 'Action Required: Complete your MBTECH Payment',
+                body: 'Hello {{customerName}},\n\nWe noticed that your payment for your recent order ({{orderId}}) is currently pending. Please complete your transaction to ensure you get immediate access to your course materials.\n\nClick here to complete payment: https://mbtech.ng/checkout\n\nThank you,\nMBTECH Team',
+                targetStatus: 'Pending'
+            },
+            payment_success: {
+                id: 'payment_success',
+                name: 'Thank You (Paid)',
+                subject: 'Payment Received - Welcome aboard!',
+                body: 'Hello {{customerName}},\n\nThank you for your payment! Your order ({{orderId}}) has been successfully processed.\n\nYou can now log in to your dashboard to access your materials.\n\nBest regards,\nMBTECH Team',
+                targetStatus: 'Paid'
+            },
+            promo: {
+                id: 'promo',
+                name: 'Promo/Discount Offer',
+                subject: 'Exclusive 20% Off Your Next Tech Course!',
+                body: 'Hello {{customerName}},\n\nReady to level up your skills? We are offering an exclusive 20% discount on all courses this weekend.\n\nUse code: TECH20 at checkout.\n\nSee you in class,\nMBTECH Team',
+                targetStatus: 'All'
+            }
+        };
+
+        // --- Components ---
+
+        const Toast = ({ message, type, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            const bgColor = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-brand-blue';
+            
+            return (
+                <div className={`fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-xl flex items-center gap-3 z-50 animate-bounce`}>
+                    {type === 'success' ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                    <span className="font-medium">{message}</span>
+                </div>
+            );
+        };
+
+        const LoginScreen = ({ onLogin }) => {
+            const [email, setEmail] = useState('admin@mbtech.ng');
+            const [password, setPassword] = useState('admin123');
+            const [error, setError] = useState('');
+
+            const handleLogin = (e) => {
+                e.preventDefault();
+                if (email === 'admin@mbtech.ng' && password.length > 0) {
+                    onLogin();
+                } else {
+                    setError('Invalid admin credentials. Please try again.');
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-brand-dark px-4 relative overflow-hidden">
+                    {/* Background accents */}
+                    <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-blue rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-brand-orange rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                    
+                    <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md relative z-10 border border-slate-100">
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 bg-brand-blue rounded-xl mx-auto flex items-center justify-center shadow-lg shadow-brand-blue/30 mb-4">
+                                <ShieldCheck size={32} className="text-white" />
+                            </div>
+                            <h1 className="text-2xl font-extrabold text-slate-800">Admin Access</h1>
+                            <p className="text-slate-500 mt-2 text-sm">Sign in to manage CRM operations</p>
+                        </div>
+                        
+                        {error && (
+                            <div className="mb-6 p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2 border border-red-100">
+                                <XCircle size={16} /> {error}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleLogin} className="space-y-5">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Admin Email</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <User size={18} className="text-slate-400" />
+                                    </div>
+                                    <input 
+                                        type="email" 
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock size={18} className="text-slate-400" />
+                                    </div>
+                                    <input 
+                                        type="password" 
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <button 
+                                type="submit" 
+                                className="w-full bg-brand-blue text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-blue/30 hover:bg-brand-blueHover transition-colors flex items-center justify-center gap-2"
+                            >
+                                Login to CRM <ChevronRight size={18} />
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [isAuthenticated, setIsAuthenticated] = useState(false);
+            const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'customers', 'campaigns'
+            const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+            const [toast, setToast] = useState(null);
+
+            // Data States
+            const [orders, setOrders] = useState(initialOrders);
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // Campaign States
+            const [selectedTemplate, setSelectedTemplate] = useState('custom');
+            const [campaignAudience, setCampaignAudience] = useState('All');
+            const [campaignSubject, setCampaignSubject] = useState('');
+            const [campaignBody, setCampaignBody] = useState('');
+
+            // Derived Data
+            const customers = useMemo(() => {
+                const custMap = new Map();
+                orders.forEach(order => {
+                    if (!custMap.has(order.email)) {
+                        custMap.set(order.email, {
+                            name: order.customerName,
+                            email: order.email,
+                            totalOrders: 1,
+                            totalSpent: order.amount,
+                            lastOrderDate: order.date
+                        });
+                    } else {
+                        const existing = custMap.get(order.email);
+                        existing.totalOrders += 1;
+                        existing.totalSpent += order.amount;
+                        if (new Date(order.date) > new Date(existing.lastOrderDate)) {
+                            existing.lastOrderDate = order.date;
+                        }
+                    }
+                });
+                return Array.from(custMap.values());
+            }, [orders]);
+
+            const filteredOrders = orders.filter(o => 
+                o.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                o.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                o.email.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            const filteredCustomers = customers.filter(c => 
+                c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                c.email.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            // Handlers
+            const handleStatusChange = (orderId, newPaymentStatus) => {
+                setOrders(prev => prev.map(o => {
+                    if (o.id === orderId) {
+                        return { ...o, paymentStatus: newPaymentStatus, status: newPaymentStatus === 'Paid' ? 'Completed' : (newPaymentStatus === 'Failed' ? 'Failed' : 'Pending') };
+                    }
+                    return o;
+                }));
+                showToast(`Order ${orderId} marked as ${newPaymentStatus}`, 'success');
+            };
+
+            const handleTemplateChange = (e) => {
+                const tmplId = e.target.value;
+                setSelectedTemplate(tmplId);
+                const tmpl = emailTemplates[tmplId];
+                
+                if (tmpl) {
+                    setCampaignSubject(tmpl.subject);
+                    setCampaignBody(tmpl.body);
+                    setCampaignAudience(tmpl.targetStatus);
+                }
+            };
+
+            const handleSendCampaign = () => {
+                if (!campaignSubject || !campaignBody) {
+                    showToast('Subject and Body are required', 'error');
+                    return;
+                }
+                
+                // Calculate targeted users purely for feedback display
+                const targets = campaignAudience === 'All' 
+                    ? customers.length 
+                    : orders.filter(o => o.paymentStatus === campaignAudience).length;
+
+                showToast(`Campaign launched successfully to ${targets} recipients!`, 'success');
+                setCampaignSubject('');
+                setCampaignBody('');
+                setSelectedTemplate('custom');
+            };
+
+            const showToast = (message, type = 'success') => {
+                setToast({ message, type });
+            };
+
+            const formatCurrency = (amount) => {
+                return '₦' + amount.toLocaleString();
+            };
+
+            const getStatusBadge = (status) => {
+                switch(status) {
+                    case 'Paid':
+                    case 'Completed': return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold flex items-center gap-1 w-max"><CheckCircle size={12}/> {status}</span>;
+                    case 'Pending': return <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold flex items-center gap-1 w-max"><Clock size={12}/> {status}</span>;
+                    case 'Failed': return <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold flex items-center gap-1 w-max"><XCircle size={12}/> {status}</span>;
+                    default: return <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold w-max">{status}</span>;
+                }
+            };
+
+            if (!isAuthenticated) {
+                return <LoginScreen onLogin={() => setIsAuthenticated(true)} />;
+            }
+
+            return (
+                <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
+                    
+                    {/* Mobile Header */}
+                    <div className="md:hidden bg-brand-dark text-white p-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
+                        <div className="font-bold text-lg flex items-center gap-2">
+                            <ShieldCheck className="text-brand-orange" /> MBTECH CRM
+                        </div>
+                        <button onClick={() => setIsSidebarOpen(true)} className="p-2 hover:bg-slate-800 rounded-lg">
+                            <Menu size={24} />
+                        </button>
+                    </div>
+
+                    {/* SidebarOverlay */}
+                    {isSidebarOpen && (
+                        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsSidebarOpen(false)}></div>
+                    )}
+
+                    {/* Sidebar */}
+                    <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 w-64 bg-brand-dark text-slate-300 transition-transform duration-300 ease-in-out z-50 flex flex-col shadow-2xl md:shadow-none`}>
+                        <div className="p-6 flex items-center justify-between border-b border-slate-800">
+                            <div className="font-extrabold text-xl text-white flex items-center gap-2 tracking-tight">
+                                <div className="w-8 h-8 bg-brand-orange rounded-lg flex items-center justify-center">
+                                    <ShieldCheck size={20} className="text-white" />
+                                </div>
+                                CRM Panel
+                            </div>
+                            <button className="md:hidden p-1 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="p-4 flex-1">
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 ml-2 mt-4">Management</div>
+                            <nav className="space-y-2">
+                                <button 
+                                    onClick={() => { setActiveTab('orders'); setIsSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'orders' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <ShoppingCart size={18} /> Orders
+                                </button>
+                                <button 
+                                    onClick={() => { setActiveTab('customers'); setIsSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'customers' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <Users size={18} /> Customers
+                                </button>
+                                <button 
+                                    onClick={() => { setActiveTab('campaigns'); setIsSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'campaigns' ? 'bg-brand-blue text-white shadow-lg shadow-brand-blue/20' : 'hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <Mail size={18} /> Campaigns
+                                </button>
+                            </nav>
+                        </div>
+
+                        <div className="p-4 border-t border-slate-800">
+                            <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-slate-800/50 rounded-xl">
+                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">A</div>
+                                <div>
+                                    <div className="text-sm font-bold text-white">Admin User</div>
+                                    <div className="text-xs text-slate-400">admin@mbtech.ng</div>
+                                </div>
+                            </div>
+                            <button onClick={() => setIsAuthenticated(false)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-colors font-medium">
+                                <LogOut size={18} /> Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="flex-1 overflow-y-auto h-screen p-4 md:p-8">
+                        <div className="max-w-6xl mx-auto">
+                            
+                            {/* Header Section */}
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                                <div>
+                                    <h1 className="text-3xl font-extrabold text-slate-800 capitalize tracking-tight flex items-center gap-3">
+                                        {activeTab === 'orders' && <ShoppingCart className="text-brand-blue" size={28}/>}
+                                        {activeTab === 'customers' && <Users className="text-brand-blue" size={28}/>}
+                                        {activeTab === 'campaigns' && <Send className="text-brand-blue" size={28}/>}
+                                        {activeTab} Management
+                                    </h1>
+                                    <p className="text-slate-500 mt-1">
+                                        {activeTab === 'orders' && "Manage all customer transactions and payment statuses."}
+                                        {activeTab === 'customers' && "View your customer database and purchase history."}
+                                        {activeTab === 'campaigns' && "Send targeted emails adapted to customer payment status."}
+                                    </p>
+                                </div>
+
+                                {(activeTab === 'orders' || activeTab === 'customers') && (
+                                    <div className="relative w-full md:w-72">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                                        <input 
+                                            type="text" 
+                                            placeholder={`Search ${activeTab}...`} 
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none shadow-sm transition-all text-sm"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Orders Tab */}
+                            {activeTab === 'orders' && (
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-sm">
+                                            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-xs tracking-wider">
+                                                <tr>
+                                                    <th className="px-6 py-4">Order ID</th>
+                                                    <th className="px-6 py-4">Customer</th>
+                                                    <th className="px-6 py-4">Course/Product</th>
+                                                    <th className="px-6 py-4">Amount</th>
+                                                    <th className="px-6 py-4">Payment Status</th>
+                                                    <th className="px-6 py-4 text-right">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {filteredOrders.map(order => (
+                                                    <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="px-6 py-4 font-bold text-slate-700">{order.id}</td>
+                                                        <td className="px-6 py-4">
+                                                            <div className="font-semibold text-slate-800">{order.customerName}</div>
+                                                            <div className="text-xs text-slate-500">{order.email}</div>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-slate-600 font-medium">{order.product}</td>
+                                                        <td className="px-6 py-4 font-bold text-slate-800">{formatCurrency(order.amount)}</td>
+                                                        <td className="px-6 py-4">{getStatusBadge(order.paymentStatus)}</td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <select 
+                                                                className="text-xs border-slate-200 rounded-lg bg-white px-2 py-1.5 focus:ring-brand-blue outline-none shadow-sm font-semibold"
+                                                                value={order.paymentStatus}
+                                                                onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                                            >
+                                                                <option value="Pending">Mark Pending</option>
+                                                                <option value="Paid">Mark Paid</option>
+                                                                <option value="Failed">Mark Failed</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                                {filteredOrders.length === 0 && (
+                                                    <tr><td colSpan="6" className="px-6 py-12 text-center text-slate-500">No orders found matching your search.</td></tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Customers Tab */}
+                            {activeTab === 'customers' && (
+                                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-sm">
+                                            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-xs tracking-wider">
+                                                <tr>
+                                                    <th className="px-6 py-4">Customer Info</th>
+                                                    <th className="px-6 py-4">Total Orders</th>
+                                                    <th className="px-6 py-4">Total Spent</th>
+                                                    <th className="px-6 py-4">Last Order</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {filteredCustomers.map((customer, idx) => (
+                                                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="px-6 py-4 flex items-center gap-3">
+                                                            <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue font-bold">
+                                                                {customer.name.charAt(0)}
+                                                            </div>
+                                                            <div>
+                                                                <div className="font-semibold text-slate-800">{customer.name}</div>
+                                                                <div className="text-xs text-slate-500 flex items-center gap-1"><Mail size={10}/> {customer.email}</div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">{customer.totalOrders}</span>
+                                                        </td>
+                                                        <td className="px-6 py-4 font-bold text-slate-800 text-brand-blue">{formatCurrency(customer.totalSpent)}</td>
+                                                        <td className="px-6 py-4 text-slate-600">{customer.lastOrderDate}</td>
+                                                    </tr>
+                                                ))}
+                                                {filteredCustomers.length === 0 && (
+                                                    <tr><td colSpan="4" className="px-6 py-12 text-center text-slate-500">No customers found.</td></tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Campaigns Tab */}
+                            {activeTab === 'campaigns' && (
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    
+                                    {/* Config Column */}
+                                    <div className="lg:col-span-1 space-y-6">
+                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                                            <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Filter size={18} className="text-brand-orange"/> Campaign Settings</h3>
+                                            
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Select Template</label>
+                                                    <select 
+                                                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none text-sm font-medium text-slate-700"
+                                                        value={selectedTemplate}
+                                                        onChange={handleTemplateChange}
+                                                    >
+                                                        {Object.values(emailTemplates).map(tmpl => (
+                                                            <option key={tmpl.id} value={tmpl.id}>{tmpl.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Target Audience</label>
+                                                    <select 
+                                                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none text-sm font-medium text-slate-700"
+                                                        value={campaignAudience}
+                                                        onChange={(e) => setCampaignAudience(e.target.value)}
+                                                    >
+                                                        <option value="All">All Customers ({customers.length})</option>
+                                                        <option value="Paid">Paid Orders Only ({orders.filter(o => o.paymentStatus === 'Paid').length})</option>
+                                                        <option value="Pending">Pending Payments ({orders.filter(o => o.paymentStatus === 'Pending').length})</option>
+                                                    </select>
+                                                </div>
+
+                                                <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                                                    <div className="text-xs font-semibold text-blue-800 flex items-start gap-2">
+                                                        <BadgeCheck size={16} className="shrink-0 mt-0.5" />
+                                                        <span>Using variables like <code className="bg-white px-1 py-0.5 rounded border border-blue-200">{{customerName}}</code> or <code className="bg-white px-1 py-0.5 rounded border border-blue-200">{{orderId}}</code> will auto-fill per recipient.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Editor Column */}
+                                    <div className="lg:col-span-2">
+                                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col h-full">
+                                            <div className="mb-4">
+                                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Subject</label>
+                                                <input 
+                                                    type="text" 
+                                                    placeholder="Enter email subject..."
+                                                    value={campaignSubject}
+                                                    onChange={(e) => setCampaignSubject(e.target.value)}
+                                                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none text-slate-800 font-medium"
+                                                />
+                                            </div>
+
+                                            <div className="flex-1 mb-6">
+                                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Body</label>
+                                                <textarea 
+                                                    placeholder="Type your email content here..."
+                                                    value={campaignBody}
+                                                    onChange={(e) => setCampaignBody(e.target.value)}
+                                                    className="w-full h-64 md:h-80 px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none text-slate-700 resize-none font-mono text-sm leading-relaxed"
+                                                ></textarea>
+                                            </div>
+
+                                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                                                <button 
+                                                    onClick={handleSendCampaign} 
+                                                    className="px-8 py-3.5 bg-brand-dark hover:bg-slate-800 text-white rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <Send size={18}/> Launch Campaign
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                        </div>
+                    </div>
+                    
+                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+                </div>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
