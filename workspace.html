@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MBTECH | Secure Admin Workspace</title>
+    <title>MBTECH Workspace | Analytics & Supervision</title>
     
-    <!-- Search Engine Stealth -->
-    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="favicon.png">
 
     <!-- Fonts -->
@@ -22,771 +20,630 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: { brand: { blue: '#0056b3', blueHover: '#004494', orange: '#f97316', dark: '#0f172a' } }
+                    colors: { 
+                        brand: { 
+                            blue: '#0056b3', 
+                            blueHover: '#004494', 
+                            orange: '#f97316',
+                            dark: '#0f172a',
+                            light: '#f8fafc'
+                        } 
+                    }
                 }
             }
         }
     </script>
 
-    <style>
-        /* App Core UI */
-        .smooth-scroll { -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
-        .app-touch { user-select: none; -webkit-user-select: none; touch-action: manipulation; }
-        .pb-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)); }
-        
-        /* Tabs */
-        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .tab-content.active { display: block; opacity: 1; animation: fadeIn 0.4s ease forwards; }
-        
-        /* Modals */
-        .modal-overlay { display: none; align-items: center; justify-content: center; }
-        .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease forwards; }
-        .modal-content { transform: scale(0.95); opacity: 0; }
-        .modal-overlay.active .modal-content { animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-
-        /* Lock State Manager */
-        .icon-locked { display: none; }
-        body.logged-out .locked-feature .icon-unlocked { display: none !important; }
-        body.logged-out .locked-feature .icon-locked { display: block !important; }
-        body.logged-out .locked-feature .tab-badge { display: none !important; }
-
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        @keyframes indeterminate { 0% { transform: translateX(-100%) scaleX(0.2); } 50% { transform: translateX(0) scaleX(0.5); } 100% { transform: translateX(100%) scaleX(0.2); } }
-        
-        .toast-enter { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .toast-exit { opacity: 0; transition: opacity 0.3s ease; }
-        
-        .sync-bar { display: none; }
-        .sync-bar.active { display: block; }
-        .animate-progress { animation: indeterminate 1.5s infinite linear; }
-        
-        @keyframes spinFast { to { transform: rotate(360deg); } }
-        .native-loader { width: 48px; height: 48px; border: 4px solid #e2e8f0; border-top-color: #f97316; border-radius: 50%; animation: spinFast 1s linear infinite; }
-    </style>
+    <!-- Import Map for React and Lucide -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.284.0",
+            "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+        }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased overflow-hidden app-touch logged-out">
+<body class="bg-brand-light text-slate-800 font-sans antialiased overflow-x-hidden">
+    <div id="root"></div>
 
-    <!-- Realtime Sync Progress Bar -->
-    <div id="syncProgress" class="sync-bar absolute top-0 left-0 w-full h-[3px] bg-slate-200 z-[100] overflow-hidden">
-        <div class="h-full bg-brand-orange animate-progress w-full origin-left"></div>
-    </div>
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Activity, ShieldAlert, Link as LinkIcon, Lock, User, 
+            ChevronRight, XCircle, CheckCircle, Clock, Menu, X,
+            LogOut, ShieldCheck, Zap, Server, AlertTriangle, 
+            RefreshCw, Globe, ArrowUpRight, Search, FileCode
+        } from 'lucide-react';
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signOut } from 'firebase/auth';
+        import { getFirestore } from 'firebase/firestore';
 
-    <!-- Initialization Preloader -->
-    <div id="appPreloader" class="fixed inset-0 bg-slate-50 z-[999] flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="w-12 h-12 border-4 border-slate-200 border-t-brand-orange rounded-full animate-spin mb-4"></div>
-        <p class="text-slate-500 font-bold text-sm">Booting Workspace...</p>
-    </div>
+        // --- Firebase Initialization ---
+        let auth = null;
+        let db = null;
+        try {
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+            if (firebaseConfig) {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+            }
+        } catch (error) {
+            console.error("Error initializing Firebase:", error);
+        }
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal-overlay fixed inset-0 bg-slate-900/60 backdrop-blur-md p-4 z-[90]">
-        <div class="modal-content max-w-md w-full bg-white rounded-[2rem] shadow-2xl p-6 sm:p-10 border border-slate-100 relative">
-            <button onclick="window.closeLoginModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 bg-slate-50 p-2 rounded-full transition-colors">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18 M6 6l12 12"/></svg>
-            </button>
+        // --- Mock Data ---
+        const performanceData = {
+            score: 92,
+            loadTime: '1.2s',
+            ttfb: '200ms',
+            lcp: '1.5s',
+            uptime: '99.98%',
+            recentTests: [
+                { id: 1, time: '2 mins ago', page: '/index.html', load: '1.1s', status: 'Good' },
+                { id: 2, time: '1 hour ago', page: '/store.html', load: '1.8s', status: 'Average' },
+                { id: 3, time: '3 hours ago', page: '/course.html', load: '1.2s', status: 'Good' },
+            ]
+        };
 
-            <div class="text-center mb-8 mt-2">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-brand-blue rounded-2xl mb-5 shadow-lg shadow-brand-blue/30">
-                    <svg class="text-white w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                </div>
-                <h1 class="text-2xl font-extrabold text-brand-dark">Admin Workspace</h1>
-                <p class="text-slate-500 mt-2 font-medium text-sm">Secure access required to manage MBTECH.</p>
-            </div>
-            
-            <div id="loginAlert" class="hidden mb-6 text-xs font-bold p-3 rounded-lg flex items-center gap-2"></div>
+        const linkHealthData = {
+            totalScanned: 145,
+            brokenLinks: 3,
+            lastScanned: '10 mins ago',
+            issues: [
+                { id: 1, url: 'https://mbtech.ng/old-course-promo', status: 404, referringPage: '/index.html', type: 'Internal' },
+                { id: 2, url: 'https://external-resource.com/doc.pdf', status: 500, referringPage: '/course.html', type: 'External' },
+                { id: 3, url: 'https://mbtech.ng/assets/missing-img.png', status: 404, referringPage: '/info.html', type: 'Asset' },
+            ]
+        };
 
-            <form id="loginForm" class="space-y-4">
-                <div class="relative">
-                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"/></svg>
-                    </div>
-                    <input id="adminEmail" type="email" required placeholder="admin@mbtech.ng" class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-800" />
-                </div>
-                <div class="relative">
-                    <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    </div>
-                    <input id="adminPassword" type="password" required placeholder="••••••••" class="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all font-medium text-slate-800" />
-                </div>
-                <button id="submitLoginBtn" type="submit" class="w-full bg-brand-dark hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-all shadow-lg active:scale-[0.98] flex justify-center items-center gap-2">
-                    Secure Login
-                </button>
-            </form>
-        </div>
-    </div>
+        const securityData = {
+            score: 85,
+            sslStatus: 'Valid',
+            sslExpiry: '240 days',
+            unresolvedAlerts: 2,
+            auditLogs: [
+                { id: 1, time: '2026-03-01 09:12 AM', event: 'Failed Admin Login Attempt', ip: '192.168.1.45', severity: 'Medium' },
+                { id: 2, time: '2026-03-01 08:30 AM', event: 'Admin Login Successful', ip: '10.0.0.1', severity: 'Info' },
+                { id: 3, time: '2026-02-28 11:45 PM', event: 'Suspicious API Rate Limit Exceeded', ip: '45.22.11.9', severity: 'High' },
+                { id: 4, time: '2026-02-28 02:00 PM', event: 'SSL Certificate Auto-Renewed', ip: 'System', severity: 'Info' },
+            ]
+        };
 
-    <!-- Main Layout Area -->
-    <div class="flex h-[100dvh] overflow-hidden">
-        
-        <!-- Desktop Sidebar -->
-        <aside class="hidden lg:flex fixed inset-y-0 left-0 bg-brand-dark text-white w-64 shadow-2xl z-40 flex-col">
-            <div class="p-6 flex items-center justify-between border-b border-slate-800">
-                <div class="text-2xl font-extrabold tracking-tight">MBTECH<span class="text-brand-orange">.NG</span></div>
-            </div>
-            <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto smooth-scroll">
-                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Analytics</p>
-                <button onclick="window.handleTabSwitch('dashboard')" id="nav-dashboard-desk" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z"/></svg> Dashboard
-                </button>
-                <button onclick="window.handleTabSwitch('orders')" id="nav-orders-desk" class="nav-btn locked-feature w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <svg class="w-5 h-5 icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
-                    <svg class="w-5 h-5 icon-locked text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    Orders
-                </button>
-                <button onclick="window.handleTabSwitch('customers')" id="nav-customers-desk" class="nav-btn locked-feature w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <svg class="w-5 h-5 icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <svg class="w-5 h-5 icon-locked text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    Customers
-                </button>
+        // --- Components ---
 
-                <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-6">Management</p>
-                <button onclick="window.handleTabSwitch('products')" id="nav-products-desk" class="nav-btn locked-feature w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <svg class="w-5 h-5 icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg>
-                    <svg class="w-5 h-5 icon-locked text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    Courses & Store
-                </button>
-                <button onclick="window.handleTabSwitch('messages')" id="nav-messages-desk" class="nav-btn locked-feature w-full flex items-center justify-between px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <div class="flex items-center gap-3">
-                        <svg class="w-5 h-5 icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        <svg class="w-5 h-5 icon-locked text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        Leads
-                    </div>
-                    <span id="deskBadge" class="hidden tab-badge bg-brand-orange text-white text-[10px] px-2 py-0.5 rounded-full font-extrabold">0</span>
-                </button>
-                <button onclick="window.handleTabSwitch('ai')" id="nav-ai-desk" class="nav-btn locked-feature w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all text-slate-400 hover:bg-slate-800 hover:text-white">
-                    <svg class="w-5 h-5 icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                    <svg class="w-5 h-5 icon-locked text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    AI Tools
-                </button>
-            </nav>
-            <div class="p-4 border-t border-slate-800 bg-slate-900/50" id="deskAuthPanel"></div>
-        </aside>
+        const LoginScreen = ({ onLogin }) => {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
 
-        <!-- Mobile Bottom Nav App-Feel -->
-        <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-40 flex justify-between px-2 py-1.5 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-            <button onclick="window.handleTabSwitch('dashboard')" id="nav-dashboard-mob" class="nav-btn-mob flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z M14 3h7v7h-7z M14 14h7v7h-7z M3 14h7v7H3z"/></svg>
-                <span class="text-[9px] mt-1 font-bold">Home</span>
-            </button>
-            <button onclick="window.handleTabSwitch('orders')" id="nav-orders-mob" class="nav-btn-mob locked-feature flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-[20px] h-[20px] icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>
-                <svg class="w-[20px] h-[20px] icon-locked text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <span class="text-[9px] mt-1 font-bold">Orders</span>
-            </button>
-            <button onclick="window.handleTabSwitch('products')" id="nav-products-mob" class="nav-btn-mob locked-feature flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-[20px] h-[20px] icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg>
-                <svg class="w-[20px] h-[20px] icon-locked text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <span class="text-[9px] mt-1 font-bold">Store</span>
-            </button>
-            <button onclick="window.handleTabSwitch('messages')" id="nav-messages-mob" class="nav-btn-mob locked-feature flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400 relative">
-                <div class="relative">
-                    <svg class="w-[20px] h-[20px] icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <svg class="w-[20px] h-[20px] icon-locked text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                    <span id="mobBadge" class="hidden tab-badge absolute -top-1.5 -right-2 bg-brand-orange text-white text-[8px] font-extrabold min-w-[14px] h-[14px] px-1 flex items-center justify-center rounded-full border border-white">0</span>
-                </div>
-                <span class="text-[9px] mt-1 font-bold">Leads</span>
-            </button>
-            <button onclick="window.handleTabSwitch('ai')" id="nav-ai-mob" class="nav-btn-mob locked-feature flex flex-col items-center justify-center w-full py-1 active:scale-95 transition-transform text-slate-400">
-                <svg class="w-[20px] h-[20px] icon-unlocked" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                <svg class="w-[20px] h-[20px] icon-locked text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                <span class="text-[9px] mt-1 font-bold">AI Bot</span>
-            </button>
-        </nav>
-
-        <!-- Main Workspace Interface -->
-        <div class="flex-1 flex flex-col min-w-0 lg:ml-64 h-full relative">
-            <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
-                <div class="flex items-center justify-between px-4 sm:px-8 py-3.5">
-                    <div class="flex items-center gap-3">
-                        <div class="lg:hidden text-2xl font-extrabold text-brand-dark">MB<span class="text-brand-orange">.</span></div>
-                        <div class="hidden lg:block lg:w-px lg:h-6 lg:bg-slate-200"></div>
-                        <h2 id="headerTitle" class="text-lg sm:text-xl font-extrabold text-brand-dark capitalize truncate">Overview</h2>
-                    </div>
-                    <div class="flex items-center gap-3" id="headerActions"></div>
-                </div>
-            </header>
-
-            <main class="flex-1 overflow-y-auto p-4 sm:p-8 smooth-scroll pb-24 lg:pb-8 relative">
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                if (!auth) {
+                    setError('Firebase is not configured in this environment.');
+                    return;
+                }
                 
-                <!-- Tab: Dashboard -->
-                <div id="tab-dashboard" class="tab-content active">
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
-                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16.5 9.4 7.5 4.21 M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z M3.27 6.96 12 12.01l8.73-5.05 M12 22.08V12"/></svg></div>
-                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Store Items</p><h4 id="stat-products" class="text-xl sm:text-3xl font-extrabold text-brand-dark">0</h4></div>
-                        </div>
-                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-orange-50 text-brand-orange rounded-xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Customers</p><h4 id="stat-users" class="text-xl sm:text-3xl font-extrabold text-brand-dark">0</h4></div>
-                        </div>
-                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Leads</p><h4 id="stat-leads" class="text-xl sm:text-3xl font-extrabold text-brand-dark">0</h4></div>
-                        </div>
-                        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 flex items-center gap-4">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-green-50 text-green-600 rounded-xl flex items-center justify-center shrink-0"><svg class="w-6 h-6 sm:w-8 sm:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6 M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z M20 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg></div>
-                            <div class="overflow-hidden"><p class="text-slate-500 font-bold text-[10px] sm:text-sm mb-0.5 truncate">Orders</p><h4 id="stat-orders" class="text-xl sm:text-3xl font-extrabold text-brand-dark">0</h4></div>
-                        </div>
-                    </div>
+                setIsLoading(true);
+                setError('');
+                
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    onLogin();
+                } catch (err) {
+                    console.error("Login error:", err);
+                    setError(err.message || 'Invalid supervisor credentials. Please try again.');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div class="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                            <h3 class="font-extrabold text-brand-dark">Recent Transactions</h3>
-                            <button onclick="window.handleTabSwitch('orders')" class="text-xs font-bold text-brand-blue bg-blue-50 px-3 py-1.5 rounded-lg active:scale-95">View All</button>
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-brand-dark px-4 relative overflow-hidden">
+                    {/* Background accents */}
+                    <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-orange rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-brand-blue rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                    
+                    <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md relative z-10 border border-slate-100">
+                        <div className="text-center mb-8">
+                            <div className="w-16 h-16 bg-brand-dark rounded-xl mx-auto flex items-center justify-center shadow-lg shadow-brand-dark/30 mb-4">
+                                <Activity size={32} className="text-brand-orange" />
+                            </div>
+                            <h1 className="text-2xl font-extrabold text-slate-800">Workspace Login</h1>
+                            <p className="text-slate-500 mt-2 text-sm">Analytics & Supervisor Access</p>
                         </div>
-                        <div class="overflow-x-auto smooth-scroll">
-                            <table class="w-full text-left min-w-[500px]">
-                                <thead>
-                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
-                                        <th class="p-4 sm:p-5 font-bold">Order ID</th>
-                                        <th class="p-4 font-bold">Customer</th>
-                                        <th class="p-4 font-bold">Amount</th>
-                                        <th class="p-4 font-bold">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="dashboard-recent" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                        
+                        {error && (
+                            <div className="mb-6 p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2 border border-red-100">
+                                <XCircle size={16} /> {error}
+                            </div>
+                        )}
 
-                <!-- Tab: Orders -->
-                <div id="tab-orders" class="tab-content">
-                    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50">
-                            <h3 class="font-extrabold text-brand-dark text-lg">Fulfillment Queue</h3>
-                        </div>
-                        <div class="overflow-x-auto smooth-scroll">
-                            <table class="w-full text-left min-w-[700px]">
-                                <thead>
-                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
-                                        <th class="p-4 sm:p-5 pl-4 sm:pl-6 font-bold">Details</th>
-                                        <th class="p-4 font-bold">Customer Info</th>
-                                        <th class="p-4 font-bold">Amount</th>
-                                        <th class="p-4 font-bold">Payment</th>
-                                        <th class="p-4 font-bold text-right pr-4 sm:pr-6">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-orders" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab: Customers -->
-                <div id="tab-customers" class="tab-content">
-                    <div class="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50">
-                            <h3 class="font-extrabold text-brand-dark text-lg">CRM Database</h3>
-                        </div>
-                        <div class="overflow-x-auto smooth-scroll">
-                            <table class="w-full text-left min-w-[700px]">
-                                <thead>
-                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
-                                        <th class="p-4 pl-4 sm:pl-6 font-bold">User Name</th>
-                                        <th class="p-4 font-bold">Email Details</th>
-                                        <th class="p-4 font-bold text-center">Interactions</th>
-                                        <th class="p-4 font-bold text-right pr-4 sm:pr-6">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-customers" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
-                            </table>
-                        </div>
+                        <form onSubmit={handleLogin} className="space-y-5">
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Supervisor Email</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <User size={18} className="text-slate-400" />
+                                    </div>
+                                    <input 
+                                        type="email" 
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock size={18} className="text-slate-400" />
+                                    </div>
+                                    <input 
+                                        type="password" 
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <button 
+                                type="submit" 
+                                disabled={isLoading}
+                                className="w-full bg-brand-dark text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+                            >
+                                {isLoading ? 'Authenticating...' : 'Enter Workspace'} <ChevronRight size={18} />
+                            </button>
+                        </form>
                     </div>
                 </div>
+            );
+        };
 
-                <!-- Tab: Products & Courses -->
-                <div id="tab-products" class="tab-content">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                            <h3 class="font-extrabold text-brand-dark text-lg">Store & Courses</h3>
-                            <button onclick="window.showToast('Add interface launching soon', 'success')" class="px-3 py-1.5 bg-brand-blue text-white rounded-lg text-xs font-bold flex items-center gap-1 active:scale-95 shadow-sm">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14 M5 12h14"/></svg> Add
+        const MetricCard = ({ title, value, subtext, icon: Icon, colorClass, trend }) => (
+            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClass}`}>
+                        <Icon size={24} />
+                    </div>
+                    {trend && (
+                        <div className={`text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 ${trend > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {trend > 0 ? <ArrowUpRight size={12}/> : null} {Math.abs(trend)}%
+                        </div>
+                    )}
+                </div>
+                <div>
+                    <h3 className="text-slate-500 font-semibold text-sm mb-1">{title}</h3>
+                    <div className="text-3xl font-extrabold text-slate-800">{value}</div>
+                    {subtext && <p className="text-xs text-slate-400 mt-2 font-medium">{subtext}</p>}
+                </div>
+            </div>
+        );
+
+        const App = () => {
+            const [isAuthenticated, setIsAuthenticated] = useState(false);
+            const [user, setUser] = useState(null);
+            const [activeTab, setActiveTab] = useState('overview'); // overview, performance, links, security
+            const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+            const [isScanning, setIsScanning] = useState(false);
+
+            useEffect(() => {
+                if (!auth) return;
+
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        try { await signInWithCustomToken(auth, __initial_auth_token); } catch(e){}
+                    } else if (!auth.currentUser) {
+                        try { await signInAnonymously(auth); } catch(e){}
+                    }
+                };
+                initAuth();
+
+                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                    setUser(currentUser);
+                    if (currentUser && currentUser.email) {
+                        setIsAuthenticated(true);
+                    } else {
+                        setIsAuthenticated(false);
+                    }
+                });
+
+                return () => unsubscribe();
+            }, []);
+
+            const handleLogout = async () => {
+                if (auth) {
+                    await signOut(auth);
+                }
+                setIsAuthenticated(false);
+            };
+
+            const handleScan = () => {
+                setIsScanning(true);
+                setTimeout(() => setIsScanning(false), 2000);
+            };
+
+            if (!isAuthenticated) {
+                return <LoginScreen onLogin={() => setIsAuthenticated(true)} />;
+            }
+
+            return (
+                <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
+                    
+                    {/* Mobile Header */}
+                    <div className="md:hidden bg-brand-dark text-white p-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
+                        <div className="font-bold text-lg flex items-center gap-2">
+                            <Activity className="text-brand-orange" /> Workspace
+                        </div>
+                        <button onClick={() => setIsSidebarOpen(true)} className="p-2 hover:bg-slate-800 rounded-lg">
+                            <Menu size={24} />
+                        </button>
+                    </div>
+
+                    {/* SidebarOverlay */}
+                    {isSidebarOpen && (
+                        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsSidebarOpen(false)}></div>
+                    )}
+
+                    {/* Sidebar */}
+                    <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 w-64 bg-brand-dark text-slate-300 transition-transform duration-300 ease-in-out z-50 flex flex-col shadow-2xl md:shadow-none`}>
+                        <div className="p-6 flex items-center justify-between border-b border-slate-800">
+                            <div className="font-extrabold text-xl text-white flex items-center gap-2 tracking-tight">
+                                <div className="w-8 h-8 bg-brand-orange rounded-lg flex items-center justify-center">
+                                    <Activity size={20} className="text-white" />
+                                </div>
+                                Analytics
+                            </div>
+                            <button className="md:hidden p-1 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
+                                <X size={20} />
                             </button>
                         </div>
-                        <div class="overflow-x-auto smooth-scroll">
-                            <table class="w-full text-left min-w-[700px]">
-                                <thead>
-                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
-                                        <th class="p-4 pl-4 sm:pl-6 font-bold">Item Name</th>
-                                        <th class="p-4 font-bold">Category</th>
-                                        <th class="p-4 font-bold">Pricing</th>
-                                        <th class="p-4 font-bold">Status</th>
-                                        <th class="p-4 font-bold text-right pr-4 sm:pr-6">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-products" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Tab: Messages / Leads -->
-                <div id="tab-messages" class="tab-content">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                        <div class="p-4 sm:p-6 border-b border-slate-100 bg-slate-50/50">
-                            <h3 class="font-extrabold text-brand-dark text-lg">Connect Inquiries</h3>
+                        <div className="p-4 flex-1">
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 ml-2 mt-4">Supervision</div>
+                            <nav className="space-y-2">
+                                <button 
+                                    onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'overview' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <Globe size={18} /> Overview
+                                </button>
+                                <button 
+                                    onClick={() => { setActiveTab('performance'); setIsSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'performance' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <Zap size={18} /> Page Speed
+                                </button>
+                                <button 
+                                    onClick={() => { setActiveTab('links'); setIsSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'links' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <LinkIcon size={18} /> Link Health
+                                </button>
+                                <button 
+                                    onClick={() => { setActiveTab('security'); setIsSidebarOpen(false); }}
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'security' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
+                                >
+                                    <ShieldAlert size={18} /> Security & Audits
+                                </button>
+                            </nav>
                         </div>
-                        <div class="overflow-x-auto smooth-scroll">
-                            <table class="w-full text-left min-w-[600px]">
-                                <thead>
-                                    <tr class="bg-white text-slate-400 text-[10px] uppercase border-b border-slate-100">
-                                        <th class="p-4 pl-4 sm:pl-6 font-bold w-12 text-center">New</th>
-                                        <th class="p-4 font-bold">Sender Info</th>
-                                        <th class="p-4 font-bold">Subject</th>
-                                        <th class="p-4 font-bold text-right pr-4 sm:pr-6">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-messages" class="text-xs sm:text-sm font-semibold text-slate-700"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Tab: AI Tools -->
-                <div id="tab-ai" class="tab-content">
-                    <div class="bg-gradient-to-br from-brand-dark to-slate-800 rounded-3xl shadow-lg border border-slate-700 p-6 sm:p-10 text-white relative overflow-hidden">
-                        <div class="absolute -top-24 -right-24 w-64 h-64 bg-brand-orange/20 rounded-full blur-3xl"></div>
-                        <div class="relative z-10">
-                            <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-sm border border-white/10 shadow-inner">
-                                <svg class="w-8 h-8 text-brand-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <div className="p-4 border-t border-slate-800">
+                            <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-slate-800/50 rounded-xl">
+                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">
+                                    {user?.email ? user.email.charAt(0).toUpperCase() : 'S'}
+                                </div>
+                                <div className="overflow-hidden">
+                                    <div className="text-sm font-bold text-white">Supervisor</div>
+                                    <div className="text-xs text-slate-400 truncate">{user?.email || 'admin@mbtech.ng'}</div>
+                                </div>
                             </div>
-                            <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">AI Email Bot</h2>
-                            <p class="text-slate-300 mb-8 max-w-lg text-sm leading-relaxed">Your intelligent backend processor. Automate replies to your leads and send purchase receipts natively.</p>
+                            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-colors font-medium">
+                                <LogOut size={18} /> Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="flex-1 overflow-y-auto h-screen p-4 md:p-8">
+                        <div className="max-w-6xl mx-auto space-y-8">
                             
-                            <div class="grid sm:grid-cols-2 gap-4">
-                                <div class="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
-                                    <h4 class="font-bold text-brand-orange mb-1">Store Receipts</h4>
-                                    <p class="text-xs text-slate-400 mb-4">Send instant confirmations.</p>
-                                    <button onclick="window.showToast('Backend connection required.', 'error')" class="w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all">Configure</button>
+                            {/* Header Section */}
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                <div>
+                                    <h1 className="text-3xl font-extrabold text-slate-800 capitalize tracking-tight flex items-center gap-3">
+                                        {activeTab === 'overview' && 'System Overview'}
+                                        {activeTab === 'performance' && 'Speed & Performance'}
+                                        {activeTab === 'links' && 'Link Health Monitor'}
+                                        {activeTab === 'security' && 'Security Audits'}
+                                    </h1>
+                                    <p className="text-slate-500 mt-1">
+                                        {activeTab === 'overview' && "High-level analytics and health status of MBTECH platform."}
+                                        {activeTab === 'performance' && "Monitor page load times and core web vitals."}
+                                        {activeTab === 'links' && "Track 404s, broken resources, and dead external links."}
+                                        {activeTab === 'security' && "Supervise suspicious activities and security configurations."}
+                                    </p>
                                 </div>
-                                <div class="bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
-                                    <h4 class="font-bold text-brand-orange mb-1">Lead Nurturing</h4>
-                                    <p class="text-xs text-slate-400 mb-4">Auto-reply to Connect inquiries.</p>
-                                    <button onclick="window.showToast('Backend connection required.', 'error')" class="w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all">Configure</button>
+                                <div className="flex gap-3">
+                                    <button 
+                                        onClick={handleScan}
+                                        disabled={isScanning}
+                                        className="px-5 py-2.5 bg-brand-blue hover:bg-brand-blueHover text-white rounded-xl font-bold shadow-lg shadow-brand-blue/30 transition-all flex items-center gap-2 disabled:opacity-70"
+                                    >
+                                        <RefreshCw size={16} className={isScanning ? 'animate-spin' : ''} />
+                                        {isScanning ? 'Scanning...' : 'Run Diagnostics'}
+                                    </button>
                                 </div>
                             </div>
+
+                            {/* --- OVERVIEW TAB --- */}
+                            {activeTab === 'overview' && (
+                                <div className="space-y-8 animate-in fade-in duration-300">
+                                    {/* Metrics Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        <MetricCard 
+                                            title="Performance Score" 
+                                            value={`${performanceData.score}/100`} 
+                                            subtext="Based on Core Web Vitals"
+                                            icon={Zap} 
+                                            colorClass="bg-blue-100 text-blue-600"
+                                            trend={2}
+                                        />
+                                        <MetricCard 
+                                            title="Broken Links" 
+                                            value={linkHealthData.brokenLinks} 
+                                            subtext={`Out of ${linkHealthData.totalScanned} scanned`}
+                                            icon={LinkIcon} 
+                                            colorClass="bg-orange-100 text-orange-600"
+                                        />
+                                        <MetricCard 
+                                            title="Security Score" 
+                                            value={`${securityData.score}/100`} 
+                                            subtext={`${securityData.unresolvedAlerts} unresolved alerts`}
+                                            icon={ShieldCheck} 
+                                            colorClass="bg-emerald-100 text-emerald-600"
+                                            trend={5}
+                                        />
+                                        <MetricCard 
+                                            title="System Uptime" 
+                                            value={performanceData.uptime} 
+                                            subtext="Last 30 days"
+                                            icon={Server} 
+                                            colorClass="bg-purple-100 text-purple-600"
+                                        />
+                                    </div>
+
+                                    {/* Two Column Layout for Quick Logs */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        {/* Security Quick View */}
+                                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="font-bold text-slate-800 flex items-center gap-2"><ShieldAlert size={18} className="text-brand-orange"/> Recent Security Logs</h3>
+                                                <button onClick={() => setActiveTab('security')} className="text-sm font-semibold text-brand-blue hover:underline">View All</button>
+                                            </div>
+                                            <div className="space-y-4">
+                                                {securityData.auditLogs.slice(0,3).map(log => (
+                                                    <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                                        <div className={`mt-0.5 w-2 h-2 rounded-full ${log.severity === 'High' ? 'bg-red-500' : (log.severity === 'Medium' ? 'bg-orange-500' : 'bg-blue-500')}`}></div>
+                                                        <div className="flex-1">
+                                                            <div className="text-sm font-bold text-slate-800">{log.event}</div>
+                                                            <div className="text-xs text-slate-500 mt-1 flex justify-between">
+                                                                <span>IP: {log.ip}</span>
+                                                                <span>{log.time}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Performance Quick View */}
+                                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                                            <div className="flex justify-between items-center mb-6">
+                                                <h3 className="font-bold text-slate-800 flex items-center gap-2"><Activity size={18} className="text-emerald-500"/> Speed Tests</h3>
+                                                <button onClick={() => setActiveTab('performance')} className="text-sm font-semibold text-brand-blue hover:underline">View All</button>
+                                            </div>
+                                            <div className="space-y-4">
+                                                {performanceData.recentTests.map(test => (
+                                                    <div key={test.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                                        <div className="flex items-center gap-3">
+                                                            <FileCode size={16} className="text-slate-400"/>
+                                                            <span className="text-sm font-semibold text-slate-700">{test.page}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            <span className="text-sm font-bold text-slate-800">{test.load}</span>
+                                                            <span className={`text-xs px-2 py-1 rounded-full font-bold ${test.status === 'Good' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>{test.status}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- PERFORMANCE TAB --- */}
+                            {activeTab === 'performance' && (
+                                <div className="space-y-6 animate-in fade-in duration-300">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
+                                            <div className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">Average Load Time</div>
+                                            <div className="text-4xl font-extrabold text-emerald-600">{performanceData.loadTime}</div>
+                                            <div className="text-xs text-slate-400 mt-2">Target: &lt; 2.0s</div>
+                                        </div>
+                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
+                                            <div className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">TTFB (Time to First Byte)</div>
+                                            <div className="text-4xl font-extrabold text-blue-600">{performanceData.ttfb}</div>
+                                            <div className="text-xs text-slate-400 mt-2">Target: &lt; 600ms</div>
+                                        </div>
+                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
+                                            <div className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">LCP (Largest Contentful Paint)</div>
+                                            <div className="text-4xl font-extrabold text-orange-500">{performanceData.lcp}</div>
+                                            <div className="text-xs text-slate-400 mt-2">Target: &lt; 2.5s</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                                            <h3 className="font-bold text-slate-800">Page Speed History</h3>
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left text-sm">
+                                                <thead className="bg-slate-50 text-slate-600 font-semibold uppercase text-xs tracking-wider">
+                                                    <tr>
+                                                        <th className="px-6 py-4">Page</th>
+                                                        <th className="px-6 py-4">Time Tested</th>
+                                                        <th className="px-6 py-4">Load Time</th>
+                                                        <th className="px-6 py-4">Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100">
+                                                    {performanceData.recentTests.map((test, idx) => (
+                                                        <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                                            <td className="px-6 py-4 font-semibold text-slate-700">{test.page}</td>
+                                                            <td className="px-6 py-4 text-slate-500">{test.time}</td>
+                                                            <td className="px-6 py-4 font-bold">{test.load}</td>
+                                                            <td className="px-6 py-4">
+                                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${test.status === 'Good' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
+                                                                    {test.status}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- LINK HEALTH TAB --- */}
+                            {activeTab === 'links' && (
+                                <div className="space-y-6 animate-in fade-in duration-300">
+                                    <div className="flex items-center gap-4 bg-orange-50 border border-orange-200 p-4 rounded-xl text-orange-800">
+                                        <AlertTriangle size={24} className="shrink-0" />
+                                        <div>
+                                            <div className="font-bold text-sm">Action Required</div>
+                                            <div className="text-xs mt-0.5">Found {linkHealthData.brokenLinks} broken links during the last scan ({linkHealthData.lastScanned}).</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left text-sm">
+                                                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-xs tracking-wider">
+                                                    <tr>
+                                                        <th className="px-6 py-4">Broken URL</th>
+                                                        <th className="px-6 py-4">Status Code</th>
+                                                        <th className="px-6 py-4">Found On (Referrer)</th>
+                                                        <th className="px-6 py-4">Type</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100">
+                                                    {linkHealthData.issues.map(issue => (
+                                                        <tr key={issue.id} className="hover:bg-slate-50 transition-colors">
+                                                            <td className="px-6 py-4">
+                                                                <div className="font-medium text-red-600 break-all max-w-xs">{issue.url}</div>
+                                                            </td>
+                                                            <td className="px-6 py-4">
+                                                                <span className="bg-red-100 text-red-700 px-2 py-1 rounded font-mono font-bold text-xs">{issue.status} Error</span>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-slate-600 font-medium">{issue.referringPage}</td>
+                                                            <td className="px-6 py-4">
+                                                                <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-bold">{issue.type}</span>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- SECURITY TAB --- */}
+                            {activeTab === 'security' && (
+                                <div className="space-y-6 animate-in fade-in duration-300">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                                            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
+                                                <Lock size={32} className="text-emerald-600"/>
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">SSL Certificate</div>
+                                                <div className="text-2xl font-extrabold text-slate-800">{securityData.sslStatus}</div>
+                                                <div className="text-xs text-slate-400 font-medium mt-1">Expires in {securityData.sslExpiry}</div>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+                                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                                                <ShieldAlert size={32} className="text-red-600"/>
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">Active Threats / Alerts</div>
+                                                <div className="text-2xl font-extrabold text-slate-800">{securityData.unresolvedAlerts}</div>
+                                                <div className="text-xs text-slate-400 font-medium mt-1">Review audit logs below</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                                        <div className="p-6 border-b border-slate-100">
+                                            <h3 className="font-bold text-slate-800">System Audit Logs</h3>
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left text-sm">
+                                                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-xs tracking-wider">
+                                                    <tr>
+                                                        <th className="px-6 py-4">Timestamp</th>
+                                                        <th className="px-6 py-4">Event Description</th>
+                                                        <th className="px-6 py-4">IP Address</th>
+                                                        <th className="px-6 py-4">Severity</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100">
+                                                    {securityData.auditLogs.map(log => (
+                                                        <tr key={log.id} className="hover:bg-slate-50 transition-colors">
+                                                            <td className="px-6 py-4 text-slate-500 text-xs font-mono">{log.time}</td>
+                                                            <td className="px-6 py-4 font-semibold text-slate-700">{log.event}</td>
+                                                            <td className="px-6 py-4 text-slate-600 font-mono text-xs">{log.ip}</td>
+                                                            <td className="px-6 py-4">
+                                                                <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                                                    log.severity === 'High' ? 'bg-red-100 text-red-700' : 
+                                                                    (log.severity === 'Medium' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700')
+                                                                }`}>
+                                                                    {log.severity}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </div>
-
-                <footer class="mt-8 py-6 text-center text-slate-400 text-xs sm:text-sm font-medium border-t border-slate-200">
-                    <p>&copy; 2026 MBTECH Workspace.</p>
-                    <p class="mt-1">Designed by <a href="https://wa.me/2347044318043" target="_blank" class="text-brand-orange font-bold hover:underline">Emmy Kingz</a></p>
-                </footer>
-            </main>
-        </div>
-    </div>
-
-    <!-- Global Toast Container -->
-    <div id="toastContainer" class="fixed bottom-24 lg:bottom-6 right-4 sm:right-6 z-[100] flex flex-col gap-2"></div>
-
-    <!-- Main Logic -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
-        import { getFirestore, collection, onSnapshot, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js';
-
-        // ----------------------------------------------------
-        // FIREBASE COLLECTION MAP (Ensure this matches your DB)
-        // ----------------------------------------------------
-        const DB_COLLECTIONS = {
-            orders: 'orders',
-            customers: 'customers',
-            products: 'products',
-            messages: 'messages'
+            );
         };
 
-        const ALLOWED_EMAILS = ['emmanuel.amobi03@gmail.com', 'mesobest2000@gmail.com', 'mesobest.technology.org@gmail.com'];
-        const SUPER_ADMIN = 'emmanuel.amobi03@gmail.com';
-        const SESSION_TIMEOUT = 30 * 60 * 1000;
-        
-        let appData = { orders: [], customers: [], products: [], messages: [] };
-        const state = {
-            user: null, isSuperAdmin: false, db: null, auth: null,
-            activeTab: 'dashboard',
-            fetched: { dashboard: false, orders: false, customers: false, products: false, messages: false },
-            unsubs: {}
-        };
-
-        try {
-            const firebaseConfig = {
-                apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
-                authDomain: "mbtechstore-17984.firebaseapp.com",
-                projectId: "mbtechstore-17984",
-                storageBucket: "mbtechstore-17984.firebasestorage.app",
-                messagingSenderId: "1083008774596",
-                appId: "1:1083008774596:web:110b651c6426116ed43491"
-            };
-            const fbApp = initializeApp(firebaseConfig);
-            state.auth = getAuth(fbApp);
-            state.db = getFirestore(fbApp);
-        } catch (e) { console.error("Firebase Init Error:", e); }
-
-        // --- Safe Output Generators ---
-        const safeStr = (val, fallback = 'Unknown') => val ? val : fallback;
-        const safeNum = (val) => val ? val.toLocaleString() : '0';
-        
-        // Smart Date Parser for Firestore Timestamps
-        const parseDate = (val) => {
-            if (!val) return 'Just now';
-            if (val.toDate) return val.toDate().toLocaleDateString(); // Native Firestore Timestamp
-            if (val.seconds) return new Date(val.seconds * 1000).toLocaleDateString(); // Raw object
-            return String(val); // Fallback string
-        };
-
-        // --- UI Rendering ---
-        window.showToast = (msg, type = 'success') => {
-            const c = document.getElementById('toastContainer');
-            if(!c) return;
-            const t = document.createElement('div');
-            const bg = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-500' : 'bg-brand-blue';
-            t.className = `toast-enter ${bg} text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-bold`;
-            t.innerHTML = `<span>${msg}</span>`;
-            c.appendChild(t);
-            setTimeout(() => { t.classList.add('toast-exit'); setTimeout(() => t.remove(), 300); }, 3000);
-        };
-
-        const setSyncBar = (active) => {
-            const bar = document.getElementById('syncProgress');
-            if(bar) {
-                if (active) {
-                    bar.classList.add('active');
-                } else {
-                    setTimeout(() => bar.classList.remove('active'), 400);
-                }
-            }
-        };
-
-        const renderTables = () => {
-            // Stats
-            const statProducts = document.getElementById('stat-products');
-            const statUsers = document.getElementById('stat-users');
-            const statLeads = document.getElementById('stat-leads');
-            const statOrders = document.getElementById('stat-orders');
-            
-            if(statProducts) statProducts.innerText = appData.products.length;
-            if(statUsers) statUsers.innerText = appData.customers.length;
-            if(statLeads) statLeads.innerText = appData.messages.length;
-            if(statOrders) statOrders.innerText = appData.orders.length;
-
-            const unread = appData.messages.filter(m => m.status === 'Unread').length;
-            ['deskBadge', 'mobBadge'].forEach(id => {
-                const b = document.getElementById(id);
-                if(b) { 
-                    if (unread > 0 && state.user) { 
-                        b.innerText = unread > 99 ? '99+' : unread; 
-                        b.classList.remove('hidden'); 
-                    } else { 
-                        b.classList.add('hidden'); 
-                    } 
-                }
-            });
-
-            // Dashboard Recent
-            const dashTable = document.getElementById('dashboard-recent');
-            if(dashTable) {
-                dashTable.innerHTML = appData.orders.slice(0,5).map(o => `
-                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 sm:p-5 text-brand-blue font-extrabold">${safeStr(o.id || o.orderId)}</td>
-                        <td class="p-4 sm:p-5 font-bold">${safeStr(o.customer || o.name || o.buyer)}</td>
-                        <td class="p-4 sm:p-5 font-bold">₦${safeNum(o.total || o.amount || o.price)}</td>
-                        <td class="p-4 sm:p-5"><span class="px-2 py-1 bg-slate-100 rounded text-[10px] font-bold">${safeStr(o.status, 'Pending')}</span></td>
-                    </tr>
-                `).join('') || `<tr><td colSpan="4" class="p-6 text-center text-slate-500 font-medium">No recent orders found.</td></tr>`;
-            }
-
-            // Orders
-            const ordTable = document.getElementById('table-orders');
-            if(ordTable) {
-                ordTable.innerHTML = appData.orders.map(o => `
-                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 sm:p-5 pl-4 sm:pl-6"><div class="font-extrabold text-brand-dark">${safeStr(o.id || o.orderId)}</div><div class="text-[10px] text-slate-500">${parseDate(o.date || o.createdAt)}</div></td>
-                        <td class="p-4 sm:p-5"><div class="font-bold">${safeStr(o.customer || o.name || o.buyer)}</div><div class="text-[10px] text-slate-500">${safeStr(o.email)}</div></td>
-                        <td class="p-4 sm:p-5 font-extrabold text-brand-blue">₦${safeNum(o.total || o.amount || o.price || o.cartTotal)}</td>
-                        <td class="p-4 sm:p-5">
-                            <span class="text-[10px] px-2 py-1 rounded bg-slate-100 font-bold">${safeStr(o.payment || o.paymentStatus, 'Pending')}</span>
-                            <div class="text-[10px] text-slate-500 mt-1">${safeStr(o.status, 'Processing')}</div>
-                        </td>
-                        <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2">
-                            <button onclick="window.showToast('Edit via Admin panel only.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
-                            ${state.isSuperAdmin ? `<button onclick="window.handleDelete('${DB_COLLECTIONS.orders}', '${o.id}')" class="bg-red-50 text-red-500 p-1.5 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
-                        </td>
-                    </tr>
-                `).join('') || `<tr><td colSpan="6" class="p-6 text-center text-slate-500 font-medium">No records found in database.</td></tr>`;
-            }
-
-            // Customers
-            const thCust = document.getElementById('th-cust-action');
-            if(thCust) thCust.style.display = state.isSuperAdmin ? 'table-cell' : 'none';
-            
-            const custTable = document.getElementById('table-customers');
-            if(custTable) {
-                custTable.innerHTML = appData.customers.map(c => `
-                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 sm:p-5 pl-4 sm:pl-6 font-bold text-brand-dark">${safeStr(c.name || c.fullName || c.customerName)}</td>
-                        <td class="p-4 sm:p-5 text-slate-500">${safeStr(c.email)}</td>
-                        <td class="p-4 sm:p-5 font-bold text-center"><span class="bg-slate-100 px-3 py-1 rounded-full text-[10px]">${safeNum(c.totalOrders || c.ordersCount)}</span></td>
-                        <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2 items-center">
-                            <span class="font-extrabold text-brand-blue mr-2">₦${safeNum(c.spent || c.totalSpent)}</span>
-                            ${state.isSuperAdmin ? `<button onclick="window.handleDelete('${DB_COLLECTIONS.customers}', '${c.id}')" class="bg-red-50 text-red-500 p-1.5 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
-                        </td>
-                    </tr>
-                `).join('') || `<tr><td colSpan="5" class="p-6 text-center text-slate-500 font-medium">No records found in database.</td></tr>`;
-            }
-
-            // Products
-            const prodTable = document.getElementById('table-products');
-            if(prodTable) {
-                prodTable.innerHTML = appData.products.map(p => `
-                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 sm:p-5 pl-4 sm:pl-6 font-bold text-brand-dark">${safeStr(p.name || p.title || p.courseName)}</td>
-                        <td class="p-4 sm:p-5 text-slate-500 text-xs font-bold">${safeStr(p.category || p.type)}</td>
-                        <td class="p-4 sm:p-5 font-extrabold text-brand-blue">₦${safeNum(p.price || p.amount || p.coursePrice)}</td>
-                        <td class="p-4 sm:p-5"><span class="text-[10px] px-2 py-1.5 rounded bg-slate-100 font-bold">${safeStr(p.status, 'Active')}</span></td>
-                        <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2 items-center">
-                            <button onclick="window.showToast('Edit mode locked.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Edit</button>
-                            ${state.isSuperAdmin ? `<button onclick="window.handleDelete('${DB_COLLECTIONS.products}', '${p.id}')" class="bg-red-50 text-red-500 p-1.5 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
-                        </td>
-                    </tr>
-                `).join('') || `<tr><td colSpan="5" class="p-6 text-center text-slate-500 font-medium">No records found in database.</td></tr>`;
-            }
-
-            // Messages
-            const msgTable = document.getElementById('table-messages');
-            if(msgTable) {
-                msgTable.innerHTML = appData.messages.map(m => `
-                    <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors ${m.status === 'Unread' ? 'bg-orange-50/30' : ''}">
-                        <td class="p-4 sm:p-5 pl-4 sm:pl-6 text-center"><div class="w-2.5 h-2.5 rounded-full mx-auto ${m.status === 'Unread' ? 'bg-brand-orange animate-pulse' : 'bg-slate-300'}"></div></td>
-                        <td class="p-4 sm:p-5"><div class="font-bold text-brand-dark">${safeStr(m.name || m.sender || m.fullName)}</div><div class="text-[10px] text-slate-500">${safeStr(m.email)}</div></td>
-                        <td class="p-4 sm:p-5 font-bold">${safeStr(m.subject || m.topic || m.message)} <span class="block font-normal text-[10px] text-slate-400 mt-1">${parseDate(m.date || m.timestamp)}</span></td>
-                        <td class="p-4 sm:p-5 text-right pr-4 sm:pr-6 flex justify-end gap-2 items-center">
-                            <button onclick="window.showToast('Message status toggled.')" class="bg-slate-100 px-4 py-2 rounded-lg font-bold text-[10px] active:scale-95">Read</button>
-                            ${state.isSuperAdmin ? `<button onclick="window.handleDelete('${DB_COLLECTIONS.messages}', '${m.id}')" class="bg-red-50 text-red-500 p-1.5 rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2 M10 11v6 M14 11v6"/></svg></button>` : ''}
-                        </td>
-                    </tr>
-                `).join('') || `<tr><td colSpan="4" class="p-6 text-center text-slate-500 font-medium">No connect leads.</td></tr>`;
-            }
-        };
-
-        const renderAuthHeaders = () => {
-            const deskPanel = document.getElementById('deskAuthPanel');
-            const headActions = document.getElementById('headerActions');
-            
-            if (!state.user) {
-                if(deskPanel) deskPanel.innerHTML = `<button onclick="window.openLoginModal()" class="w-full flex justify-center items-center gap-2 px-4 py-3.5 bg-brand-blue text-white rounded-xl font-bold transition-all hover:bg-brand-blueHover"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg> Admin Login</button>`;
-                if(headActions) headActions.innerHTML = `<button onclick="window.openLoginModal()" class="p-2 bg-brand-blue text-white rounded-lg active:scale-95 flex items-center gap-2 text-sm font-bold"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z M7 11V7a5 5 0 0 1 10 0v4"/></svg> <span class="hidden sm:inline">Sign In</span></button>`;
-                document.body.classList.add('logged-out');
-            } else {
-                if(deskPanel) deskPanel.innerHTML = `
-                    <div class="flex items-center gap-3 px-4 py-2 mb-3">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0 shadow-inner ${state.isSuperAdmin ? 'bg-brand-orange' : 'bg-brand-blue'}">${state.isSuperAdmin ? 'SA' : 'AD'}</div>
-                        <div class="overflow-hidden"><p class="text-sm font-bold text-white truncate">${state.isSuperAdmin ? 'Super Admin' : 'Workspace Admin'}</p><p class="text-[10px] text-slate-400 truncate">${state.user}</p></div>
-                    </div>
-                    <button onclick="window.handleLogout()" class="w-full flex justify-center items-center gap-2 px-4 py-3 bg-slate-800 text-slate-300 hover:bg-red-500 hover:text-white rounded-xl font-bold transition-all"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg> Secure Logout</button>
-                `;
-                if(headActions) headActions.innerHTML = `
-                    <div class="hidden sm:block relative"><input type="text" placeholder="Search data..." class="pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl text-sm font-medium w-64 outline-none focus:bg-white focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/10 transition-all" /></div>
-                    <button onclick="window.handleLogout()" class="lg:hidden p-2 bg-slate-800 text-slate-300 hover:text-white rounded-lg active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9"/></svg></button>
-                `;
-                document.body.classList.remove('logged-out');
-            }
-        };
-
-        // --- Data Fetching Logic (Lazy Loading) ---
-        const executeCollectionSync = (colKey) => {
-            if (!state.db || !state.user) {
-                setSyncBar(false);
-                return;
-            }
-            
-            const actualDbName = DB_COLLECTIONS[colKey];
-            const ref = collection(state.db, actualDbName);
-            
-            state.unsubs[colKey] = onSnapshot(ref, (snap) => {
-                if (!snap.empty) {
-                    appData[colKey] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                } else {
-                    appData[colKey] = []; 
-                }
-                renderTables();
-                setSyncBar(false);
-            }, (err) => { 
-                console.error(`Firestore sync error on ${actualDbName}:`, err);
-                setSyncBar(false); 
-            });
-        };
-
-        const triggerActivityFetch = (tabId) => {
-            if (!state.user) return; 
-            setSyncBar(true);
-            
-            if (tabId === 'dashboard' && !state.fetched.dashboard) {
-                ['orders', 'customers', 'products', 'messages'].forEach(col => {
-                    if(!state.fetched[col]) { executeCollectionSync(col); state.fetched[col] = true; }
-                });
-                state.fetched.dashboard = true;
-            } 
-            else if (['orders', 'customers', 'products', 'messages'].includes(tabId)) {
-                if (!state.fetched[tabId]) {
-                    executeCollectionSync(tabId);
-                    state.fetched[tabId] = true;
-                } else {
-                    setSyncBar(false); 
-                }
-            } else {
-                setSyncBar(false); 
-            }
-        };
-
-        // --- Public Global Functions ---
-        window.openLoginModal = () => {
-            const modal = document.getElementById('loginModal');
-            if(modal) modal.classList.add('active');
-        };
-        
-        window.closeLoginModal = () => {
-            const modal = document.getElementById('loginModal');
-            if(modal) modal.classList.remove('active');
-        };
-
-        window.handleTabSwitch = (tabId) => {
-            if (!state.user && tabId !== 'dashboard') {
-                window.openLoginModal();
-                window.showToast('Please log in to access this feature.', 'error');
-                return;
-            }
-
-            state.activeTab = tabId;
-
-            // UI Adjustments
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            const activeTabContent = document.getElementById(`tab-${tabId}`);
-            if(activeTabContent) activeTabContent.classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(el => { el.classList.remove('bg-brand-blue', 'text-white'); el.classList.add('text-slate-400'); });
-            const deskBtn = document.getElementById(`nav-${tabId}-desk`);
-            if(deskBtn) { deskBtn.classList.remove('text-slate-400'); deskBtn.classList.add('bg-brand-blue', 'text-white'); }
-
-            document.querySelectorAll('.nav-btn-mob').forEach(el => { el.classList.remove('text-brand-blue'); el.classList.add('text-slate-400'); el.querySelector('span').classList.remove('font-extrabold'); });
-            const mobBtn = document.getElementById(`nav-${tabId}-mob`);
-            if(mobBtn) { mobBtn.classList.remove('text-slate-400'); mobBtn.classList.add('text-brand-blue'); mobBtn.querySelector('span').classList.add('font-extrabold'); }
-
-            const titles = { dashboard: 'Overview', orders: 'Fulfillment', customers: 'Customers', products: 'Store & Courses', messages: 'Leads & Connect', ai: 'AI Automations' };
-            const headTitle = document.getElementById('headerTitle');
-            if(headTitle) headTitle.innerText = titles[tabId];
-            
-            triggerActivityFetch(tabId);
-        };
-
-        window.handleDelete = async (colKey, id) => {
-            if(!state.user) return window.openLoginModal();
-            if(!state.isSuperAdmin) return window.showToast('Permission Denied. Super Admin only.', 'error');
-            
-            if (state.db) {
-                try {
-                    await deleteDoc(doc(state.db, DB_COLLECTIONS[colKey], id));
-                    window.showToast('Item permanently deleted.', 'success');
-                } catch(e) { window.showToast('Failed to delete.', 'error'); }
-            }
-        };
-
-        window.handleLogout = async () => {
-            if (state.auth) await signOut(state.auth);
-            state.user = null;
-            state.isSuperAdmin = false;
-            sessionStorage.removeItem('mbtech_session_active');
-            
-            Object.keys(state.fetched).forEach(k => state.fetched[k] = false);
-            Object.values(state.unsubs).forEach(unsub => unsub && unsub());
-            appData = { orders: [], customers: [], products: [], messages: [] };
-            
-            renderAuthHeaders();
-            renderTables();
-            window.handleTabSwitch('dashboard');
-            window.openLoginModal();
-            window.showToast('Logged out securely');
-        };
-
-        const completeLogin = () => {
-            window.closeLoginModal();
-            renderAuthHeaders();
-            window.showToast('Authenticated Successfully');
-            
-            triggerActivityFetch('dashboard');
-            
-            setTimeout(() => {
-                if(state.activeTab === 'dashboard' && !state.fetched.orders) { 
-                    executeCollectionSync('orders'); 
-                    state.fetched.orders = true; 
-                }
-            }, 500); 
-        };
-
-        // --- Boot Sequence & Auth Listener ---
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            const loginForm = document.getElementById('loginForm');
-            if(loginForm) {
-                loginForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const email = document.getElementById('adminEmail').value;
-                    const password = document.getElementById('adminPassword').value;
-                    const btn = document.getElementById('submitLoginBtn');
-                    const err = document.getElementById('loginAlert');
-                    
-                    if(!ALLOWED_EMAILS.includes(email)) { err.innerText = "Access Denied."; err.classList.remove('hidden'); return; }
-
-                    btn.innerText = 'Authenticating...'; btn.disabled = true;
-
-                    try {
-                        if (state.auth) {
-                            await signInWithEmailAndPassword(state.auth, email, password);
-                            // Auth listener below will handle the rest implicitly
-                        } else {
-                            throw new Error("Database offline.");
-                        }
-                    } catch(error) {
-                        err.innerText = "Authentication failed. Check credentials."; err.classList.remove('hidden');
-                        btn.innerHTML = 'Secure Login'; btn.disabled = false;
-                    }
-                });
-            }
-
-            // Hide Preloader
-            const preloader = document.getElementById('appPreloader');
-            if (preloader) {
-                preloader.style.opacity = '0';
-                setTimeout(() => { if(preloader.parentNode) preloader.remove(); }, 500);
-            }
-
-            // Check if Firebase is active
-            if (state.auth) {
-                onAuthStateChanged(state.auth, (fbUser) => {
-                    if (fbUser && ALLOWED_EMAILS.includes(fbUser.email)) {
-                        state.user = fbUser.email;
-                        state.isSuperAdmin = fbUser.email === SUPER_ADMIN;
-                        sessionStorage.setItem('mbtech_session_active', 'true');
-                        completeLogin();
-                    } else {
-                        if(fbUser) signOut(state.auth);
-                        state.user = null;
-                        appData = { orders: [], customers: [], products: [], messages: [] };
-                        renderAuthHeaders();
-                        renderTables();
-                        if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(window.openLoginModal, 10000);
-                    }
-                });
-            } else {
-                renderAuthHeaders();
-                if(!sessionStorage.getItem('mbtech_session_active')) setTimeout(window.openLoginModal, 10000);
-            }
-
-            window.handleTabSwitch('dashboard');
-            renderTables();
-        });
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
