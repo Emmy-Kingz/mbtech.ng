@@ -69,12 +69,19 @@
         let auth = null;
         let db = null;
         try {
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-            if (firebaseConfig) {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-            }
+            const firebaseConfig = {
+                apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+                authDomain: "mbtechstore-17984.firebaseapp.com",
+                projectId: "mbtechstore-17984",
+                storageBucket: "mbtechstore-17984.firebasestorage.app",
+                messagingSenderId: "1083008774596",
+                appId: "1:1083008774596:web:110b651c6426116ed43491",
+                measurementId: "G-213C6T6EJ0"
+            };
+            
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
         } catch (error) {
             console.error("Error initializing Firebase:", error);
         }
