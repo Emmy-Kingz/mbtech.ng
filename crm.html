@@ -34,13 +34,16 @@
         }
     </script>
 
-    <!-- Import Map for React and Lucide -->
+    <!-- Import Map for React, Lucide, and Firebase -->
     <script type="importmap">
     {
         "imports": {
             "react": "https://esm.sh/react@18.2.0",
             "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "lucide-react": "https://esm.sh/lucide-react@0.284.0"
+            "lucide-react": "https://esm.sh/lucide-react@0.284.0",
+            "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
         }
     }
     </script>
@@ -57,6 +60,30 @@
             Search, Filter, LogOut, Lock, User, Menu, X, ChevronRight, FileText, 
             CreditCard, ShieldCheck, MailWarning, BadgeCheck
         } from 'lucide-react';
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signOut } from 'firebase/auth';
+        import { getFirestore } from 'firebase/firestore';
+
+        // --- Firebase Initialization ---
+        let auth = null;
+        let db = null;
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+                authDomain: "mbtechstore-17984.firebaseapp.com",
+                projectId: "mbtechstore-17984",
+                storageBucket: "mbtechstore-17984.firebasestorage.app",
+                messagingSenderId: "1083008774596",
+                appId: "1:1083008774596:web:110b651c6426116ed43491",
+                measurementId: "G-213C6T6EJ0"
+            };
+            
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (error) {
+            console.error("Error initializing Firebase:", error);
+        }
 
         // --- Mock Data ---
         const initialOrders = [
@@ -118,16 +145,29 @@
         };
 
         const LoginScreen = ({ onLogin }) => {
-            const [email, setEmail] = useState('admin@mbtech.ng');
-            const [password, setPassword] = useState('admin123');
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
             const [error, setError] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
 
-            const handleLogin = (e) => {
+            const handleLogin = async (e) => {
                 e.preventDefault();
-                if (email === 'admin@mbtech.ng' && password.length > 0) {
+                if (!auth) {
+                    setError('Firebase is not configured properly.');
+                    return;
+                }
+                
+                setIsLoading(true);
+                setError('');
+                
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
                     onLogin();
-                } else {
-                    setError('Invalid admin credentials. Please try again.');
+                } catch (err) {
+                    console.error("Login error:", err);
+                    setError(err.message || 'Invalid admin credentials. Please try again.');
+                } finally {
+                    setIsLoading(false);
                 }
             };
 
@@ -185,9 +225,10 @@
                             </div>
                             <button 
                                 type="submit" 
-                                className="w-full bg-brand-blue text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-blue/30 hover:bg-brand-blueHover transition-colors flex items-center justify-center gap-2"
+                                disabled={isLoading}
+                                className="w-full bg-brand-blue text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand-blue/30 hover:bg-brand-blueHover transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
                             >
-                                Login to CRM <ChevronRight size={18} />
+                                {isLoading ? 'Authenticating...' : 'Login to CRM'} <ChevronRight size={18} />
                             </button>
                         </form>
                     </div>
@@ -197,6 +238,7 @@
 
         const App = () => {
             const [isAuthenticated, setIsAuthenticated] = useState(false);
+            const [user, setUser] = useState(null);
             const [activeTab, setActiveTab] = useState('orders'); // 'orders', 'customers', 'campaigns'
             const [isSidebarOpen, setIsSidebarOpen] = useState(false);
             const [toast, setToast] = useState(null);
@@ -210,6 +252,38 @@
             const [campaignAudience, setCampaignAudience] = useState('All');
             const [campaignSubject, setCampaignSubject] = useState('');
             const [campaignBody, setCampaignBody] = useState('');
+
+            // Firebase Auth Effect
+            useEffect(() => {
+                if (!auth) return;
+
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        try { await signInWithCustomToken(auth, __initial_auth_token); } catch(e){}
+                    } else if (!auth.currentUser) {
+                        try { await signInAnonymously(auth); } catch(e){}
+                    }
+                };
+                initAuth();
+
+                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                    setUser(currentUser);
+                    if (currentUser && currentUser.email) {
+                        setIsAuthenticated(true);
+                    } else {
+                        setIsAuthenticated(false);
+                    }
+                });
+
+                return () => unsubscribe();
+            }, []);
+
+            const handleLogout = async () => {
+                if (auth) {
+                    await signOut(auth);
+                }
+                setIsAuthenticated(false);
+            };
 
             // Derived Data
             const customers = useMemo(() => {
@@ -366,13 +440,15 @@
 
                         <div className="p-4 border-t border-slate-800">
                             <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-slate-800/50 rounded-xl">
-                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">A</div>
-                                <div>
+                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">
+                                    {user?.email ? user.email.charAt(0).toUpperCase() : 'A'}
+                                </div>
+                                <div className="overflow-hidden">
                                     <div className="text-sm font-bold text-white">Admin User</div>
-                                    <div className="text-xs text-slate-400">admin@mbtech.ng</div>
+                                    <div className="text-xs text-slate-400 truncate">{user?.email || 'admin@mbtech.ng'}</div>
                                 </div>
                             </div>
-                            <button onClick={() => setIsAuthenticated(false)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-colors font-medium">
+                            <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-colors font-medium">
                                 <LogOut size={18} /> Logout
                             </button>
                         </div>
