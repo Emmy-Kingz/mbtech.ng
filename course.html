@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-213C6T6EJ0"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-213C6T6EJ0');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-213C6T6EJ0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-213C6T6EJ0');
+    </script>
     
-<!-- Facebook Pixel Code -->
+    <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -27,57 +26,12 @@
     <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=1973713946881967&ev=PageView&noscript=1"
     /></noscript>
-    <!-- End Facebook Pixel Code -->
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>MBTECH NG | Tech & Tutorials</title>
-    
-    <!-- Premium SEO Meta Tags -->
-    <meta name="description" content="Learn highly sought-after tech skills with Mbtech Academy. Enroll in practical courses for Solar Inverter Installation, Web Development, UI/UX Design, Data Analytics, and Hardware/Software Installation in Nigeria.">
-    <meta name="keywords" content="Tech Courses Nigeria, Learn Solar Installation, Web Development Training Lagos, UI/UX Design Course, CCTV Installation, Data Analytics, Mbtech Academy, Mesobest Technology">
-    <meta name="author" content="Mesobest Technology">
-    <meta name="robots" content="index, follow">
+    <meta name="description" content="Select multiple courses across Design, Tech, and Engineering. Pay securely with Paystack and start your journey with Mbtech Academy.">
     <link rel="canonical" href="https://emmy-kingz.github.io/mbtech.ng/course.html">
-
-    <!-- Open Graph / Social Sharing -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://emmy-kingz.github.io/mbtech.ng/course.html">
-    <meta property="og:title" content="MBTECH NG | Tech & Tutorials">
-    <meta property="og:description" content="Join Mbtech Academy to learn Web Development, UI/UX Design, and Engineering skills like Solar & CCTV Installation with hands-on practicals.">
-    <meta property="og:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MBTECH NG | Tech & Engineering Courses">
-    <meta name="twitter:description" content="Enroll in practical tech courses for Web Development, UI/UX Design, and Solar/CCTV Installation.">
-    <meta name="twitter:image" content="https://emmy-kingz.github.io/mbtech.ng/logo.png">
-
-    <!-- JSON-LD Structured Data for Google Courses -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "item": {
-            "@type": "Course",
-            "name": "Solar & Hybrid Inverter Installation",
-            "description": "Master the complete process of sizing, installing, and maintaining solar energy systems and hybrid inverters.",
-            "provider": {
-              "@type": "Organization",
-              "name": "Mbtech Academy",
-              "sameAs": "https://emmy-kingz.github.io/mbtech.ng/"
-            }
-          }
-        }
-      ]
-    }
-    </script>
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
 
     <!-- Tailwind CSS -->
@@ -96,98 +50,51 @@
         }
     }
     </script>
-
-    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
 
-    <!-- Tailwind Config matching index.html colors -->
+    <style>
+        :root { --brand-blue: #0056b3; --brand-orange: #f97316; --brand-dark: #0f172a; }
+        html { scroll-behavior: smooth; }
+        body { padding-bottom: 64px; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
+        @media (min-width: 768px) { body { padding-bottom: 0; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .animated-gradient-text { background: linear-gradient(to right, #0056b3, #f97316, #0056b3); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 3s linear infinite; }
+        @keyframes shine { to { background-position: 200% center; } }
+        /* Honeypot - hidden from real users */
+        .bot-trap { position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        brand: {
-                            blue: '#0056b3',
-                            blueHover: '#004494',
-                            orange: '#f97316',
-                            dark: '#0f172a'
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                    }
+                    colors: { brand: { blue: '#0056b3', blueHover: '#004494', orange: '#f97316', dark: '#0f172a' } },
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
                 }
             }
         }
     </script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --brand-blue: #0056b3;
-            --brand-orange: #f97316;
-            --brand-dark: #0f172a;
-        }
-        html { scroll-behavior: smooth; }
-        
-        /* Mobile Bottom Nav Padding matching index.html */
-        body { padding-bottom: 64px; }
-        @media (min-width: 768px) { body { padding-bottom: 0; } }
-
-        /* Hide scrollbar for swipable elements on mobile */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Dynamic viewport height for modals on mobile */
-        .dvh-screen { height: 100vh; height: 100dvh; }
-
-        .animated-gradient-text {
-            background: linear-gradient(to right, #0056b3, #f97316, #0056b3);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shine 3s linear infinite;
-        }
-        @keyframes shine { to { background-position: 200% center; } }
-    </style>
 </head>
-<body class="bg-[#f8fafc] font-sans text-slate-900 selection:bg-brand-blue selection:text-white">
+<body class="bg-[#f8fafc] font-sans text-slate-900">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
         import { 
-            Menu, X, ChevronRight, Zap, Monitor, Code, 
-            Wrench, GraduationCap, CheckCircle, ArrowRight, 
-            Phone, Mail, BookOpen, Users, Store as StoreIcon, 
-            Home, ShieldAlert, Clock, Calendar, Star, FileText,
-            Award, UserCheck, PlayCircle, Palette, Database, Shield, Video, Megaphone,
-            Facebook, Twitter, Instagram, Linkedin, HelpCircle, Loader2, Settings, MapPin,
-            FileKey, ShieldCheck, RefreshCcw, Plug
+            Menu, X, ChevronRight, Zap, Monitor, Code, Wrench, GraduationCap, CheckCircle, ArrowRight, 
+            Phone, Mail, BookOpen, Users, Store as StoreIcon, Home, ShieldAlert, Clock, Calendar, 
+            Award, UserCheck, PlayCircle, Palette, Database, Shield, Video, Megaphone, Facebook, Twitter, 
+            Instagram, Linkedin, HelpCircle, Loader2, Settings, MapPin, FileKey, ShieldCheck, RefreshCcw, 
+            Plug, ShoppingCart, CreditCard, FileText, LogIn, UserPlus
         } from 'lucide-react';
 
-        // --- FIREBASE IMPORTS ---
+        // Firebase
         import { initializeApp } from 'firebase/app';
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
-        import { getFirestore, collection, onSnapshot, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+        import { getFirestore, collection, onSnapshot, doc, setDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 
-        // ==========================================
-        // CONFIGURATION: GOOGLE SCRIPT URL & FIREBASE
-        // ==========================================
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbzQ2aQj2n4s3W_NfJ1Ua2_o_v5z/exec"; 
-        
         const firebaseConfig = {
             apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
             authDomain: "mbtechstore-17984.firebaseapp.com",
@@ -196,741 +103,471 @@
             messagingSenderId: "1083008774596",
             appId: "1:1083008774596:web:110b651c6426116ed43491"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = 'mbtech-public-store'; // Matches Store/Admin
+        const appId = 'mbtech-public-store';
 
-        const WHATSAPP_NUMBER = "2347084672771";
+        // Obfuscated Paystack Live Key (base64 encoded)
+        const _pKey = "cGlfbGl2ZV82YjI1NWIzNTliYmJmNmFhZjVhNjlkMDNkMjI2MmYwYmQ2MGI3ZTNj";
+        const getPaystackKey = () => atob(_pKey);
         
-        const NAV_ITEMS = [
-            { name: 'Home', url: 'index.html', icon: <Home size={18} /> },
-            { name: 'Courses', url: 'course.html', icon: <BookOpen size={18} /> },
-            { name: 'Store', url: 'store.html', icon: <StoreIcon size={18} /> },
-            { name: 'Connect', url: 'connect.html', icon: <Users size={18} /> }
-        ];
+        const WHATSAPP_NUMBER = "2347084672771";
+        const TUTOR_WHATSAPP = "2348109006065";
 
-        const SOCIAL_LINKS = [
-            { name: 'Facebook', icon: Facebook, url: 'https://facebook.com/mbtech.ng' },
-            { name: 'Twitter', icon: Twitter, url: 'https://x.com/mbtech_ng' },
-            { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/mbtech_ng' },
-            { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/company/mbtech-ng' }
-        ];
-
-        // PRICING & DURATIONS: Design = 50k (6wks), Tech = 100k (8wks), Engineering = 150k (10wks)
+        // Fallback courses
         const FALLBACK_COURSES = [
-            // --- DESIGN COURSES (50k, 6 Weeks) ---
-            {
-                id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Palette",
-                image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800",
-                description: "Learn how to design intuitive, beautiful, and user-friendly digital products using Figma. Transform complex problems into elegant user interfaces.",
-                curriculum: ["Design Thinking & User Research", "Wireframing & Prototyping", "Figma Mastery", "Color Theory & Typography", "Building a Professional Case Study"]
-            },
-            {
-                id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Monitor",
-                image: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800", 
-                description: "Master Adobe Photoshop, Illustrator, and CorelDraw to create stunning visual identities, flyers, and branding materials.",
-                curriculum: ["Principles of Visual Design", "Adobe Photoshop Mastery", "Vector Graphics in Illustrator", "Logo Design & Branding", "Print vs Digital Design Setup"]
-            },
-            {
-                id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Video",
-                image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800",
-                description: "Learn professional video editing using Premiere Pro, After Effects, and CapCut. Create engaging content for YouTube, Social Media, and corporate clients.",
-                curriculum: ["Timeline & Sequence Management", "Color Grading & Correction", "Audio Mixing & Sound Design", "Motion Graphics & Text Animation", "Exporting for Various Platforms"]
-            },
-            {
-                id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "Megaphone",
-                image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&q=80&w=800",
-                description: "Master SEO, Social Media Marketing, and Paid Advertising (Facebook/Google Ads) to drive sales and grow brands online.",
-                curriculum: ["Search Engine Optimization (SEO)", "Social Media Strategy & Management", "Running Profitable Ad Campaigns", "Email Marketing Fundamentals", "Analytics & Conversion Tracking"]
-            },
-
-            // --- TECH COURSES (100k, 8 Weeks) ---
-            {
-                id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "Code",
-                image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800",
-                description: "Learn to build responsive, modern, and interactive websites from scratch. Master the tools used by top tech companies globally.",
-                curriculum: ["HTML5, CSS3 & Responsive Design", "JavaScript Essentials & DOM", "Version Control with Git & GitHub", "React.js Framework", "Tailwind CSS & APIs"]
-            },
-            {
-                id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", level: "Intermediate", price: 100000, iconName: "Database",
-                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800",
-                description: "Master server-side programming. Learn to build robust APIs, manage databases, and handle user authentication securely.",
-                curriculum: ["Node.js & Express Framework", "RESTful API Development", "Database Management (MongoDB/SQL)", "User Authentication (JWT)", "Server Deployment & Hosting"]
-            },
-            {
-                id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "FileText",
-                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800",
-                description: "Extract actionable insights from raw data. Learn to clean data, perform complex analysis, and create stunning visual dashboards.",
-                curriculum: ["Excel for Data Analytics", "SQL Database Querying", "Python Programming for Data", "Data Visualization with PowerBI/Tableau", "Predictive Modeling Basics"]
-            },
-            {
-                id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "Shield",
-                image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800",
-                description: "Protect systems and networks from digital attacks. Learn how hackers think so you can secure infrastructures effectively.",
-                curriculum: ["Networking Fundamentals", "Linux Essentials & Command Line", "Vulnerability Assessment", "Penetration Testing (Ethical Hacking)", "Incident Response & Mitigation"]
-            },
-
-            // --- ENGINEERING COURSES (150k, 10 Weeks) ---
-            {
-                id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "Zap",
-                image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=800",
-                description: "Master the complete process of sizing, installing, and maintaining solar energy systems and hybrid inverters. 100% practical field training.",
-                curriculum: ["Introduction to Renewable Energy & Safety", "Load Calculation & Solar Panel Sizing", "Battery Technologies (Lithium/Tubular)", "Inverter Configurations & Wiring", "Live Practical Installation Projects"]
-            },
-            {
-                id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "ShieldAlert",
-                image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=800",
-                description: "Become a security systems engineer. Learn to design, wire, configure, and troubleshoot modern surveillance and intercom systems.",
-                curriculum: ["Types of Cameras (IP vs Analog)", "DVR/NVR Setup & Configuration", "Cabling, Crimping & Power Supply", "Network Setup for Mobile Viewing", "Intercom & Access Control Basics"]
-            },
-            {
-                id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "Settings",
-                image: "https://images.unsplash.com/photo-1629654291663-b91ad427698f?auto=format&fit=crop&q=80&w=800", 
-                description: "Master full PC diagnostics, component replacements, OS installations, and advanced driver management. Become a certified computer technician.",
-                curriculum: ["PC Architecture & Disassembly", "Motherboard Diagnostics & Repair", "OS Installation (Windows/macOS)", "Driver Management & Software Troubleshooting", "Data Backup, Recovery & Optimization"]
-            },
-            {
-                id: "e4", title: "Electrical Installation & Troubleshooting", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "Plug",
-                image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=800",
-                description: "Master residential and commercial electrical wiring, fault finding, load balancing, and advanced safety standards.",
-                curriculum: ["Electrical Safety & Standard Codes", "Residential & Commercial Wiring Techniques", "Circuit Breakers & Distribution Boards", "Fault Diagnostics & Troubleshooting", "Earthing, Bonding & Power Management"]
-            }
+            { id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Palette", description: "Master Figma, prototyping, and user research." },
+            { id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Monitor", description: "Photoshop, Illustrator, brand identity." },
+            { id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Video", description: "Premiere Pro, After Effects, CapCut." },
+            { id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Megaphone", description: "SEO, Ads, social media management." },
+            { id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "Code", description: "HTML, CSS, JS, React, Tailwind." },
+            { id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "Database", description: "Node.js, Express, MongoDB, APIs." },
+            { id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "FileText", description: "Python, SQL, PowerBI, Tableau." },
+            { id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "Shield", description: "Network security, Kali Linux, pen testing." },
+            { id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "Zap", description: "Solar sizing, wiring, installation practical." },
+            { id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "ShieldAlert", description: "IP cameras, DVR, remote viewing." },
+            { id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "Settings", description: "PC diagnostics, OS, driver management." },
+            { id: "e4", title: "Electrical Installation & Troubleshooting", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "Plug", description: "Wiring, breakers, fault finding." }
         ];
 
-        // Converts String Icon Names from DB to actual React Icons
         const getIcon = (iconName) => {
-            const icons = {
-                Palette: <Palette size={24} />,
-                Monitor: <Monitor size={24} />,
-                Video: <Video size={24} />,
-                Megaphone: <Megaphone size={24} />,
-                Code: <Code size={24} />,
-                Database: <Database size={24} />,
-                FileText: <FileText size={24} />,
-                Shield: <Shield size={24} />,
-                Zap: <Zap size={24} />,
-                ShieldAlert: <ShieldAlert size={24} />,
-                Settings: <Settings size={24} />,
-                Plug: <Plug size={24} />
-            };
-            return icons[iconName] || <BookOpen size={24} />;
+            const icons = { Palette: <Palette size={20} />, Monitor: <Monitor size={20} />, Video: <Video size={20} />, Megaphone: <Megaphone size={20} />, Code: <Code size={20} />, Database: <Database size={20} />, FileText: <FileText size={20} />, Shield: <Shield size={20} />, Zap: <Zap size={20} />, ShieldAlert: <ShieldAlert size={20} />, Settings: <Settings size={20} />, Plug: <Plug size={20} /> };
+            return icons[iconName] || <BookOpen size={20} />;
         };
 
-        const getCategoryColor = (category) => {
-            const colors = {
-                'Design': 'bg-pink-500',
-                'Tech': 'bg-brand-blue',
-                'Engineering': 'bg-brand-orange'
-            };
-            return colors[category] || 'bg-brand-blue';
-        };
+        // Validation helpers
+        const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        const validatePhone = (phone) => /^[0-9+\-\s()]{8,15}$/.test(phone);
+        const validateName = (name) => name.trim().length >= 2;
 
-        // --- UTILS: Submit to Google Sheets via pure FormData ---
-        const submitToGoogleSheets = async (data) => {
-            const formData = new FormData();
-            for (const key in data) {
-                formData.append(key, data[key]);
-            }
-            
-            try {
-                // Classic Form submission logic that naturally avoids CORS checks
-                await fetch(GOOGLE_SHEETS_URL, { 
-                    method: 'POST', 
-                    body: formData 
-                });
-                return true;
-            } catch (error) {
-                console.error("Sheets sync error:", error);
-                return true; // We return true anyway so the user's flow to WhatsApp isn't interrupted
-            }
-        };
-
-        // --- COMPONENTS ---
-
-        function Navbar({ onOpenAssignment }) {
+        // Navbar
+        function Navbar({ user, onLogout, onOpenTutorModal }) {
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const [scrolled, setScrolled] = useState(false);
-
             useEffect(() => {
-                const handleScroll = () => {
-                    setScrolled(window.scrollY > 50);
-                };
+                const handleScroll = () => setScrolled(window.scrollY > 50);
                 window.addEventListener('scroll', handleScroll);
                 return () => window.removeEventListener('scroll', handleScroll);
             }, []);
-
             return (
                 <>
-                    {/* Main Top Navbar */}
-                    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-gray-100' : 'bg-white border-b border-gray-100'}`}>
+                    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-white border-b border-gray-100'}`}>
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between items-center h-20">
-                                {/* Logo (Matches Homepage) */}
-                                <div className="flex-shrink-0 flex items-center gap-3">
-                                    <a href="index.html" className="flex items-center gap-3 cursor-pointer group">
-                                        <img src="logo.png" alt="MBTECH NG" className="h-10 w-auto" onError={(e) => {e.target.style.display='none'}} />
-                                        <div className="flex flex-col">
-                                            <span className="text-xl font-extrabold text-brand-dark tracking-tight leading-none uppercase">
-                                                MBTECH <span className="text-brand-blue">NG</span>
-                                            </span>
-                                            <span className="text-[10px] text-brand-orange font-bold tracking-widest uppercase">Innovating Africa</span>
-                                        </div>
-                                    </a>
-                                </div>
-
-                                {/* Desktop Nav */}
+                                <a href="index.html" className="flex items-center gap-3">
+                                    <img src="logo.png" alt="MBTECH NG" className="h-10 w-auto" onError={(e)=>{e.target.style.display='none'}} />
+                                    <div><span className="text-xl font-extrabold text-brand-dark">MBTECH <span className="text-brand-blue">NG</span></span><span className="text-[10px] text-brand-orange block font-bold">Innovating Africa</span></div>
+                                </a>
                                 <div className="hidden md:flex items-center space-x-8">
-                                    <a href="index.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><Home size={16}/> Home</a>
-                                    <a href="course.html" className="text-sm font-bold text-brand-blue transition-colors flex items-center gap-1.5"><BookOpen size={16}/> Courses</a>
-                                    <a href="store.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><StoreIcon size={16}/> Store</a>
+                                    <a href="index.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue">Home</a>
+                                    <a href="course.html" className="text-sm font-bold text-brand-blue">Courses</a>
+                                    <a href="store.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue">Store</a>
                                 </div>
-
-                                {/* Desktop CTA */}
                                 <div className="hidden md:flex items-center gap-4">
-                                    <button onClick={onOpenAssignment} className="text-sm font-bold text-slate-600 hover:text-brand-orange transition-colors flex items-center gap-1.5">
-                                        <HelpCircle size={16}/> Assignment Help
-                                    </button>
-                                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="bg-brand-blue hover:bg-brand-blueHover text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-lg shadow-blue-500/30">
-                                        Get in Touch
-                                    </a>
+                                    {user ? (
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-sm text-slate-600">{user.email}</span>
+                                            <button onClick={onLogout} className="text-sm font-bold text-red-500">Logout</button>
+                                        </div>
+                                    ) : (
+                                        <button onClick={onOpenTutorModal} className="text-sm font-bold text-slate-600 hover:text-brand-orange flex items-center gap-1.5"><HelpCircle size={16}/> Get a Tutor</button>
+                                    )}
+                                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" className="bg-brand-blue text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg">Get in Touch</a>
                                 </div>
-
-                                {/* Mobile Hamburger (For secondary actions) */}
-                                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-brand-dark hover:text-brand-blue transition-colors">
-                                    {mobileMenuOpen ? <X size={28}/> : <Menu size={28}/>}
-                                </button>
+                                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2"><Menu size={28}/></button>
                             </div>
-
-                            {/* Mobile Hamburger Dropdown (Secondary Actions) */}
                             {mobileMenuOpen && (
-                                <div className="md:hidden absolute w-full left-0 top-20 bg-white shadow-xl border-t border-gray-100 animate-in slide-in-from-top-4 duration-200 z-50 rounded-b-2xl">
-                                    <div className="p-4 flex flex-col gap-2 pb-6">
-                                        <button onClick={() => { setMobileMenuOpen(false); onOpenAssignment(); }} className="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-slate-700 hover:bg-slate-50 border border-slate-100">
-                                            <HelpCircle size={18} className="text-brand-orange"/> Request Assignment Help
-                                        </button>
-                                        <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="w-full mt-2 py-4 bg-brand-blue text-white rounded-xl flex items-center justify-center font-bold shadow-md">
-                                            Get in Touch
-                                        </a>
-                                    </div>
+                                <div className="md:hidden absolute w-full left-0 top-20 bg-white shadow-xl rounded-b-2xl p-4">
+                                    <button onClick={() => { setMobileMenuOpen(false); onOpenTutorModal(); }} className="flex items-center gap-3 font-bold p-3 rounded-xl w-full border mb-3"><HelpCircle size={18} className="text-brand-orange"/> Get a Tutor</button>
+                                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} className="block w-full py-3 bg-brand-blue text-white rounded-xl text-center font-bold">Contact Us</a>
                                 </div>
                             )}
                         </div>
                     </nav>
-
-                    {/* Mobile Bottom Nav (App-like experience matching homepage) */}
-                    <div className="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-safe">
-                        <div className="flex justify-around items-center h-16 pb-1">
-                            <a href="index.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
-                                <Home size={20} />
-                                <span className="text-[10px] font-bold">Home</span>
-                            </a>
-                            <a href="course.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-brand-blue transition-colors">
-                                <BookOpen size={20} />
-                                <span className="text-[10px] font-bold">Courses</span>
-                            </a>
-                            <a href="store.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
-                                <StoreIcon size={20} />
-                                <span className="text-[10px] font-bold">Store</span>
-                            </a>
-                            <a href="connect.html" className="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
-                                <Users size={20} />
-                                <span className="text-[10px] font-bold">Connect</span>
-                            </a>
-                        </div>
+                    <div className="md:hidden fixed bottom-0 w-full bg-white border-t z-50 flex justify-around h-16">
+                        <a href="index.html" className="flex flex-col items-center justify-center text-slate-400"><Home size={20}/><span className="text-[10px]">Home</span></a>
+                        <a href="course.html" className="flex flex-col items-center justify-center text-brand-blue"><BookOpen size={20}/><span className="text-[10px]">Courses</span></a>
+                        <a href="store.html" className="flex flex-col items-center justify-center text-slate-400"><StoreIcon size={20}/><span className="text-[10px]">Store</span></a>
+                        <a href="connect.html" className="flex flex-col items-center justify-center text-slate-400"><Users size={20}/><span className="text-[10px]">Connect</span></a>
                     </div>
                 </>
             );
         }
 
-        function Hero({ onOpenAssignment }) {
-            return (
-                <div className="relative bg-brand-dark text-white overflow-hidden sm:mb-0 mb-6 pt-20">
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-orange/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
-                    
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 flex flex-col md:flex-row items-center gap-12">
-                        <div className="md:w-1/2 text-center md:text-left">
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/30 text-blue-300 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
-                                <GraduationCap size={14} /> Transform Your Career
-                            </div>
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
-                                Master Skills That <br className="hidden sm:block"/>
-                                <span className="text-brand-orange">Matter Today.</span>
-                            </h1>
-                            <p className="text-lg text-slate-300 mb-8 max-w-lg mx-auto md:mx-0 leading-relaxed">
-                                100% Practical-based training in Tech, Design, and Hardware Engineering. Plus, get expert help for your academic & technical assignments.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                                <a href="#courses" className="px-8 py-4 bg-brand-blue hover:bg-brand-blueHover text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
-                                    Explore Courses <ArrowRight size={18} />
-                                </a>
-                                <button onClick={onOpenAssignment} className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur border border-white/10 text-white font-bold rounded-xl hover:-translate-y-1 transition-all flex items-center justify-center gap-2">
-                                    Get Assignment Help
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div className="md:w-1/2 relative w-full hidden md:block">
-                            <div className="grid grid-cols-2 gap-4 animate-float">
-                                <div className="space-y-4 mt-8">
-                                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-48 w-full" alt="Students" />
-                                    <div className="bg-slate-800/80 backdrop-blur p-5 rounded-2xl border border-slate-700/50 shadow-xl border-l-4 border-l-brand-orange">
-                                        <h3 className="text-brand-orange font-extrabold text-2xl mb-1">95%</h3>
-                                        <p className="text-xs text-slate-300 font-bold uppercase tracking-wider">Completion Rate</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="bg-brand-blue/20 backdrop-blur p-5 rounded-2xl border border-brand-blue/30 shadow-xl flex flex-col items-center justify-center h-32 text-center border-b-4 border-b-brand-blue">
-                                        <UserCheck size={32} className="text-blue-300 mb-2"/>
-                                        <p className="text-xs text-blue-100 font-bold uppercase tracking-wider">Expert Mentors</p>
-                                    </div>
-                                    <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400" className="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-56 w-full" alt="Solar Practical" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        function EnrollModal({ course, isOpen, onClose }) {
+        // Auth Modal with honeypot bot trap
+        function AuthModal({ isOpen, onClose, onSuccess }) {
+            const [isLogin, setIsLogin] = useState(true);
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
             const [loading, setLoading] = useState(false);
-
-            if (!isOpen || !course) return null;
-
-            const handleEnroll = async (e) => {
-                e.preventDefault();
-                setLoading(true);
-                
-                const formElement = e.target;
-                
-                // 1. Post to Google Sheets using classic FormData exactly as in old HTML
-                try {
-                    await fetch(GOOGLE_SHEETS_URL, { 
-                        method: 'POST', 
-                        body: new FormData(formElement) 
-                    });
-                } catch (error) {
-                    console.error("Sheets sync error:", error);
-                }
-                
-                // 2. Redirect to WhatsApp
-                const name = formElement.Name.value;
-                const email = formElement.Email.value;
-                const phone = formElement.Phone.value;
-                
-                const text = `Hello Mbtech Academy, I want to enroll in the *${course.title}* course.%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Fee:* ₦${course.price.toLocaleString()}%0A%0APlease provide me with the registration and payment details.`;
-                const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-                window.open(url, '_blank', 'noopener,noreferrer');
-                
-                setLoading(false);
-                onClose();
-            };
-
-            return (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
-                    <div className="bg-white rounded-[2rem] w-full max-w-4xl max-h-[90dvh] overflow-hidden shadow-2xl flex flex-col md:flex-row animate-in zoom-in-95 duration-200">
-                        
-                        {/* Course Details Side */}
-                        <div className="bg-slate-50 md:w-5/12 p-6 md:p-8 border-b md:border-b-0 md:border-r border-slate-200 overflow-y-auto no-scrollbar">
-                            <button onClick={onClose} className="md:hidden absolute top-4 right-4 p-2 bg-white rounded-full shadow-sm text-slate-500"><X size={20}/></button>
-                            
-                            <div className="w-12 h-12 bg-blue-100 text-brand-blue rounded-2xl flex items-center justify-center mb-6">
-                                {getIcon(course.iconName)}
-                            </div>
-                            <h2 className="text-2xl font-extrabold text-brand-dark mb-2 leading-tight">{course.title}</h2>
-                            <p className="text-slate-500 text-sm mb-6 leading-relaxed">{course.description}</p>
-                            
-                            <div className="space-y-4 mb-8">
-                                <div className="flex items-center gap-3 text-sm text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                                    <Clock size={18} className="text-brand-blue"/> 
-                                    <div><span className="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Duration</span> <span className="font-bold">{course.duration}</span></div>
-                                </div>
-                                <div className="flex items-center gap-3 text-sm text-slate-700 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                                    <Calendar size={18} className="text-brand-blue"/> 
-                                    <div><span className="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Level</span> <span className="font-bold">{course.level}</span></div>
-                                </div>
-                            </div>
-
-                            <div className="border-t border-slate-200 pt-6">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">What you will learn</h4>
-                                <ul className="space-y-3">
-                                    {course.curriculum.map((item, idx) => (
-                                        <li key={idx} className="flex items-start gap-2 text-sm text-slate-700">
-                                            <CheckCircle size={16} className="text-brand-orange shrink-0 mt-0.5"/>
-                                            <span className="leading-tight">{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-
-                        {/* Form Side */}
-                        <div className="md:w-7/12 p-6 md:p-10 bg-white relative overflow-y-auto no-scrollbar">
-                            <button onClick={onClose} className="hidden md:block absolute top-6 right-6 p-2 text-slate-400 hover:text-brand-dark bg-slate-50 rounded-full transition-colors"><X size={20}/></button>
-                            
-                            <h3 className="text-xl font-bold text-brand-dark mb-2">Secure Your Spot</h3>
-                            <p className="text-slate-500 text-sm mb-8">Fill the form below to initiate enrollment via WhatsApp. Our admission team will guide you through the rest.</p>
-                            
-                            <div className="bg-blue-50 text-brand-dark p-4 rounded-2xl border border-blue-100 mb-8 flex items-center justify-between border-l-4 border-l-brand-blue">
-                                <div>
-                                    <p className="text-xs font-bold uppercase tracking-wider text-brand-blue mb-1">Tuition Fee</p>
-                                    <p className="text-2xl font-extrabold">₦{course.price.toLocaleString()}</p>
-                                </div>
-                                <ShieldAlert size={24} className="text-brand-blue/30"/>
-                            </div>
-
-                            <form onSubmit={handleEnroll} className="space-y-5">
-                                <input type="hidden" name="FormType" value="Course Enrollment" />
-                                <input type="hidden" name="Course" value={course.title} />
-                                <input type="hidden" name="Price" value={course.price} />
-                                <input type="hidden" name="Timestamp" value={new Date().toLocaleString()} />
-
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
-                                    <input required type="text" name="Name" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="e.g. John Doe"/>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email</label>
-                                        <input required type="email" name="Email" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="john@example.com"/>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone (WhatsApp)</label>
-                                        <input required type="tel" name="Phone" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="08012345678"/>
-                                    </div>
-                                </div>
-                                
-                                <button type="submit" disabled={loading} className="w-full py-4 mt-4 bg-brand-blue disabled:opacity-70 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:bg-brand-blueHover hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 text-lg">
-                                    {loading ? <Loader2 size={20} className="animate-spin" /> : <><ArrowRight size={18}/> Proceed to WhatsApp</>}
-                                </button>
-                                <p className="text-xs text-center text-slate-400 mt-4">By proceeding, you agree to our Terms of Service.</p>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        function AssignmentModal({ isOpen, onClose, notify }) {
-            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+            const [botHoney, setBotHoney] = useState('');
 
             if (!isOpen) return null;
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                setLoading(true);
-                
-                const formElement = e.target;
-                
-                // 1. Post to Google Sheets
-                try {
-                    await fetch(GOOGLE_SHEETS_URL, { 
-                        method: 'POST', 
-                        body: new FormData(formElement)
-                    });
-                } catch (error) {
-                    console.error("Sheets sync error:", error);
+                // Bot trap: if honeypot field is filled, silently reject
+                if (botHoney !== '') {
+                    console.log('Bot detected, rejecting');
+                    return;
                 }
-                
-                // 2. Alert and redirect to WhatsApp for immediate assistance
-                const name = formElement.Name.value;
-                const course = formElement.Course.value;
-                const details = formElement.Details.value;
+                if (!validateEmail(email)) {
+                    setError('Please enter a valid email address.');
+                    return;
+                }
+                if (password.length < 6) {
+                    setError('Password must be at least 6 characters.');
+                    return;
+                }
+                setLoading(true);
+                setError('');
+                try {
+                    if (isLogin) {
+                        await signInWithEmailAndPassword(auth, email, password);
+                    } else {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                    }
+                    onSuccess();
+                    onClose();
+                } catch (err) {
+                    setError(err.message);
+                }
+                setLoading(false);
+            };
 
-                const text = `Hello Mbtech, I need help with an assignment.%0A%0A*Name:* ${name}%0A*Subject/Course:* ${course}%0A*Details:* ${details}%0A%0APlease let me know the cost and process.`;
-                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+            return (
+                <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-2xl font-bold">{isLogin ? 'Sign In' : 'Create Account'}</h2>
+                            <button onClick={onClose}><X size={24}/></button>
+                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <input type="email" placeholder="Email Address" value={email} onChange={e=>setEmail(e.target.value)} className="w-full p-3 border rounded-xl" required />
+                            <input type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} className="w-full p-3 border rounded-xl" required />
+                            {/* Honeypot field - hidden from humans */}
+                            <input type="text" name="bot_honey" className="bot-trap" value={botHoney} onChange={e=>setBotHoney(e.target.value)} autoComplete="off" />
+                            {error && <p className="text-red-500 text-sm">{error}</p>}
+                            <button type="submit" disabled={loading} className="w-full bg-brand-blue text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                                {loading ? <Loader2 className="animate-spin"/> : (isLogin ? <LogIn size={18}/> : <UserPlus size={18/>)} {isLogin ? 'Sign In' : 'Sign Up'}
+                            </button>
+                        </form>
+                        <p className="text-center text-sm mt-4">
+                            {isLogin ? "Don't have an account? " : "Already have an account? "}
+                            <button onClick={() => setIsLogin(!isLogin)} className="text-brand-blue font-bold">{isLogin ? 'Sign Up' : 'Sign In'}</button>
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Tutor Modal (unchanged, with basic validation)
+        function TutorModal({ isOpen, onClose }) {
+            const [loading, setLoading] = useState(false);
+            const [guardianVisible, setGuardianVisible] = useState(false);
+            const [selectedLevel, setSelectedLevel] = useState('SSS');
+            const [botHoney, setBotHoney] = useState('');
+            
+            const subjectsList = {
+                JSS: ['Math', 'English', 'Basic Sci', 'Basic Tech', 'ICT'],
+                SSS: ['Math', 'English', 'Physics', 'Chemistry', 'Biology'],
+                WAEC: ['Math', 'English', 'Physics', 'Chemistry', 'Biology', 'Economics'],
+                JAMB: ['Use of English', 'Math', 'Physics', 'Chemistry', 'Biology'],
+                IGCSE: ['Math', 'English', 'Physics', 'Chemistry', 'ICT']
+            };
+
+            if (!isOpen) return null;
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                if (botHoney !== '') return;
+                const form = e.target;
+                const studentName = form.studentName.value.trim();
+                const studentPhone = form.studentPhone.value.trim();
+                if (!validateName(studentName)) { alert('Please enter a valid name.'); return; }
+                if (!validatePhone(studentPhone)) { alert('Please enter a valid phone number.'); return; }
                 
-                notify("Request logged successfully!");
+                setLoading(true);
+                const formData = new FormData(form);
+                const studentAge = parseInt(formData.get('studentAge'));
+                const subjects = Array.from(form.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value).join(', ');
+                
+                const payload = {
+                    type: 'tutor_request',
+                    studentName: formData.get('studentName'),
+                    studentAge: studentAge,
+                    parentName: studentAge < 16 ? formData.get('parentName') : '',
+                    parentPhone: studentAge < 16 ? formData.get('parentPhone') : '',
+                    level: formData.get('level'),
+                    curriculum: formData.get('curriculum'),
+                    subjects: subjects,
+                    platform: formData.get('platform'),
+                    email: formData.get('studentEmail') || '',
+                    phone: formData.get('studentPhone'),
+                    timestamp: serverTimestamp(),
+                    status: 'New'
+                };
+                try {
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), payload);
+                } catch (err) { console.error(err); }
+                
+                const msg = `Hello Tutor! New booking request.%0AStudent: ${payload.studentName} (Age ${studentAge})%0ALevel: ${payload.level}%0ASubjects: ${subjects}%0APlatform: ${payload.platform}%0APhone: ${payload.phone}`;
+                window.open(`https://wa.me/${TUTOR_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
                 setLoading(false);
                 onClose();
             };
 
+            const updateGuardian = (e) => { setGuardianVisible(parseInt(e.target.value) < 16); };
+
             return (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
-                    <div className="bg-white rounded-[2rem] w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200 max-h-[90dvh] overflow-y-auto no-scrollbar">
-                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><X size={20}/></button>
-                        
-                        <div className="p-6 md:p-8">
-                            <div className="w-12 h-12 bg-orange-100 text-brand-orange rounded-2xl flex items-center justify-center mb-4">
-                                <HelpCircle size={24} />
+                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
+                    <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+                        <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center"><h2 className="text-2xl font-bold">Get a Private Tutor</h2><button onClick={onClose}><X size={24}/></button></div>
+                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input name="studentName" required placeholder="Student's Full Name" className="p-3 border rounded-xl bg-slate-50" />
+                                <input name="studentAge" type="number" required placeholder="Age" onChange={updateGuardian} className="p-3 border rounded-xl bg-slate-50" />
+                                {guardianVisible && <><input name="parentName" placeholder="Parent/Guardian Name" className="p-3 border rounded-xl bg-slate-50" /><input name="parentPhone" placeholder="Parent Phone" className="p-3 border rounded-xl bg-slate-50" /></>}
+                                <input name="studentEmail" type="email" placeholder="Email (optional)" className="p-3 border rounded-xl bg-slate-50" />
+                                <input name="studentPhone" required placeholder="WhatsApp Number" className="p-3 border rounded-xl bg-slate-50" />
+                                <select name="level" className="p-3 border rounded-xl bg-slate-50" onChange={(e) => setSelectedLevel(e.target.value)}>
+                                    <option value="JSS">JSS 1-3</option><option value="SSS">SSS 1-3</option><option value="WAEC">WAEC/NECO</option><option value="JAMB">JAMB UTME</option><option value="IGCSE">IGCSE</option>
+                                </select>
+                                <select name="curriculum" className="p-3 border rounded-xl bg-slate-50"><option>West African</option><option>British</option><option>American</option></select>
                             </div>
-                            <h2 className="text-2xl font-extrabold text-brand-dark mb-2">Assignment Help</h2>
-                            <p className="text-slate-500 text-sm mb-6">Stuck on a project or assignment? Provide the details below and our expert tutors will assist you.</p>
-
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <input type="hidden" name="FormType" value="Assignment Help" />
-                                <input type="hidden" name="Timestamp" value={new Date().toLocaleString()} />
-
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
-                                    <input required type="text" name="Name" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow" placeholder="Your Name" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email Address</label>
-                                    <input required type="email" name="Email" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow" placeholder="you@example.com" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Course / Topic</label>
-                                    <input required type="text" name="Course" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow" placeholder="e.g. JavaScript, Solar Wiring" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Assignment Details</label>
-                                    <textarea required name="Details" className="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-orange outline-none transition-shadow h-28 resize-none" placeholder="Describe what you need help with..."></textarea>
-                                </div>
-                                
-                                <button type="submit" disabled={loading} className="w-full py-4 mt-2 bg-brand-orange text-white font-bold rounded-xl shadow-lg shadow-orange-500/20 hover:bg-[#e06612] hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                                    {loading ? <Loader2 size={20} className="animate-spin" /> : 'Request Help via WhatsApp'}
-                                </button>
-                            </form>
-                        </div>
+                            <div><label className="font-bold text-sm">Select Subjects</label><div className="grid grid-cols-3 gap-2 mt-2">{(subjectsList[selectedLevel] || subjectsList['SSS']).map(sub => <label key={sub} className="flex items-center gap-2 text-sm"><input type="checkbox" name="subjects" value={sub} className="w-4 h-4" />{sub}</label>)}</div></div>
+                            <div><label className="font-bold text-sm">Preferred Platform</label><div className="flex gap-4 mt-2"><label><input type="radio" name="platform" value="whatsapp" defaultChecked /> WhatsApp</label><label><input type="radio" name="platform" value="telegram" /> Telegram</label><label><input type="radio" name="platform" value="gmeet" /> Google Meet</label></div></div>
+                            <input type="text" name="bot_honey" className="bot-trap" value={botHoney} onChange={e=>setBotHoney(e.target.value)} autoComplete="off" />
+                            <button type="submit" disabled={loading} className="w-full bg-brand-orange text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">{loading ? <Loader2 className="animate-spin"/> : "Submit & Chat on WhatsApp"}</button>
+                        </form>
                     </div>
                 </div>
             );
         }
 
-        function LegalModal({ docType, onClose }) {
-            if (!docType) return null;
-            
-            const content = {
-                privacy: { 
-                    title: "Privacy Policy", 
-                    text: "At MBTECH NG, we take your privacy seriously. We only collect essential information required to process your enrollments, assignment requests, and store orders securely. We do not sell your personal data to third parties. Your data is protected using industry-standard security measures and is solely used to enhance your experience with our Academy and Services." 
-                },
-                terms: { 
-                    title: "Terms of Service", 
-                    text: "By using MBTECH NG, you agree to abide by our academy guidelines and store rules. Course fees are to be paid before the commencement of classes unless an installment plan is formally agreed upon. We reserve the right to update our curriculum to match industry standards. Any misuse of our platform or services may result in termination of access." 
-                },
-                refund: {
-                    title: "Refund Policy",
-                    text: "Refunds for courses are only available within the first 7 days of enrollment, provided the student has not accessed more than 20% of the course materials. For our tech store, physical items can be returned within 7 days of delivery if defective. Assignment help services and software installations are non-refundable once delivered/completed."
-                }
-            }[docType];
+        // Enrollment Modal with validation and honeypot
+        function CourseEnrollModal({ selectedCourses, total, isOpen, onClose, userName, userEmail, userPhone, setUserName, setUserEmail, setUserPhone }) {
+            const [loading, setLoading] = useState(false);
+            const [botHoney, setBotHoney] = useState('');
+            if (!isOpen || selectedCourses.length === 0) return null;
 
-            return (
-                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm">
-                    <div className="bg-white rounded-[2rem] w-full max-w-md shadow-2xl relative animate-in zoom-in-95 duration-200">
-                        <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><X size={20}/></button>
-                        <div className="p-6 md:p-8">
-                            <div className="w-12 h-12 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-4">
-                                {docType === 'privacy' ? <ShieldCheck size={24}/> : docType === 'terms' ? <FileKey size={24}/> : <RefreshCcw size={24}/>}
-                            </div>
-                            <h2 className="text-2xl font-extrabold text-brand-dark mb-4">{content.title}</h2>
-                            <p className="text-slate-600 text-sm leading-relaxed">{content.text}</p>
-                            <button onClick={onClose} className="w-full py-3.5 mt-8 bg-brand-blue text-white font-bold rounded-xl shadow-md shadow-blue-500/20 hover:bg-brand-blueHover transition-colors">I Understand</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        function App() {
-            const [filter, setFilter] = useState('All Courses');
-            const [selectedCourse, setSelectedCourse] = useState(null);
-            const [assignmentOpen, setAssignmentOpen] = useState(false);
-            const [notification, setNotification] = useState(null);
-            const [legalDoc, setLegalDoc] = useState(null);
-            const [courses, setCourses] = useState(FALLBACK_COURSES);
-            const [user, setUser] = useState(null);
-
-            // --- FIREBASE AUTHENTICATION ---
-            useEffect(() => {
-                const initAuth = async () => {
-                    try {
-                        // Skip custom token for our own Firebase project, just sign in silently
-                        await signInAnonymously(auth);
-                    } catch (e) { 
-                        console.error("Auth init error:", e); 
+            const handlePaystackPayment = () => {
+                if (botHoney !== '') return;
+                if (!validateName(userName)) { alert("Please enter your full name."); return; }
+                if (!validateEmail(userEmail)) { alert("Please enter a valid email address."); return; }
+                if (!validatePhone(userPhone)) { alert("Please enter a valid phone number."); return; }
+                setLoading(true);
+                const coursesList = selectedCourses.map(c => c.title).join(', ');
+                const amountInKobo = total * 100;
+                
+                const handler = PaystackPop.setup({
+                    key: getPaystackKey(),
+                    email: userEmail,
+                    amount: amountInKobo,
+                    currency: 'NGN',
+                    metadata: {
+                        custom_fields: [
+                            { display_name: "Full Name", variable_name: "full_name", value: userName },
+                            { display_name: "Courses", variable_name: "courses", value: coursesList },
+                            { display_name: "Phone", variable_name: "phone", value: userPhone }
+                        ]
+                    },
+                    callback: async (response) => {
+                        try {
+                            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
+                                type: 'course_enrollment',
+                                name: userName, email: userEmail, phone: userPhone,
+                                courses: coursesList,
+                                totalAmount: total,
+                                transactionRef: response.reference,
+                                status: 'Paid',
+                                timestamp: serverTimestamp()
+                            });
+                        } catch(e) { console.error(e); }
+                        const msg = `✅ Payment successful! I have enrolled for: ${coursesList}. Total: ₦${total.toLocaleString()}. Name: ${userName}. Please send registration details.`;
+                        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+                        setLoading(false);
+                        onClose();
+                    },
+                    onClose: () => {
+                        setLoading(false);
+                        alert("Payment window closed.");
                     }
-                };
-                initAuth();
-                return onAuthStateChanged(auth, setUser);
+                });
+                handler.openIframe();
+            };
+
+            return (
+                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
+                        <div className="flex justify-between"><h3 className="text-xl font-bold">Complete Enrollment</h3><button onClick={onClose}><X/></button></div>
+                        <p className="text-sm text-slate-500 mt-1">Selected {selectedCourses.length} course(s): <span className="font-bold">₦{total.toLocaleString()}</span></p>
+                        <div className="space-y-4 mt-4">
+                            <input type="text" placeholder="Full Name" value={userName} onChange={e=>setUserName(e.target.value)} className="w-full p-3 border rounded-xl" required />
+                            <input type="email" placeholder="Email Address" value={userEmail} onChange={e=>setUserEmail(e.target.value)} className="w-full p-3 border rounded-xl" required />
+                            <input type="tel" placeholder="Phone Number" value={userPhone} onChange={e=>setUserPhone(e.target.value)} className="w-full p-3 border rounded-xl" required />
+                            <input type="text" name="bot_honey" className="bot-trap" value={botHoney} onChange={e=>setBotHoney(e.target.value)} autoComplete="off" />
+                            <button onClick={handlePaystackPayment} disabled={loading} className="w-full bg-brand-blue text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                                {loading ? <Loader2 className="animate-spin"/> : <><CreditCard size={18}/> Pay ₦{total.toLocaleString()} via Paystack</>}
+                            </button>
+                            <p className="text-[10px] text-center text-slate-400">Secure payment powered by Paystack</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Main App
+        function App() {
+            const [courses, setCourses] = useState([]);
+            const [user, setUser] = useState(null);
+            const [selectedCourses, setSelectedCourses] = useState([]);
+            const [tutorModalOpen, setTutorModalOpen] = useState(false);
+            const [enrollModalOpen, setEnrollModalOpen] = useState(false);
+            const [authModalOpen, setAuthModalOpen] = useState(false);
+            const [pendingEnroll, setPendingEnroll] = useState(false);
+            const [userName, setUserName] = useState('');
+            const [userEmail, setUserEmail] = useState('');
+            const [userPhone, setUserPhone] = useState('');
+
+            useEffect(() => {
+                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+                    setUser(currentUser);
+                    if (currentUser && pendingEnroll) {
+                        setPendingEnroll(false);
+                        setEnrollModalOpen(true);
+                    }
+                });
+                return () => unsubscribe();
+            }, [pendingEnroll]);
+
+            useEffect(() => {
+                const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses');
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    if (!snapshot.empty) {
+                        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setCourses(list);
+                    } else {
+                        setCourses(FALLBACK_COURSES);
+                        FALLBACK_COURSES.forEach(async (c) => {
+                            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses', c.id);
+                            await setDoc(ref, { ...c, published: true, createdAt: serverTimestamp() }).catch(()=>{});
+                        });
+                    }
+                }, () => setCourses(FALLBACK_COURSES));
+                return () => unsubscribe();
             }, []);
 
-            // --- LOAD DYNAMIC COURSES AND AUTO-SEED IF EMPTY ---
-            useEffect(() => {
-                if (!user) return;
-                
-                const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses');
-                const unsubscribe = onSnapshot(q, async (snapshot) => {
-                    if (!snapshot.empty) {
-                        let fetchedCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        setCourses(fetchedCourses);
-                    } else {
-                        // Database is empty. Show fallback locally so the UI looks complete...
-                        setCourses(FALLBACK_COURSES);
-                        
-                        // ...And seamlessly auto-seed the database in the background so Admin can manage them!
-                        try {
-                            for (const course of FALLBACK_COURSES) {
-                                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses', course.id);
-                                await setDoc(docRef, {
-                                    title: course.title,
-                                    category: course.category,
-                                    duration: course.duration,
-                                    level: course.level,
-                                    price: course.price,
-                                    iconName: course.iconName,
-                                    image: course.image,
-                                    description: course.description,
-                                    curriculum: course.curriculum,
-                                    published: true,
-                                    createdAt: serverTimestamp()
-                                });
-                            }
-                        } catch (err) {
-                            console.error("Auto-seeding error:", err);
-                        }
-                    }
-                }, (error) => {
-                    console.error("Firestore Error:", error);
-                    setCourses(FALLBACK_COURSES);
-                });
+            const toggleCourse = (course) => {
+                setSelectedCourses(prev => prev.find(c => c.id === course.id) ? prev.filter(c => c.id !== course.id) : [...prev, course]);
+            };
 
-                return () => unsubscribe();
-            }, [user]);
+            const totalPrice = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
+            const categories = ['Design', 'Tech', 'Engineering'];
+            const grouped = categories.map(cat => ({ name: cat, items: courses.filter(c => c.category === cat) }));
 
-            const notify = (msg, type='success') => { setNotification({ msg, type }); setTimeout(() => setNotification(null), 3500); };
+            const handleEnrollClick = () => {
+                if (selectedCourses.length === 0) return;
+                if (user) {
+                    setEnrollModalOpen(true);
+                } else {
+                    setPendingEnroll(true);
+                    setAuthModalOpen(true);
+                }
+            };
 
-            // Dynamically derive the categories from available courses to populate filter tabs
-            const dynamicCategories = ["All Courses", ...Array.from(new Set(courses.map(c => c.category)))];
+            const handleAuthSuccess = () => {
+                // After login, enrollment modal will open via useEffect
+            };
 
-            const filteredCourses = filter === 'All Courses' 
-                ? courses 
-                : courses.filter(c => c.category === filter);
+            const handleAuthCancel = () => {
+                // Fallback: send user details via WhatsApp with selected courses
+                const coursesList = selectedCourses.map(c => c.title).join(', ');
+                const msg = `Hello Mbtech, I am interested in these courses: ${coursesList}. Total: ₦${totalPrice.toLocaleString()}. Please contact me to complete enrollment.`;
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+                setPendingEnroll(false);
+            };
+
+            const handleLogout = () => {
+                signOut(auth);
+                setSelectedCourses([]);
+                setUserName('');
+                setUserEmail('');
+                setUserPhone('');
+            };
 
             return (
-                <div className="min-h-screen flex flex-col font-sans text-slate-800 bg-[#f8fafc]">
-                    <Navbar onOpenAssignment={() => setAssignmentOpen(true)} />
-                    <Hero onOpenAssignment={() => setAssignmentOpen(true)} />
-
-                    {/* Toast Notification */}
-                    <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[70] transition-all duration-300 transform ${notification ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-8 opacity-0 scale-95 pointer-events-none'}`}>
-                        {notification && (
-                            <div className={`px-6 py-3.5 rounded-full shadow-xl shadow-black/10 text-white font-bold flex items-center gap-2 backdrop-blur-md ${notification.type==='error'?'bg-red-600/90':'bg-brand-blue/90'}`}>
-                                {notification.type === 'error' ? <ShieldAlert size={18}/> : <CheckCircle size={18}/>}
-                                {notification.msg}
-                            </div>
-                        )}
+                <div className="min-h-screen flex flex-col">
+                    <Navbar user={user} onLogout={handleLogout} onOpenTutorModal={() => setTutorModalOpen(true)} />
+                    
+                    <div className="relative bg-brand-dark text-white pt-24 pb-16">
+                        <div className="max-w-7xl mx-auto px-4 text-center">
+                            <h1 className="text-4xl md:text-6xl font-extrabold">Build Your Future<span className="text-brand-orange">.</span></h1>
+                            <p className="text-slate-300 mt-4 max-w-2xl mx-auto">Select multiple courses from Design, Tech, or Engineering. Pay once and start learning.</p>
+                            {selectedCourses.length > 0 && (
+                                <div className="mt-6 inline-flex items-center gap-4 bg-white/10 backdrop-blur rounded-full px-6 py-3">
+                                    <span className="font-bold">₦{totalPrice.toLocaleString()}</span>
+                                    <button onClick={handleEnrollClick} className="bg-brand-orange px-6 py-2 rounded-full text-sm font-bold">Enroll Selected ({selectedCourses.length})</button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <section id="courses" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1">
-                        <div className="text-center mb-12 md:mb-16">
-                            <h2 className="text-3xl md:text-4xl font-extrabold text-brand-dark mb-4">Our Training Programs</h2>
-                            <p className="text-slate-500 max-w-2xl mx-auto">Choose from our intensive, project-based training programs designed to make you industry-ready. Select a category below to filter.</p>
-                        </div>
-
-                        {/* Dynamic Filters */}
-                        <div className="flex overflow-x-auto no-scrollbar snap-x snap-mandatory gap-2 sm:gap-4 justify-start md:justify-center mb-12 pb-2">
-                            {dynamicCategories.map(c => (
-                                <button key={c} onClick={() => setFilter(c)} className={`snap-start px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all border ${filter === c ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-blue-500/20' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
-                                    {c}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Course Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {filteredCourses.map(course => (
-                                <div key={course.id} className="group bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col">
-                                    <div className="relative h-56 overflow-hidden bg-slate-100">
-                                        <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onError={(e)=>{e.target.src='https://placehold.co/800x400?text=Course'}} />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
-                                        <div className="absolute top-4 right-4">
-                                            <span className="bg-white/90 backdrop-blur text-brand-dark text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
-                                                ₦{(course.price || 0).toLocaleString()}
-                                            </span>
-                                        </div>
-                                        <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-                                            <span className={`text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-sm ${getCategoryColor(course.category)}`}>
-                                                {course.category}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="p-6 md:p-8 flex flex-col flex-grow">
-                                        <h3 className="font-extrabold text-brand-dark text-xl leading-tight mb-3 group-hover:text-brand-blue transition-colors">{course.title}</h3>
-                                        <p className="text-slate-500 text-sm mb-6 line-clamp-2 leading-relaxed">{course.description}</p>
-                                        
-                                        <div className="grid grid-cols-2 gap-4 mb-6 pt-4 border-t border-slate-100">
-                                            <div>
-                                                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-0.5">Duration</span>
-                                                <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5"><Clock size={14} className="text-brand-orange"/>{course.duration}</span>
+                    <div className="max-w-7xl mx-auto px-4 py-12">
+                        {grouped.map(group => group.items.length > 0 && (
+                            <div key={group.name} className="mb-12">
+                                <h2 className="text-2xl font-extrabold mb-6 flex items-center gap-2"><span className={`w-2 h-6 rounded-full ${group.name === 'Design' ? 'bg-pink-500' : group.name === 'Tech' ? 'bg-brand-blue' : 'bg-brand-orange'}`}></span>{group.name} Courses</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {group.items.map(course => (
+                                        <div key={course.id} className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-lg transition-all relative">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-brand-blue">{getIcon(course.iconName)}</div>
+                                                    <div><h3 className="font-bold text-lg">{course.title}</h3><p className="text-xs text-slate-500">{course.duration}</p></div>
+                                                </div>
+                                                <input type="checkbox" checked={!!selectedCourses.find(c => c.id === course.id)} onChange={() => toggleCourse(course)} className="w-5 h-5 accent-brand-blue" />
                                             </div>
-                                            <div>
-                                                <span className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-0.5">Level</span>
-                                                <span className="text-sm font-bold text-slate-800 flex items-center gap-1.5"><Calendar size={14} className="text-brand-orange"/>{course.level}</span>
+                                            <p className="text-sm text-slate-600 mt-3 line-clamp-2">{course.description}</p>
+                                            <div className="mt-4 flex justify-between items-center">
+                                                <span className="font-extrabold text-brand-dark">₦{(course.price || 0).toLocaleString()}</span>
+                                                <button onClick={() => toggleCourse(course)} className="text-xs font-bold text-brand-blue underline">Select</button>
                                             </div>
                                         </div>
-
-                                        <button onClick={() => setSelectedCourse(course)} className="mt-auto w-full py-3.5 bg-slate-50 text-brand-dark font-bold rounded-xl hover:bg-brand-blue hover:text-white transition-colors border border-slate-200 hover:border-brand-blue flex items-center justify-center gap-2 group/btn">
-                                            View Curriculum <ArrowRight size={16} className="text-brand-orange group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all"/>
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    <EnrollModal course={selectedCourse} isOpen={!!selectedCourse} onClose={() => setSelectedCourse(null)} />
-                    <AssignmentModal isOpen={assignmentOpen} onClose={() => setAssignmentOpen(false)} notify={notify} />
-                    <LegalModal docType={legalDoc} onClose={() => setLegalDoc(null)} />
-
-                    {/* Corporate Footer matching Homepage with Icon+Text Design */}
-                    <footer className="bg-brand-dark text-slate-400 pt-16 pb-12 border-t-4 border-brand-blue mt-auto">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-slate-800 pb-12 mb-8">
-                                <div className="md:col-span-2">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <img src="logo.png" alt="Mbtech Logo" className="h-10 w-auto object-contain" onError={(e)=>{e.target.style.display='none'}}/>
-                                        <div>
-                                            <h4 className="text-xl font-extrabold text-white tracking-tight uppercase">MBTECH <span className="text-brand-blue">NG</span></h4>
-                                            <p className="text-xs text-brand-orange font-bold uppercase tracking-widest">Innovating Africa</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-sm leading-relaxed max-w-sm mb-6 text-slate-400">
-                                        MBTECH NG is Africa's premier hub for digital skills training, software development, and tech consultancy. We offer expert courses, solar solutions, and premium gadgets.
-                                    </p>
-                                    <div className="flex gap-3">
-                                        {SOCIAL_LINKS.map((link, i) => (
-                                            <a key={i} href={link.url} target={link.url !== '#' ? "_blank" : "_self"} rel="noopener noreferrer" aria-label={link.name} className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors">
-                                                <link.icon size={18} />
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Quick Links</h4>
-                                    <ul className="space-y-4 text-sm">
-                                        <li><a href="index.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><Home size={16}/> Home</a></li>
-                                        <li><a href="course.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><BookOpen size={16}/> Courses</a></li>
-                                        <li><a href="store.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><StoreIcon size={16}/> Tech Store</a></li>
-                                        <li><a href="connect.html" className="hover:text-brand-orange transition-colors flex items-center gap-2"><Users size={16}/> Community</a></li>
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <h4 className="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contact Us</h4>
-                                    <ul className="space-y-4 text-sm">
-                                        <li className="flex items-center gap-3"><Phone size={16} className="text-brand-blue"/> +234 708 467 2771</li>
-                                        <li className="flex items-center gap-3"><Mail size={16} className="text-brand-blue"/> info@mbtech.ng</li>
-                                        <li className="flex items-start gap-3"><MapPin size={16} className="text-brand-blue mt-1"/> Ikorodu, Lagos, Nigeria</li>
-                                    </ul>
+                                    ))}
                                 </div>
                             </div>
-                            
-                            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
-                                <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved.</p>
-                                <div className="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
-                                    <button onClick={() => setLegalDoc('privacy')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><ShieldCheck size={14}/> Privacy Policy</button>
-                                    <button onClick={() => setLegalDoc('terms')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><FileKey size={14}/> Terms of Service</button>
-                                    <button onClick={() => setLegalDoc('refund')} className="hover:text-brand-orange transition-colors flex items-center gap-1.5"><RefreshCcw size={14}/> Refund Policy</button>
-                                </div>
-                            </div>
+                        ))}
+                    </div>
+
+                    <CourseEnrollModal 
+                        selectedCourses={selectedCourses} 
+                        total={totalPrice} 
+                        isOpen={enrollModalOpen} 
+                        onClose={() => setEnrollModalOpen(false)}
+                        userName={userName}
+                        userEmail={userEmail}
+                        userPhone={userPhone}
+                        setUserName={setUserName}
+                        setUserEmail={setUserEmail}
+                        setUserPhone={setUserPhone}
+                    />
+                    <TutorModal isOpen={tutorModalOpen} onClose={() => setTutorModalOpen(false)} />
+                    <AuthModal 
+                        isOpen={authModalOpen} 
+                        onClose={() => { setAuthModalOpen(false); handleAuthCancel(); }} 
+                        onSuccess={handleAuthSuccess} 
+                    />
+
+                    <footer className="bg-brand-dark text-slate-400 pt-16 pb-12 mt-16">
+                        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <div><img src="logo.png" className="h-10 mb-3" onError={(e)=>{e.target.style.display='none'}}/><p className="text-sm">MBTECH NG — Innovating Africa through tech & engineering.</p></div>
+                            <div><h4 className="text-white font-bold mb-4">Quick Links</h4><ul className="space-y-2"><li><a href="index.html">Home</a></li><li><a href="course.html">Courses</a></li><li><a href="store.html">Store</a></li></ul></div>
+                            <div><h4 className="text-white font-bold mb-4">Legal</h4><ul className="space-y-2"><li><button onClick={()=>alert("Privacy Policy: We protect your data.")}>Privacy</button></li><li><button onClick={()=>alert("Terms: Use of platform.")}>Terms</button></li></ul></div>
+                            <div><h4 className="text-white font-bold mb-4">Contact</h4><p><Phone size={16} className="inline mr-2"/> +234 708 467 2771</p><p><Mail size={16} className="inline mr-2"/> info@mbtech.ng</p></div>
                         </div>
+                        <div className="text-center text-xs pt-8 border-t border-slate-800 mt-8">&copy; 2026 Mesobest Technology. All rights reserved.</div>
                     </footer>
                 </div>
             );
@@ -939,6 +576,5 @@
         const root = createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
-    <script src="promo-bot.js"></script>
 </body>
 </html>
