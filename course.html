@@ -28,7 +28,7 @@
     /></noscript>
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>MBTECH NG | Tech & Tutorials</title>
     <meta name="description" content="Select multiple courses across Design, Tech, and Engineering. Pay securely with Paystack and start your journey with Mbtech Academy.">
     <link rel="canonical" href="https://emmy-kingz.github.io/mbtech.ng/course.html">
@@ -36,65 +36,29 @@
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Import Map -->
-    <script type="importmap">
-    {
-        "imports": {
-            "react": "https://esm.sh/react@18.2.0",
-            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "lucide-react": "https://esm.sh/lucide-react@0.294.0",
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
-            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-        }
-    }
-    </script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-
     <style>
         :root { --brand-blue: #0056b3; --brand-orange: #f97316; --brand-dark: #0f172a; }
         html { scroll-behavior: smooth; }
-        body { padding-bottom: 64px; font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-bottom: 70px; }
         @media (min-width: 768px) { body { padding-bottom: 0; } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .animated-gradient-text { background: linear-gradient(to right, #0056b3, #f97316, #0056b3); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 3s linear infinite; }
-        @keyframes shine { to { background-position: 200% center; } }
-        /* Honeypot - hidden from real users */
         .bot-trap { position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none; }
+        .modal { transition: opacity 0.2s ease; }
+        .course-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1); }
+        .mobile-nav a.active { color: var(--brand-blue); background: #eff6ff; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { brand: { blue: '#0056b3', blueHover: '#004494', orange: '#f97316', dark: '#0f172a' } },
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-[#f8fafc] font-sans text-slate-900">
-    <div id="root"></div>
-
-    <script type="text/babel" data-type="module">
-        import React, { useState, useEffect } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { 
-            Menu, X, ChevronRight, Zap, Monitor, Code, Wrench, GraduationCap, CheckCircle, ArrowRight, 
-            Phone, Mail, BookOpen, Users, Store as StoreIcon, Home, ShieldAlert, Clock, Calendar, 
-            Award, UserCheck, PlayCircle, Palette, Database, Shield, Video, Megaphone, Facebook, Twitter, 
-            Instagram, Linkedin, HelpCircle, Loader2, Settings, MapPin, FileKey, ShieldCheck, RefreshCcw, 
-            Plug, ShoppingCart, CreditCard, FileText, LogIn, UserPlus
-        } from 'lucide-react';
-
-        // Firebase
-        import { initializeApp } from 'firebase/app';
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-        import { getFirestore, collection, onSnapshot, doc, setDoc, serverTimestamp, addDoc } from 'firebase/firestore';
-
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, onSnapshot, doc, setDoc, serverTimestamp, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
         const firebaseConfig = {
             apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
             authDomain: "mbtechstore-17984.firebaseapp.com",
@@ -104,477 +68,487 @@
             appId: "1:1083008774596:web:110b651c6426116ed43491"
         };
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = 'mbtech-public-store';
-
-        // Obfuscated Paystack Live Key (base64 encoded)
-        const _pKey = "cGlfbGl2ZV82YjI1NWIzNTliYmJmNmFhZjVhNjlkMDNkMjI2MmYwYmQ2MGI3ZTNj";
-        const getPaystackKey = () => atob(_pKey);
+        window.auth = getAuth(app);
+        window.db = getFirestore(app);
+        window.appId = 'mbtech-public-store';
         
-        const WHATSAPP_NUMBER = "2347084672771";
-        const TUTOR_WHATSAPP = "2348109006065";
-
-        // Fallback courses
+        // Obfuscated Paystack live key
+        window.getPaystackKey = () => atob("cGlfbGl2ZV82YjI1NWIzNTliYmJmNmFhZjVhNjlkMDNkMjI2MmYwYmQ2MGI3ZTNj");
+        window.WHATSAPP_NUMBER = "2347084672771";
+        window.TUTOR_WHATSAPP = "2348109006065";
+    </script>
+    
+    <!-- Paystack -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    
+    <!-- Main application script (vanilla JS) -->
+    <script type="module">
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { collection, onSnapshot, doc, setDoc, serverTimestamp, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        const auth = window.auth;
+        const db = window.db;
+        const appId = window.appId;
+        const WHATSAPP_NUMBER = window.WHATSAPP_NUMBER;
+        const TUTOR_WHATSAPP = window.TUTOR_WHATSAPP;
+        
+        // Fallback courses with Lucide icon names
         const FALLBACK_COURSES = [
-            { id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Palette", description: "Master Figma, prototyping, and user research." },
-            { id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Monitor", description: "Photoshop, Illustrator, brand identity." },
-            { id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Video", description: "Premiere Pro, After Effects, CapCut." },
-            { id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", price: 50000, iconName: "Megaphone", description: "SEO, Ads, social media management." },
-            { id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "Code", description: "HTML, CSS, JS, React, Tailwind." },
-            { id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "Database", description: "Node.js, Express, MongoDB, APIs." },
-            { id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "FileText", description: "Python, SQL, PowerBI, Tableau." },
-            { id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", price: 100000, iconName: "Shield", description: "Network security, Kali Linux, pen testing." },
-            { id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "Zap", description: "Solar sizing, wiring, installation practical." },
-            { id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "ShieldAlert", description: "IP cameras, DVR, remote viewing." },
-            { id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "Settings", description: "PC diagnostics, OS, driver management." },
-            { id: "e4", title: "Electrical Installation & Troubleshooting", category: "Engineering", duration: "10 Weeks", price: 150000, iconName: "Plug", description: "Wiring, breakers, fault finding." }
+            { id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", price: 50000, icon: "Palette", description: "Master Figma, prototyping, and user research." },
+            { id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", price: 50000, icon: "Brush", description: "Photoshop, Illustrator, brand identity." },
+            { id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", price: 50000, icon: "Video", description: "Premiere Pro, After Effects, CapCut." },
+            { id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", price: 50000, icon: "Megaphone", description: "SEO, Ads, social media management." },
+            { id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, icon: "Code", description: "HTML, CSS, JS, React, Tailwind." },
+            { id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, icon: "Database", description: "Node.js, Express, MongoDB, APIs." },
+            { id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", price: 100000, icon: "BarChart", description: "Python, SQL, PowerBI, Tableau." },
+            { id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", price: 100000, icon: "Shield", description: "Network security, Kali Linux, pen testing." },
+            { id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Sun", description: "Solar sizing, wiring, installation practical." },
+            { id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Camera", description: "IP cameras, DVR, remote viewing." },
+            { id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Cpu", description: "PC diagnostics, OS, driver management." },
+            { id: "e4", title: "Electrical Installation & Troubleshooting", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Zap", description: "Wiring, breakers, fault finding." }
         ];
-
-        const getIcon = (iconName) => {
-            const icons = { Palette: <Palette size={20} />, Monitor: <Monitor size={20} />, Video: <Video size={20} />, Megaphone: <Megaphone size={20} />, Code: <Code size={20} />, Database: <Database size={20} />, FileText: <FileText size={20} />, Shield: <Shield size={20} />, Zap: <Zap size={20} />, ShieldAlert: <ShieldAlert size={20} />, Settings: <Settings size={20} />, Plug: <Plug size={20} /> };
-            return icons[iconName] || <BookOpen size={20} />;
-        };
-
-        // Validation helpers
-        const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        const validatePhone = (phone) => /^[0-9+\-\s()]{8,15}$/.test(phone);
-        const validateName = (name) => name.trim().length >= 2;
-
-        // Navbar
-        function Navbar({ user, onLogout, onOpenTutorModal }) {
-            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-            const [scrolled, setScrolled] = useState(false);
-            useEffect(() => {
-                const handleScroll = () => setScrolled(window.scrollY > 50);
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
-            return (
-                <>
-                    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-white border-b border-gray-100'}`}>
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex justify-between items-center h-20">
-                                <a href="index.html" className="flex items-center gap-3">
-                                    <img src="logo.png" alt="MBTECH NG" className="h-10 w-auto" onError={(e)=>{e.target.style.display='none'}} />
-                                    <div><span className="text-xl font-extrabold text-brand-dark">MBTECH <span className="text-brand-blue">NG</span></span><span className="text-[10px] text-brand-orange block font-bold">Innovating Africa</span></div>
-                                </a>
-                                <div className="hidden md:flex items-center space-x-8">
-                                    <a href="index.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue">Home</a>
-                                    <a href="course.html" className="text-sm font-bold text-brand-blue">Courses</a>
-                                    <a href="store.html" className="text-sm font-bold text-slate-600 hover:text-brand-blue">Store</a>
+        
+        let courses = [];
+        let selectedCourses = [];
+        let currentUser = null;
+        
+        // DOM elements
+        const coursesContainer = document.getElementById('coursesContainer');
+        const totalSpan = document.getElementById('totalPrice');
+        const enrollBtn = document.getElementById('enrollBtn');
+        const authModal = document.getElementById('authModal');
+        const enrollModal = document.getElementById('enrollModal');
+        const tutorModal = document.getElementById('tutorModal');
+        const userDisplay = document.getElementById('userDisplay');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        // Helper: render courses with Lucide icons
+        function renderCourses() {
+            if (!coursesContainer) return;
+            const categories = ['Design', 'Tech', 'Engineering'];
+            let html = '';
+            for (const cat of categories) {
+                const catCourses = courses.filter(c => c.category === cat);
+                if (catCourses.length === 0) continue;
+                const colorClass = cat === 'Design' ? 'bg-pink-500' : (cat === 'Tech' ? 'bg-brand-blue' : 'bg-brand-orange');
+                html += `<div class="mb-12"><h2 class="text-2xl font-extrabold mb-6 flex items-center gap-2"><span class="w-2 h-6 rounded-full ${colorClass}"></span>${cat} Courses</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                for (const course of catCourses) {
+                    const isChecked = selectedCourses.some(c => c.id === course.id);
+                    const iconName = course.icon || 'BookOpen';
+                    html += `
+                        <div class="course-card bg-white rounded-2xl border border-slate-200 p-5 transition-all">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-brand-blue">
+                                        <i data-lucide="${iconName}" class="w-5 h-5"></i>
+                                    </div>
+                                    <div><h3 class="font-bold text-lg">${escapeHtml(course.title)}</h3><p class="text-xs text-slate-500">${course.duration}</p></div>
                                 </div>
-                                <div className="hidden md:flex items-center gap-4">
-                                    {user ? (
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-sm text-slate-600">{user.email}</span>
-                                            <button onClick={onLogout} className="text-sm font-bold text-red-500">Logout</button>
-                                        </div>
-                                    ) : (
-                                        <button onClick={onOpenTutorModal} className="text-sm font-bold text-slate-600 hover:text-brand-orange flex items-center gap-1.5"><HelpCircle size={16}/> Get a Tutor</button>
-                                    )}
-                                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" className="bg-brand-blue text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg">Get in Touch</a>
-                                </div>
-                                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2"><Menu size={28}/></button>
+                                <input type="checkbox" class="course-checkbox w-5 h-5 accent-brand-blue" data-id="${course.id}" data-title="${escapeHtml(course.title)}" data-price="${course.price}" ${isChecked ? 'checked' : ''}>
                             </div>
-                            {mobileMenuOpen && (
-                                <div className="md:hidden absolute w-full left-0 top-20 bg-white shadow-xl rounded-b-2xl p-4">
-                                    <button onClick={() => { setMobileMenuOpen(false); onOpenTutorModal(); }} className="flex items-center gap-3 font-bold p-3 rounded-xl w-full border mb-3"><HelpCircle size={18} className="text-brand-orange"/> Get a Tutor</button>
-                                    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} className="block w-full py-3 bg-brand-blue text-white rounded-xl text-center font-bold">Contact Us</a>
-                                </div>
-                            )}
+                            <p class="text-sm text-slate-600 mt-3 line-clamp-2">${escapeHtml(course.description)}</p>
+                            <div class="mt-4 flex justify-between items-center">
+                                <span class="font-extrabold text-brand-dark">₦${course.price.toLocaleString()}</span>
+                                <button class="select-toggle text-xs font-bold text-brand-blue underline" data-id="${course.id}">${isChecked ? 'Deselect' : 'Select'}</button>
+                            </div>
                         </div>
-                    </nav>
-                    <div className="md:hidden fixed bottom-0 w-full bg-white border-t z-50 flex justify-around h-16">
-                        <a href="index.html" className="flex flex-col items-center justify-center text-slate-400"><Home size={20}/><span className="text-[10px]">Home</span></a>
-                        <a href="course.html" className="flex flex-col items-center justify-center text-brand-blue"><BookOpen size={20}/><span className="text-[10px]">Courses</span></a>
-                        <a href="store.html" className="flex flex-col items-center justify-center text-slate-400"><StoreIcon size={20}/><span className="text-[10px]">Store</span></a>
-                        <a href="connect.html" className="flex flex-col items-center justify-center text-slate-400"><Users size={20}/><span className="text-[10px]">Connect</span></a>
-                    </div>
-                </>
-            );
-        }
-
-        // Auth Modal with honeypot bot trap
-        function AuthModal({ isOpen, onClose, onSuccess }) {
-            const [isLogin, setIsLogin] = useState(true);
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [loading, setLoading] = useState(false);
-            const [error, setError] = useState('');
-            const [botHoney, setBotHoney] = useState('');
-
-            if (!isOpen) return null;
-
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                // Bot trap: if honeypot field is filled, silently reject
-                if (botHoney !== '') {
-                    console.log('Bot detected, rejecting');
-                    return;
+                    `;
                 }
-                if (!validateEmail(email)) {
-                    setError('Please enter a valid email address.');
-                    return;
-                }
-                if (password.length < 6) {
-                    setError('Password must be at least 6 characters.');
-                    return;
-                }
-                setLoading(true);
-                setError('');
-                try {
-                    if (isLogin) {
-                        await signInWithEmailAndPassword(auth, email, password);
-                    } else {
-                        await createUserWithEmailAndPassword(auth, email, password);
-                    }
-                    onSuccess();
-                    onClose();
-                } catch (err) {
-                    setError(err.message);
-                }
-                setLoading(false);
-            };
-
-            return (
-                <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-2xl font-bold">{isLogin ? 'Sign In' : 'Create Account'}</h2>
-                            <button onClick={onClose}><X size={24}/></button>
-                        </div>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <input type="email" placeholder="Email Address" value={email} onChange={e=>setEmail(e.target.value)} className="w-full p-3 border rounded-xl" required />
-                            <input type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} className="w-full p-3 border rounded-xl" required />
-                            {/* Honeypot field - hidden from humans */}
-                            <input type="text" name="bot_honey" className="bot-trap" value={botHoney} onChange={e=>setBotHoney(e.target.value)} autoComplete="off" />
-                            {error && <p className="text-red-500 text-sm">{error}</p>}
-                            <button type="submit" disabled={loading} className="w-full bg-brand-blue text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
-                                {loading ? <Loader2 className="animate-spin"/> : (isLogin ? <LogIn size={18}/> : <UserPlus size={18/>)} {isLogin ? 'Sign In' : 'Sign Up'}
-                            </button>
-                        </form>
-                        <p className="text-center text-sm mt-4">
-                            {isLogin ? "Don't have an account? " : "Already have an account? "}
-                            <button onClick={() => setIsLogin(!isLogin)} className="text-brand-blue font-bold">{isLogin ? 'Sign Up' : 'Sign In'}</button>
-                        </p>
-                    </div>
-                </div>
-            );
-        }
-
-        // Tutor Modal (unchanged, with basic validation)
-        function TutorModal({ isOpen, onClose }) {
-            const [loading, setLoading] = useState(false);
-            const [guardianVisible, setGuardianVisible] = useState(false);
-            const [selectedLevel, setSelectedLevel] = useState('SSS');
-            const [botHoney, setBotHoney] = useState('');
+                html += `</div></div>`;
+            }
+            coursesContainer.innerHTML = html;
             
-            const subjectsList = {
+            // Initialize Lucide icons
+            if (window.lucide) window.lucide.createIcons();
+            
+            // Attach event listeners
+            document.querySelectorAll('.course-checkbox').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const id = cb.dataset.id;
+                    const course = courses.find(c => c.id === id);
+                    if (cb.checked) {
+                        if (!selectedCourses.find(c => c.id === id)) selectedCourses.push(course);
+                    } else {
+                        selectedCourses = selectedCourses.filter(c => c.id !== id);
+                    }
+                    updateTotal();
+                    renderCourses(); // re-render to update toggle button text
+                });
+            });
+            document.querySelectorAll('.select-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    const course = courses.find(c => c.id === id);
+                    const isSelected = selectedCourses.some(c => c.id === id);
+                    if (isSelected) {
+                        selectedCourses = selectedCourses.filter(c => c.id !== id);
+                    } else {
+                        selectedCourses.push(course);
+                    }
+                    updateTotal();
+                    renderCourses(); // re-render to sync checkboxes and toggle text
+                });
+            });
+            updateSelectedCount();
+        }
+        
+        function updateTotal() {
+            const total = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
+            totalSpan.innerText = total.toLocaleString();
+            enrollBtn.disabled = selectedCourses.length === 0;
+            updateSelectedCount();
+        }
+        
+        function updateSelectedCount() {
+            const countSpan = document.getElementById('selectedCount');
+            if (countSpan) countSpan.innerText = selectedCourses.length;
+        }
+        
+        function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+        
+        // Load courses from Firestore or fallback
+        function loadCourses() {
+            const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses');
+            onSnapshot(q, (snapshot) => {
+                if (!snapshot.empty) {
+                    courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                } else {
+                    courses = [...FALLBACK_COURSES];
+                    // Auto-seed
+                    courses.forEach(async (c) => {
+                        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses', c.id);
+                        await setDoc(ref, { ...c, published: true, createdAt: serverTimestamp() }).catch(()=>{});
+                    });
+                }
+                renderCourses();
+            }, (err) => {
+                console.error(err);
+                courses = [...FALLBACK_COURSES];
+                renderCourses();
+            });
+        }
+        
+        // Auth state
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                userDisplay.innerText = user.email;
+                userDisplay.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                document.getElementById('loginBtn').classList.add('hidden');
+            } else {
+                userDisplay.innerText = '';
+                userDisplay.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+                document.getElementById('loginBtn').classList.remove('hidden');
+            }
+        });
+        
+        // Logout
+        window.handleLogout = async () => {
+            await signOut(auth);
+            selectedCourses = [];
+            updateTotal();
+            renderCourses();
+        };
+        
+        // Auth Modal handlers
+        let pendingEnroll = false;
+        function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
+        
+        window.handleAuthSubmit = async (e) => {
+            e.preventDefault();
+            const honey = document.getElementById('authHoney').value;
+            if (honey !== '') return;
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const isLogin = document.getElementById('authIsLogin').value === 'true';
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { alert('Valid email required'); return; }
+            if (password.length < 6) { alert('Password must be at least 6 characters'); return; }
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+                closeAuthModal();
+                if (pendingEnroll) {
+                    pendingEnroll = false;
+                    openEnrollModal();
+                }
+            } catch (err) { alert(err.message); }
+        };
+        
+        window.toggleAuthMode = () => {
+            const isLogin = document.getElementById('authIsLogin').value === 'true';
+            document.getElementById('authIsLogin').value = (!isLogin).toString();
+            document.getElementById('authTitle').innerText = isLogin ? 'Create Account' : 'Sign In';
+            document.getElementById('authSubmitBtn').innerText = isLogin ? 'Sign Up' : 'Sign In';
+            document.getElementById('authToggleText').innerHTML = isLogin ? 'Already have an account? Sign In' : "Don't have an account? Sign Up";
+        };
+        
+        // Enrollment Modal
+        function openEnrollModal() {
+            if (selectedCourses.length === 0) return;
+            if (!currentUser) { pendingEnroll = true; openAuthModal(); return; }
+            document.getElementById('enrollName').value = '';
+            document.getElementById('enrollEmail').value = currentUser.email || '';
+            document.getElementById('enrollPhone').value = '';
+            document.getElementById('enrollModal').classList.remove('hidden');
+        }
+        function closeEnrollModal() { document.getElementById('enrollModal').classList.add('hidden'); }
+        
+        window.processPayment = async () => {
+            const honey = document.getElementById('enrollHoney').value;
+            if (honey !== '') return;
+            const name = document.getElementById('enrollName').value.trim();
+            const email = document.getElementById('enrollEmail').value.trim();
+            const phone = document.getElementById('enrollPhone').value.trim();
+            if (name.length < 2) { alert('Full name required'); return; }
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { alert('Valid email required'); return; }
+            if (!phone.match(/^[0-9+\-\s()]{8,15}$/)) { alert('Valid phone number required'); return; }
+            const total = selectedCourses.reduce((s,c)=>s+(c.price||0),0);
+            const coursesList = selectedCourses.map(c=>c.title).join(', ');
+            const handler = PaystackPop.setup({
+                key: window.getPaystackKey(),
+                email: email,
+                amount: total * 100,
+                currency: 'NGN',
+                metadata: { custom_fields: [{ display_name: "Full Name", value: name }, { display_name: "Courses", value: coursesList }, { display_name: "Phone", value: phone }] },
+                callback: async (response) => {
+                    try {
+                        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
+                            type: 'course_enrollment', name, email, phone, courses: coursesList, totalAmount: total,
+                            transactionRef: response.reference, status: 'Paid', timestamp: serverTimestamp()
+                        });
+                    } catch(e) { console.error(e); }
+                    const msg = `✅ Payment successful! Enrolled: ${coursesList}. Total: ₦${total.toLocaleString()}. Name: ${name}. Please send registration details.`;
+                    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+                    closeEnrollModal();
+                },
+                onClose: () => { alert('Payment window closed.'); }
+            });
+            handler.openIframe();
+        };
+        
+        // Tutor Modal
+        function openTutorModal() { document.getElementById('tutorModal').classList.remove('hidden'); }
+        function closeTutorModal() { document.getElementById('tutorModal').classList.add('hidden'); }
+        
+        window.updateGuardianField = () => {
+            const age = parseInt(document.getElementById('tutorAge').value);
+            const guardianDiv = document.getElementById('guardianFields');
+            if (age < 16) guardianDiv.classList.remove('hidden');
+            else guardianDiv.classList.add('hidden');
+        };
+        
+        window.updateSubjects = () => {
+            const level = document.getElementById('tutorLevel').value;
+            const subjects = {
                 JSS: ['Math', 'English', 'Basic Sci', 'Basic Tech', 'ICT'],
                 SSS: ['Math', 'English', 'Physics', 'Chemistry', 'Biology'],
                 WAEC: ['Math', 'English', 'Physics', 'Chemistry', 'Biology', 'Economics'],
                 JAMB: ['Use of English', 'Math', 'Physics', 'Chemistry', 'Biology'],
                 IGCSE: ['Math', 'English', 'Physics', 'Chemistry', 'ICT']
             };
-
-            if (!isOpen) return null;
-
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                if (botHoney !== '') return;
-                const form = e.target;
-                const studentName = form.studentName.value.trim();
-                const studentPhone = form.studentPhone.value.trim();
-                if (!validateName(studentName)) { alert('Please enter a valid name.'); return; }
-                if (!validatePhone(studentPhone)) { alert('Please enter a valid phone number.'); return; }
-                
-                setLoading(true);
-                const formData = new FormData(form);
-                const studentAge = parseInt(formData.get('studentAge'));
-                const subjects = Array.from(form.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value).join(', ');
-                
-                const payload = {
-                    type: 'tutor_request',
-                    studentName: formData.get('studentName'),
-                    studentAge: studentAge,
-                    parentName: studentAge < 16 ? formData.get('parentName') : '',
-                    parentPhone: studentAge < 16 ? formData.get('parentPhone') : '',
-                    level: formData.get('level'),
-                    curriculum: formData.get('curriculum'),
-                    subjects: subjects,
-                    platform: formData.get('platform'),
-                    email: formData.get('studentEmail') || '',
-                    phone: formData.get('studentPhone'),
-                    timestamp: serverTimestamp(),
-                    status: 'New'
-                };
-                try {
-                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), payload);
-                } catch (err) { console.error(err); }
-                
-                const msg = `Hello Tutor! New booking request.%0AStudent: ${payload.studentName} (Age ${studentAge})%0ALevel: ${payload.level}%0ASubjects: ${subjects}%0APlatform: ${payload.platform}%0APhone: ${payload.phone}`;
-                window.open(`https://wa.me/${TUTOR_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
-                setLoading(false);
-                onClose();
+            const list = subjects[level] || subjects['SSS'];
+            const container = document.getElementById('subjectsContainer');
+            container.innerHTML = list.map(sub => `<label class="flex items-center gap-2 text-sm"><input type="checkbox" name="subjects" value="${sub}" class="w-4 h-4">${sub}</label>`).join('');
+        };
+        
+        window.submitTutorRequest = async (e) => {
+            e.preventDefault();
+            const honey = document.getElementById('tutorHoney').value;
+            if (honey !== '') return;
+            const name = document.getElementById('tutorName').value.trim();
+            const phone = document.getElementById('tutorPhone').value.trim();
+            if (name.length < 2) { alert('Valid name required'); return; }
+            if (!phone.match(/^[0-9+\-\s()]{8,15}$/)) { alert('Valid phone required'); return; }
+            const age = parseInt(document.getElementById('tutorAge').value);
+            const subjects = Array.from(document.querySelectorAll('#subjectsContainer input:checked')).map(cb => cb.value).join(', ');
+            const parentName = age < 16 ? document.getElementById('parentName').value : '';
+            const parentPhone = age < 16 ? document.getElementById('parentPhone').value : '';
+            const payload = {
+                type: 'tutor_request', studentName: name, studentAge: age, parentName, parentPhone,
+                level: document.getElementById('tutorLevel').value, curriculum: document.getElementById('tutorCurriculum').value,
+                subjects, platform: document.querySelector('input[name="platform"]:checked').value,
+                email: document.getElementById('tutorEmail').value || '', phone, timestamp: serverTimestamp(), status: 'New'
             };
-
-            const updateGuardian = (e) => { setGuardianVisible(parseInt(e.target.value) < 16); };
-
-            return (
-                <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
-                    <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
-                        <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center"><h2 className="text-2xl font-bold">Get a Private Tutor</h2><button onClick={onClose}><X size={24}/></button></div>
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input name="studentName" required placeholder="Student's Full Name" className="p-3 border rounded-xl bg-slate-50" />
-                                <input name="studentAge" type="number" required placeholder="Age" onChange={updateGuardian} className="p-3 border rounded-xl bg-slate-50" />
-                                {guardianVisible && <><input name="parentName" placeholder="Parent/Guardian Name" className="p-3 border rounded-xl bg-slate-50" /><input name="parentPhone" placeholder="Parent Phone" className="p-3 border rounded-xl bg-slate-50" /></>}
-                                <input name="studentEmail" type="email" placeholder="Email (optional)" className="p-3 border rounded-xl bg-slate-50" />
-                                <input name="studentPhone" required placeholder="WhatsApp Number" className="p-3 border rounded-xl bg-slate-50" />
-                                <select name="level" className="p-3 border rounded-xl bg-slate-50" onChange={(e) => setSelectedLevel(e.target.value)}>
-                                    <option value="JSS">JSS 1-3</option><option value="SSS">SSS 1-3</option><option value="WAEC">WAEC/NECO</option><option value="JAMB">JAMB UTME</option><option value="IGCSE">IGCSE</option>
-                                </select>
-                                <select name="curriculum" className="p-3 border rounded-xl bg-slate-50"><option>West African</option><option>British</option><option>American</option></select>
-                            </div>
-                            <div><label className="font-bold text-sm">Select Subjects</label><div className="grid grid-cols-3 gap-2 mt-2">{(subjectsList[selectedLevel] || subjectsList['SSS']).map(sub => <label key={sub} className="flex items-center gap-2 text-sm"><input type="checkbox" name="subjects" value={sub} className="w-4 h-4" />{sub}</label>)}</div></div>
-                            <div><label className="font-bold text-sm">Preferred Platform</label><div className="flex gap-4 mt-2"><label><input type="radio" name="platform" value="whatsapp" defaultChecked /> WhatsApp</label><label><input type="radio" name="platform" value="telegram" /> Telegram</label><label><input type="radio" name="platform" value="gmeet" /> Google Meet</label></div></div>
-                            <input type="text" name="bot_honey" className="bot-trap" value={botHoney} onChange={e=>setBotHoney(e.target.value)} autoComplete="off" />
-                            <button type="submit" disabled={loading} className="w-full bg-brand-orange text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">{loading ? <Loader2 className="animate-spin"/> : "Submit & Chat on WhatsApp"}</button>
-                        </form>
-                    </div>
-                </div>
-            );
-        }
-
-        // Enrollment Modal with validation and honeypot
-        function CourseEnrollModal({ selectedCourses, total, isOpen, onClose, userName, userEmail, userPhone, setUserName, setUserEmail, setUserPhone }) {
-            const [loading, setLoading] = useState(false);
-            const [botHoney, setBotHoney] = useState('');
-            if (!isOpen || selectedCourses.length === 0) return null;
-
-            const handlePaystackPayment = () => {
-                if (botHoney !== '') return;
-                if (!validateName(userName)) { alert("Please enter your full name."); return; }
-                if (!validateEmail(userEmail)) { alert("Please enter a valid email address."); return; }
-                if (!validatePhone(userPhone)) { alert("Please enter a valid phone number."); return; }
-                setLoading(true);
-                const coursesList = selectedCourses.map(c => c.title).join(', ');
-                const amountInKobo = total * 100;
-                
-                const handler = PaystackPop.setup({
-                    key: getPaystackKey(),
-                    email: userEmail,
-                    amount: amountInKobo,
-                    currency: 'NGN',
-                    metadata: {
-                        custom_fields: [
-                            { display_name: "Full Name", variable_name: "full_name", value: userName },
-                            { display_name: "Courses", variable_name: "courses", value: coursesList },
-                            { display_name: "Phone", variable_name: "phone", value: userPhone }
-                        ]
-                    },
-                    callback: async (response) => {
-                        try {
-                            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
-                                type: 'course_enrollment',
-                                name: userName, email: userEmail, phone: userPhone,
-                                courses: coursesList,
-                                totalAmount: total,
-                                transactionRef: response.reference,
-                                status: 'Paid',
-                                timestamp: serverTimestamp()
-                            });
-                        } catch(e) { console.error(e); }
-                        const msg = `✅ Payment successful! I have enrolled for: ${coursesList}. Total: ₦${total.toLocaleString()}. Name: ${userName}. Please send registration details.`;
-                        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-                        setLoading(false);
-                        onClose();
-                    },
-                    onClose: () => {
-                        setLoading(false);
-                        alert("Payment window closed.");
-                    }
-                });
-                handler.openIframe();
-            };
-
-            return (
-                <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl max-w-md w-full p-6 relative">
-                        <div className="flex justify-between"><h3 className="text-xl font-bold">Complete Enrollment</h3><button onClick={onClose}><X/></button></div>
-                        <p className="text-sm text-slate-500 mt-1">Selected {selectedCourses.length} course(s): <span className="font-bold">₦{total.toLocaleString()}</span></p>
-                        <div className="space-y-4 mt-4">
-                            <input type="text" placeholder="Full Name" value={userName} onChange={e=>setUserName(e.target.value)} className="w-full p-3 border rounded-xl" required />
-                            <input type="email" placeholder="Email Address" value={userEmail} onChange={e=>setUserEmail(e.target.value)} className="w-full p-3 border rounded-xl" required />
-                            <input type="tel" placeholder="Phone Number" value={userPhone} onChange={e=>setUserPhone(e.target.value)} className="w-full p-3 border rounded-xl" required />
-                            <input type="text" name="bot_honey" className="bot-trap" value={botHoney} onChange={e=>setBotHoney(e.target.value)} autoComplete="off" />
-                            <button onClick={handlePaystackPayment} disabled={loading} className="w-full bg-brand-blue text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
-                                {loading ? <Loader2 className="animate-spin"/> : <><CreditCard size={18}/> Pay ₦{total.toLocaleString()} via Paystack</>}
-                            </button>
-                            <p className="text-[10px] text-center text-slate-400">Secure payment powered by Paystack</p>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // Main App
-        function App() {
-            const [courses, setCourses] = useState([]);
-            const [user, setUser] = useState(null);
-            const [selectedCourses, setSelectedCourses] = useState([]);
-            const [tutorModalOpen, setTutorModalOpen] = useState(false);
-            const [enrollModalOpen, setEnrollModalOpen] = useState(false);
-            const [authModalOpen, setAuthModalOpen] = useState(false);
-            const [pendingEnroll, setPendingEnroll] = useState(false);
-            const [userName, setUserName] = useState('');
-            const [userEmail, setUserEmail] = useState('');
-            const [userPhone, setUserPhone] = useState('');
-
-            useEffect(() => {
-                const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-                    setUser(currentUser);
-                    if (currentUser && pendingEnroll) {
-                        setPendingEnroll(false);
-                        setEnrollModalOpen(true);
-                    }
-                });
-                return () => unsubscribe();
-            }, [pendingEnroll]);
-
-            useEffect(() => {
-                const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses');
-                const unsubscribe = onSnapshot(q, (snapshot) => {
-                    if (!snapshot.empty) {
-                        const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                        setCourses(list);
-                    } else {
-                        setCourses(FALLBACK_COURSES);
-                        FALLBACK_COURSES.forEach(async (c) => {
-                            const ref = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses', c.id);
-                            await setDoc(ref, { ...c, published: true, createdAt: serverTimestamp() }).catch(()=>{});
-                        });
-                    }
-                }, () => setCourses(FALLBACK_COURSES));
-                return () => unsubscribe();
-            }, []);
-
-            const toggleCourse = (course) => {
-                setSelectedCourses(prev => prev.find(c => c.id === course.id) ? prev.filter(c => c.id !== course.id) : [...prev, course]);
-            };
-
-            const totalPrice = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
-            const categories = ['Design', 'Tech', 'Engineering'];
-            const grouped = categories.map(cat => ({ name: cat, items: courses.filter(c => c.category === cat) }));
-
-            const handleEnrollClick = () => {
-                if (selectedCourses.length === 0) return;
-                if (user) {
-                    setEnrollModalOpen(true);
-                } else {
-                    setPendingEnroll(true);
-                    setAuthModalOpen(true);
-                }
-            };
-
-            const handleAuthSuccess = () => {
-                // After login, enrollment modal will open via useEffect
-            };
-
-            const handleAuthCancel = () => {
-                // Fallback: send user details via WhatsApp with selected courses
-                const coursesList = selectedCourses.map(c => c.title).join(', ');
-                const msg = `Hello Mbtech, I am interested in these courses: ${coursesList}. Total: ₦${totalPrice.toLocaleString()}. Please contact me to complete enrollment.`;
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), payload);
+            } catch(err) { console.error(err); }
+            const msg = `Hello Tutor! New booking request.%0AStudent: ${name} (Age ${age})%0ALevel: ${payload.level}%0ASubjects: ${subjects}%0APlatform: ${payload.platform}%0APhone: ${phone}`;
+            window.open(`https://wa.me/${TUTOR_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+            closeTutorModal();
+        };
+        
+        // Fallback if user cancels auth
+        window.handleAuthCancel = () => {
+            if (selectedCourses.length > 0) {
+                const coursesList = selectedCourses.map(c=>c.title).join(', ');
+                const total = selectedCourses.reduce((s,c)=>s+(c.price||0),0);
+                const msg = `Hello Mbtech, I am interested in these courses: ${coursesList}. Total: ₦${total.toLocaleString()}. Please contact me to complete enrollment.`;
                 window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-                setPendingEnroll(false);
-            };
-
-            const handleLogout = () => {
-                signOut(auth);
-                setSelectedCourses([]);
-                setUserName('');
-                setUserEmail('');
-                setUserPhone('');
-            };
-
-            return (
-                <div className="min-h-screen flex flex-col">
-                    <Navbar user={user} onLogout={handleLogout} onOpenTutorModal={() => setTutorModalOpen(true)} />
-                    
-                    <div className="relative bg-brand-dark text-white pt-24 pb-16">
-                        <div className="max-w-7xl mx-auto px-4 text-center">
-                            <h1 className="text-4xl md:text-6xl font-extrabold">Build Your Future<span className="text-brand-orange">.</span></h1>
-                            <p className="text-slate-300 mt-4 max-w-2xl mx-auto">Select multiple courses from Design, Tech, or Engineering. Pay once and start learning.</p>
-                            {selectedCourses.length > 0 && (
-                                <div className="mt-6 inline-flex items-center gap-4 bg-white/10 backdrop-blur rounded-full px-6 py-3">
-                                    <span className="font-bold">₦{totalPrice.toLocaleString()}</span>
-                                    <button onClick={handleEnrollClick} className="bg-brand-orange px-6 py-2 rounded-full text-sm font-bold">Enroll Selected ({selectedCourses.length})</button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="max-w-7xl mx-auto px-4 py-12">
-                        {grouped.map(group => group.items.length > 0 && (
-                            <div key={group.name} className="mb-12">
-                                <h2 className="text-2xl font-extrabold mb-6 flex items-center gap-2"><span className={`w-2 h-6 rounded-full ${group.name === 'Design' ? 'bg-pink-500' : group.name === 'Tech' ? 'bg-brand-blue' : 'bg-brand-orange'}`}></span>{group.name} Courses</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {group.items.map(course => (
-                                        <div key={course.id} className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-lg transition-all relative">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-brand-blue">{getIcon(course.iconName)}</div>
-                                                    <div><h3 className="font-bold text-lg">{course.title}</h3><p className="text-xs text-slate-500">{course.duration}</p></div>
-                                                </div>
-                                                <input type="checkbox" checked={!!selectedCourses.find(c => c.id === course.id)} onChange={() => toggleCourse(course)} className="w-5 h-5 accent-brand-blue" />
-                                            </div>
-                                            <p className="text-sm text-slate-600 mt-3 line-clamp-2">{course.description}</p>
-                                            <div className="mt-4 flex justify-between items-center">
-                                                <span className="font-extrabold text-brand-dark">₦{(course.price || 0).toLocaleString()}</span>
-                                                <button onClick={() => toggleCourse(course)} className="text-xs font-bold text-brand-blue underline">Select</button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <CourseEnrollModal 
-                        selectedCourses={selectedCourses} 
-                        total={totalPrice} 
-                        isOpen={enrollModalOpen} 
-                        onClose={() => setEnrollModalOpen(false)}
-                        userName={userName}
-                        userEmail={userEmail}
-                        userPhone={userPhone}
-                        setUserName={setUserName}
-                        setUserEmail={setUserEmail}
-                        setUserPhone={setUserPhone}
-                    />
-                    <TutorModal isOpen={tutorModalOpen} onClose={() => setTutorModalOpen(false)} />
-                    <AuthModal 
-                        isOpen={authModalOpen} 
-                        onClose={() => { setAuthModalOpen(false); handleAuthCancel(); }} 
-                        onSuccess={handleAuthSuccess} 
-                    />
-
-                    <footer className="bg-brand-dark text-slate-400 pt-16 pb-12 mt-16">
-                        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-                            <div><img src="logo.png" className="h-10 mb-3" onError={(e)=>{e.target.style.display='none'}}/><p className="text-sm">MBTECH NG — Innovating Africa through tech & engineering.</p></div>
-                            <div><h4 className="text-white font-bold mb-4">Quick Links</h4><ul className="space-y-2"><li><a href="index.html">Home</a></li><li><a href="course.html">Courses</a></li><li><a href="store.html">Store</a></li></ul></div>
-                            <div><h4 className="text-white font-bold mb-4">Legal</h4><ul className="space-y-2"><li><button onClick={()=>alert("Privacy Policy: We protect your data.")}>Privacy</button></li><li><button onClick={()=>alert("Terms: Use of platform.")}>Terms</button></li></ul></div>
-                            <div><h4 className="text-white font-bold mb-4">Contact</h4><p><Phone size={16} className="inline mr-2"/> +234 708 467 2771</p><p><Mail size={16} className="inline mr-2"/> info@mbtech.ng</p></div>
-                        </div>
-                        <div className="text-center text-xs pt-8 border-t border-slate-800 mt-8">&copy; 2026 Mesobest Technology. All rights reserved.</div>
-                    </footer>
+            }
+            closeAuthModal();
+        };
+        
+        // Initialize
+        loadCourses();
+        
+        // Mobile bottom nav active state
+        const setActiveNav = (path) => {
+            document.querySelectorAll('.mobile-nav a').forEach(link => link.classList.remove('active'));
+            if (path.includes('course.html')) document.querySelector('.mobile-nav a[href="course.html"]')?.classList.add('active');
+            else if (path.includes('index.html')) document.querySelector('.mobile-nav a[href="index.html"]')?.classList.add('active');
+            else if (path.includes('store.html')) document.querySelector('.mobile-nav a[href="store.html"]')?.classList.add('active');
+            else if (path.includes('connect.html')) document.querySelector('.mobile-nav a[href="connect.html"]')?.classList.add('active');
+        };
+        setActiveNav(window.location.pathname);
+        
+        // Expose globals for inline onclick
+        window.openEnrollModal = openEnrollModal;
+        window.closeEnrollModal = closeEnrollModal;
+        window.openTutorModal = openTutorModal;
+        window.closeTutorModal = closeTutorModal;
+        window.openAuthModal = openAuthModal;
+        window.closeAuthModal = closeAuthModal;
+        window.handleAuthCancel = handleAuthCancel;
+    </script>
+</head>
+<body class="bg-[#f8fafc] font-sans text-slate-900">
+    <!-- Header -->
+    <nav class="fixed top-0 w-full z-50 bg-white border-b border-gray-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="index.html" class="flex items-center gap-3">
+                    <img src="logo.png" alt="MBTECH NG" class="h-10 w-auto" onerror="this.style.display='none'">
+                    <div><span class="text-xl font-extrabold text-brand-dark">MBTECH <span class="text-brand-blue">NG</span></span><span class="text-[10px] text-brand-orange block font-bold">Innovating Africa</span></div>
+                </a>
+                <div class="hidden md:flex items-center gap-4">
+                    <span id="userDisplay" class="text-sm text-slate-600 hidden"></span>
+                    <button id="logoutBtn" onclick="window.handleLogout()" class="text-sm font-bold text-red-500 hidden">Logout</button>
+                    <button id="loginBtn" onclick="window.openAuthModal()" class="text-sm font-bold text-brand-blue">Sign In</button>
+                    <button onclick="window.openTutorModal()" class="text-sm font-bold text-slate-600 hover:text-brand-orange flex items-center gap-1.5"><i data-lucide="HelpCircle" class="w-4 h-4"></i> Get a Tutor</button>
+                    <a href="https://wa.me/2347084672771" target="_blank" class="bg-brand-blue text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg">Get in Touch</a>
                 </div>
-            );
-        }
+                <button id="mobileMenuBtn" class="md:hidden p-2"><i data-lucide="Menu" class="w-6 h-6"></i></button>
+            </div>
+        </div>
+    </nav>
 
-        const root = createRoot(document.getElementById('root'));
-        root.render(<App />);
+    <!-- Hero -->
+    <div class="relative bg-brand-dark text-white pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold">Build Your Future<span class="text-brand-orange">.</span></h1>
+            <p class="text-slate-300 mt-4 max-w-2xl mx-auto">Select multiple courses from Design, Tech, or Engineering. Pay once and start learning.</p>
+            <div class="mt-6 inline-flex items-center gap-4 bg-white/10 backdrop-blur rounded-full px-6 py-3">
+                <span class="font-bold">Total: ₦<span id="totalPrice">0</span></span>
+                <button id="enrollBtn" onclick="window.openEnrollModal()" disabled class="bg-brand-orange px-6 py-2 rounded-full text-sm font-bold disabled:opacity-50">Enroll Selected (<span id="selectedCount">0</span>)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <main class="max-w-7xl mx-auto px-4 py-12" id="coursesContainer">
+        <div class="text-center py-12">Loading courses...</div>
+    </main>
+
+    <!-- Mobile Bottom Navigation (App-like) -->
+    <div class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div class="flex justify-around items-center h-16">
+            <a href="index.html" class="mobile-nav flex flex-col items-center justify-center text-slate-400 transition-colors"><i data-lucide="Home" class="w-5 h-5"></i><span class="text-[10px] font-bold">Home</span></a>
+            <a href="course.html" class="mobile-nav flex flex-col items-center justify-center text-brand-blue transition-colors"><i data-lucide="BookOpen" class="w-5 h-5"></i><span class="text-[10px] font-bold">Courses</span></a>
+            <a href="store.html" class="mobile-nav flex flex-col items-center justify-center text-slate-400"><i data-lucide="Store" class="w-5 h-5"></i><span class="text-[10px] font-bold">Store</span></a>
+            <a href="connect.html" class="mobile-nav flex flex-col items-center justify-center text-slate-400"><i data-lucide="Users" class="w-5 h-5"></i><span class="text-[10px] font-bold">Connect</span></a>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 z-[90] hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+            <button onclick="window.closeAuthModal()" class="absolute top-4 right-4"><i data-lucide="X" class="w-5 h-5"></i></button>
+            <h2 id="authTitle" class="text-2xl font-bold mb-4">Sign In</h2>
+            <form onsubmit="window.handleAuthSubmit(event)">
+                <input type="hidden" id="authIsLogin" value="true">
+                <input type="text" id="authHoney" class="bot-trap" autocomplete="off">
+                <input type="email" id="authEmail" placeholder="Email Address" class="w-full p-3 border rounded-xl mb-3" required>
+                <input type="password" id="authPassword" placeholder="Password" class="w-full p-3 border rounded-xl mb-4" required>
+                <button type="submit" id="authSubmitBtn" class="w-full bg-brand-blue text-white py-3 rounded-xl font-bold">Sign In</button>
+            </form>
+            <p class="text-center text-sm mt-4"><button onclick="window.toggleAuthMode()" id="authToggleText" class="text-brand-blue font-bold">Don't have an account? Sign Up</button></p>
+            <button onclick="window.handleAuthCancel()" class="w-full mt-3 text-slate-500 text-sm">Continue without account → WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- Enrollment Modal -->
+    <div id="enrollModal" class="fixed inset-0 z-[80] hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
+            <button onclick="window.closeEnrollModal()" class="absolute top-4 right-4"><i data-lucide="X" class="w-5 h-5"></i></button>
+            <h3 class="text-xl font-bold">Complete Enrollment</h3>
+            <input type="text" id="enrollHoney" class="bot-trap" autocomplete="off">
+            <div class="space-y-4 mt-4">
+                <input type="text" id="enrollName" placeholder="Full Name" class="w-full p-3 border rounded-xl" required>
+                <input type="email" id="enrollEmail" placeholder="Email Address" class="w-full p-3 border rounded-xl" required>
+                <input type="tel" id="enrollPhone" placeholder="Phone Number" class="w-full p-3 border rounded-xl" required>
+                <button onclick="window.processPayment()" class="w-full bg-brand-blue text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><i data-lucide="CreditCard" class="w-5 h-5"></i> Pay with Paystack</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutor Modal -->
+    <div id="tutorModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto" style="display: none;">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+            <div class="sticky top-0 bg-white p-4 border-b flex justify-between"><h2 class="text-2xl font-bold">Get a Private Tutor</h2><button onclick="window.closeTutorModal()"><i data-lucide="X" class="w-6 h-6"></i></button></div>
+            <form onsubmit="window.submitTutorRequest(event)" class="p-6 space-y-5">
+                <input type="text" id="tutorHoney" class="bot-trap" autocomplete="off">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="tutorName" required placeholder="Student's Full Name" class="p-3 border rounded-xl bg-slate-50">
+                    <input id="tutorAge" type="number" required placeholder="Age" oninput="window.updateGuardianField()" class="p-3 border rounded-xl bg-slate-50">
+                    <div id="guardianFields" class="hidden md:col-span-2 grid grid-cols-2 gap-4"><input id="parentName" placeholder="Parent/Guardian Name" class="p-3 border rounded-xl"><input id="parentPhone" placeholder="Parent Phone" class="p-3 border rounded-xl"></div>
+                    <input id="tutorEmail" type="email" placeholder="Email (optional)" class="p-3 border rounded-xl bg-slate-50">
+                    <input id="tutorPhone" required placeholder="WhatsApp Number" class="p-3 border rounded-xl bg-slate-50">
+                    <select id="tutorLevel" onchange="window.updateSubjects()" class="p-3 border rounded-xl bg-slate-50"><option value="JSS">JSS 1-3</option><option value="SSS" selected>SSS 1-3</option><option value="WAEC">WAEC/NECO</option><option value="JAMB">JAMB UTME</option><option value="IGCSE">IGCSE</option></select>
+                    <select id="tutorCurriculum" class="p-3 border rounded-xl bg-slate-50"><option>West African</option><option>British</option><option>American</option></select>
+                </div>
+                <div><label class="font-bold text-sm">Select Subjects</label><div id="subjectsContainer" class="grid grid-cols-3 gap-2 mt-2"></div></div>
+                <div><label class="font-bold text-sm">Preferred Platform</label><div class="flex gap-4 mt-2"><label><input type="radio" name="platform" value="whatsapp" checked> WhatsApp</label><label><input type="radio" name="platform" value="telegram"> Telegram</label><label><input type="radio" name="platform" value="gmeet"> Google Meet</label></div></div>
+                <button type="submit" class="w-full bg-brand-orange text-white py-3 rounded-xl font-bold">Submit & Chat on WhatsApp</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-brand-dark text-slate-400 pt-12 pb-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+            <div><img src="logo.png" class="h-10 mx-auto md:mx-auto mb-3" onerror="this.style.display='none'"><p class="text-sm">MBTECH NG — Innovating Africa through tech & engineering.</p></div>
+            <div><h4 class="text-white font-bold mb-4">Quick Links</h4><ul class="space-y-2"><li><a href="index.html">Home</a></li><li><a href="course.html">Courses</a></li><li><a href="store.html">Store</a></li></ul></div>
+            <div><h4 class="text-white font-bold mb-4">Legal</h4><ul class="space-y-2"><li><button onclick="alert('Privacy Policy: We protect your data.')">Privacy</button></li><li><button onclick="alert('Terms: Use of platform.')">Terms</button></li></ul></div>
+            <div><h4 class="text-white font-bold mb-4">Contact</h4><p><i data-lucide="Phone" class="inline w-4 h-4 mr-1"></i> +234 708 467 2771</p><p><i data-lucide="Mail" class="inline w-4 h-4 mr-1"></i> info@mbtech.ng</p></div>
+        </div>
+        <div class="text-center text-xs pt-8 border-t border-slate-800 mt-8">&copy; 2026 Mesobest Technology. All rights reserved.</div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons on page load and after dynamic updates
+        if (window.lucide) {
+            window.lucide.createIcons();
+            // Observe dynamic content to reinitialize icons
+            const observer = new MutationObserver(() => window.lucide.createIcons());
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+        // Update selected count on any change
+        function updateSelectedCountDisplay() {
+            const count = document.querySelectorAll('.course-checkbox:checked').length;
+            document.getElementById('selectedCount').innerText = count;
+        }
+        const countObserver = new MutationObserver(() => updateSelectedCountDisplay());
+        countObserver.observe(document.getElementById('coursesContainer'), { childList: true, subtree: true });
+        // Mobile menu placeholder
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
+            alert('Use bottom navigation for quick access');
+        });
     </script>
 </body>
 </html>
