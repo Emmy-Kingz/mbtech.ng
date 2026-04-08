@@ -23,41 +23,495 @@
       fbq('init', '1973713946881967');
       fbq('track', 'PageView');
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=1973713946881967&ev=PageView&noscript=1"
-    /></noscript>
+    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1973713946881967&ev=PageView&noscript=1"/></noscript>
     
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>MBTECH NG | Tech & Tutorials</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MBTECH NG | Tech Academy & Tutorials</title>
+    
+    <!-- Premium SEO Meta Tags -->
     <meta name="description" content="Select multiple courses across Design, Tech, and Engineering. Pay securely with Paystack and start your journey with Mbtech Academy.">
-    <link rel="canonical" href="https://emmy-kingz.github.io/mbtech.ng/course.html">
+    <meta name="keywords" content="Tech Courses Nigeria, Learn Solar Installation, Web Development Training Lagos, UI/UX Design Course, CCTV Installation, Data Analytics, Mbtech Academy">
+    <meta name="author" content="Mesobest Technology">
+    
     <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0056b3',
+                            blueHover: '#004494',
+                            orange: '#f97316',
+                            dark: '#0f172a'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'spin-slow': 'spin 3s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Paystack JS -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
+
     <style>
-        :root { --brand-blue: #0056b3; --brand-orange: #f97316; --brand-dark: #0f172a; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-bottom: 70px; }
+        body { padding-bottom: 64px; }
         @media (min-width: 768px) { body { padding-bottom: 0; } }
-        .bot-trap { position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none; }
-        .modal { transition: opacity 0.2s ease; }
-        .course-card { transition: transform 0.2s, box-shadow 0.2s; }
-        .course-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1); }
-        .mobile-nav a.active { color: var(--brand-blue); background: #eff6ff; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Utility class to hide elements cleanly */
+        .hidden-safely { display: none !important; }
+        
+        /* Modal Transitions */
+        .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.active .modal-content { transform: scale(1); }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDKs -->
+</head>
+<body class="bg-[#f8fafc] font-sans text-slate-900 selection:bg-brand-blue selection:text-white">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-24 md:top-4 left-1/2 -translate-x-1/2 z-[100] transition-all duration-300 transform -translate-y-8 opacity-0 scale-95 pointer-events-none">
+        <div id="toast-body" class="px-6 py-3.5 rounded-full shadow-xl shadow-black/10 text-white font-bold flex items-center gap-2 backdrop-blur-md bg-brand-blue/90">
+            <i id="toast-icon" data-lucide="check-circle" class="w-[18px] h-[18px]"></i>
+            <span id="toast-msg">Success</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 bg-white border-b border-gray-100 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <a href="index.html" class="flex items-center gap-3 cursor-pointer group">
+                        <img src="logo.png" alt="MBTECH NG" class="h-10 w-auto" onerror="this.style.display='none'" />
+                        <div class="flex flex-col">
+                            <span class="text-xl font-extrabold text-brand-dark tracking-tight leading-none uppercase">
+                                MBTECH <span class="text-brand-blue">NG</span>
+                            </span>
+                            <span class="text-[10px] text-brand-orange font-bold tracking-widest uppercase">Innovating Africa</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Desktop Nav -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><i data-lucide="home" class="w-4 h-4"></i> Home</a>
+                    <a href="course.html" class="text-sm font-bold text-brand-blue transition-colors flex items-center gap-1.5"><i data-lucide="book-open" class="w-4 h-4"></i> Courses</a>
+                    <a href="store.html" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors flex items-center gap-1.5"><i data-lucide="store" class="w-4 h-4"></i> Store</a>
+                </div>
+
+                <!-- Desktop Actions -->
+                <div class="hidden md:flex items-center gap-4">
+                    <button onclick="ui.openModal('tutorModal')" class="text-sm font-bold text-slate-600 hover:text-brand-orange transition-colors flex items-center gap-1.5">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i> Get a Tutor
+                    </button>
+                    
+                    <div class="h-6 w-px bg-slate-200"></div>
+
+                    <!-- Auth State: Logged In -->
+                    <div id="nav-user-view" class="hidden-safely items-center gap-3">
+                        <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-200">
+                            <i data-lucide="user" class="w-3.5 h-3.5 text-brand-blue"></i>
+                            <span id="nav-user-email" class="text-xs font-bold text-slate-600 truncate max-w-[100px]"></span>
+                        </div>
+                        <button onclick="app.logout()" class="text-red-500 hover:text-red-700 p-1.5 rounded-full hover:bg-red-50 transition-colors" title="Logout">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Auth State: Logged Out -->
+                    <button id="nav-login-btn" onclick="ui.openModal('authModal')" class="text-sm font-bold text-brand-blue hover:text-brand-blueHover transition-colors flex items-center gap-1.5">
+                        <i data-lucide="lock" class="w-4 h-4"></i> Sign In
+                    </button>
+                </div>
+
+                <!-- Mobile Hamburger -->
+                <div class="md:hidden flex items-center gap-3">
+                    <div id="mobile-cart-badge" class="hidden-safely bg-brand-blue text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold relative">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                        <span id="mobile-cart-count" class="absolute -top-1 -right-1 bg-brand-orange text-white w-4 h-4 rounded-full text-[10px] flex items-center justify-center border border-white">0</span>
+                    </div>
+                    <button onclick="ui.toggleMobileMenu()" class="p-2 text-brand-dark hover:text-brand-blue transition-colors">
+                        <i id="mobile-menu-icon" data-lucide="menu" class="w-7 h-7"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobile-menu" class="hidden-safely absolute w-full left-0 top-20 bg-white shadow-xl border-t border-gray-100 z-50 rounded-b-2xl">
+                <div class="p-4 flex flex-col gap-2 pb-6">
+                    <button onclick="ui.toggleMobileMenu(); ui.openModal('tutorModal');" class="flex items-center gap-3 font-bold p-3.5 rounded-xl transition-colors text-slate-700 hover:bg-slate-50 border border-slate-100 w-full text-left">
+                        <i data-lucide="help-circle" class="w-[18px] h-[18px] text-brand-orange"></i> Request Assignment/Tutor
+                    </button>
+                    
+                    <div id="mobile-user-view" class="hidden-safely flex-col gap-2 mt-2 pt-2 border-t border-slate-100">
+                        <div class="p-3.5 flex items-center gap-3 text-sm font-bold text-slate-600 bg-slate-50 rounded-xl">
+                            <i data-lucide="user" class="w-[18px] h-[18px] text-brand-blue"></i> <span id="mobile-user-email"></span>
+                        </div>
+                        <button onclick="ui.toggleMobileMenu(); app.logout();" class="w-full py-3.5 bg-red-50 text-red-600 rounded-xl flex items-center justify-center font-bold">
+                            Logout
+                        </button>
+                    </div>
+
+                    <button id="mobile-login-btn" onclick="ui.toggleMobileMenu(); ui.openModal('authModal');" class="w-full mt-2 py-4 bg-slate-900 text-white rounded-xl flex items-center justify-center font-bold shadow-md">
+                        Sign In / Create Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Nav -->
+    <div class="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 z-[45] shadow-[0_-5px_15px_rgba(0,0,0,0.05)] pb-safe">
+        <div class="flex justify-around items-center h-16 pb-1">
+            <a href="index.html" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                <i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a href="course.html" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-brand-blue transition-colors">
+                <i data-lucide="book-open" class="w-5 h-5"></i><span class="text-[10px] font-bold">Courses</span>
+            </a>
+            <a href="store.html" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                <i data-lucide="store" class="w-5 h-5"></i><span class="text-[10px] font-bold">Store</span>
+            </a>
+            <a href="connect.html" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-brand-blue transition-colors">
+                <i data-lucide="users" class="w-5 h-5"></i><span class="text-[10px] font-bold">Connect</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="relative bg-brand-dark text-white overflow-hidden pt-20">
+        <div class="absolute inset-0 opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png')"></div>
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-blue/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-orange/20 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 relative z-10 flex flex-col md:flex-row items-center gap-12">
+            <div class="md:w-1/2 text-center md:text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-blue/20 border border-brand-blue/30 text-blue-300 text-xs font-bold uppercase tracking-widest mb-6 backdrop-blur-sm">
+                    <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> Transform Your Career
+                </div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+                    Build Your Future<br class="hidden sm:block"/>
+                    <span class="text-brand-orange">With Expert Tech Skills.</span>
+                </h1>
+                <p class="text-lg text-slate-300 mb-8 max-w-lg mx-auto md:mx-0 leading-relaxed">
+                    Select multiple courses from Design, Tech, or Engineering. Build your custom learning path, pay once, and start mastering skills that matter today.
+                </p>
+            </div>
+            
+            <div class="md:w-1/2 relative w-full hidden md:block">
+                <div class="grid grid-cols-2 gap-4 animate-float">
+                    <div class="space-y-4 mt-8">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=400" class="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-48 w-full" alt="Students" />
+                        <div class="bg-slate-800/80 backdrop-blur p-5 rounded-2xl border border-slate-700/50 shadow-xl border-l-4 border-l-brand-orange">
+                            <h3 class="text-brand-orange font-extrabold text-2xl mb-1">95%</h3>
+                            <p class="text-xs text-slate-300 font-bold uppercase tracking-wider">Completion Rate</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-brand-blue/20 backdrop-blur p-5 rounded-2xl border border-brand-blue/30 shadow-xl flex flex-col items-center justify-center h-32 text-center border-b-4 border-b-brand-blue">
+                            <i data-lucide="user-check" class="w-8 h-8 text-blue-300 mb-2"></i>
+                            <p class="text-xs text-blue-100 font-bold uppercase tracking-wider">Expert Mentors</p>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=400" class="rounded-2xl shadow-lg border border-slate-700/50 object-cover h-56 w-full" alt="Solar Practical" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1">
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-brand-dark mb-4">Our Training Programs</h2>
+            <p class="text-slate-500 max-w-2xl mx-auto">Build your custom curriculum. Select multiple courses below to bundle them into a single enrollment.</p>
+        </div>
+
+        <!-- Filters -->
+        <div id="filters-container" class="flex overflow-x-auto no-scrollbar snap-x snap-mandatory gap-2 sm:gap-4 justify-start md:justify-center mb-12 pb-2">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- Grid -->
+        <div id="courses-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Rendered by JS -->
+        </div>
+    </section>
+
+    <!-- Floating Cart Bar -->
+    <div id="floating-cart" class="hidden-safely fixed bottom-[80px] md:bottom-8 left-1/2 -translate-x-1/2 z-40 bg-slate-900 text-white p-2 rounded-full shadow-2xl flex items-center gap-4 border border-slate-700 w-[90%] md:w-auto max-w-md transition-transform">
+        <div class="pl-4 py-2 flex-1 flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider"><span id="cart-count">0</span> Selected</span>
+            <span class="font-extrabold text-lg">₦<span id="cart-total">0</span></span>
+        </div>
+        <button onclick="app.handleCheckoutClick()" class="bg-brand-orange hover:bg-orange-600 text-white px-6 py-3 md:py-4 rounded-full font-bold whitespace-nowrap shadow-lg transition-colors flex items-center gap-2">
+            Enroll Now <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-brand-dark text-slate-400 pt-16 pb-24 md:pb-12 border-t-4 border-brand-blue mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-slate-800 pb-12 mb-8">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="logo.png" alt="Mbtech Logo" class="h-10 w-auto object-contain" onerror="this.style.display='none'"/>
+                        <div>
+                            <h4 class="text-xl font-extrabold text-white tracking-tight uppercase">MBTECH <span class="text-brand-blue">NG</span></h4>
+                            <p class="text-xs text-brand-orange font-bold uppercase tracking-widest">Innovating Africa</p>
+                        </div>
+                    </div>
+                    <p class="text-sm leading-relaxed max-w-sm mb-6 text-slate-400">
+                        MBTECH NG is Africa's premier hub for digital skills training, software development, and tech consultancy. We offer expert courses, solar solutions, and premium gadgets.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="https://facebook.com/mbtech.ng" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><i data-lucide="facebook" class="w-[18px] h-[18px]"></i></a>
+                        <a href="https://x.com/mbtech_ng" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><i data-lucide="twitter" class="w-[18px] h-[18px]"></i></a>
+                        <a href="https://www.instagram.com/mbtech_ng" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><i data-lucide="instagram" class="w-[18px] h-[18px]"></i></a>
+                        <a href="https://www.linkedin.com/company/mbtech-ng" target="_blank" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-brand-blue hover:text-white transition-colors"><i data-lucide="linkedin" class="w-[18px] h-[18px]"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-6 tracking-wide uppercase text-sm">Quick Links</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a href="index.html" class="hover:text-brand-orange transition-colors flex items-center gap-2"><i data-lucide="home" class="w-4 h-4"></i> Home</a></li>
+                        <li><a href="course.html" class="hover:text-brand-orange transition-colors flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> Courses</a></li>
+                        <li><a href="store.html" class="hover:text-brand-orange transition-colors flex items-center gap-2"><i data-lucide="store" class="w-4 h-4"></i> Tech Store</a></li>
+                        <li><a href="connect.html" class="hover:text-brand-orange transition-colors flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> Community</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 tracking-wide uppercase text-sm">Contact Us</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-center gap-3"><i data-lucide="phone" class="w-4 h-4 text-brand-blue"></i> +234 708 467 2771</li>
+                        <li class="flex items-center gap-3"><i data-lucide="mail" class="w-4 h-4 text-brand-blue"></i> info@mbtech.ng</li>
+                        <li class="flex items-start gap-3"><i data-lucide="map-pin" class="w-4 h-4 text-brand-blue mt-1"></i> Ikorodu, Lagos, Nigeria</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium">
+                <p>&copy; <span id="current-year"></span> Mesobest Technology. All rights reserved.</p>
+                <div class="flex items-center gap-4 sm:gap-6 flex-wrap justify-center">
+                    <button onclick="ui.openLegalModal('privacy')" class="hover:text-brand-orange transition-colors flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Privacy Policy</button>
+                    <button onclick="ui.openLegalModal('terms')" class="hover:text-brand-orange transition-colors flex items-center gap-1.5"><i data-lucide="file-key" class="w-3.5 h-3.5"></i> Terms of Service</button>
+                    <button onclick="ui.openLegalModal('refund')" class="hover:text-brand-orange transition-colors flex items-center gap-1.5"><i data-lucide="refresh-ccw" class="w-3.5 h-3.5"></i> Refund Policy</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+
+    <!-- Course Details Modal -->
+    <div id="courseModal" class="modal-overlay fixed inset-0 z-[80] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm hidden-safely" onclick="ui.closeModal('courseModal')">
+        <div class="modal-content bg-white rounded-[2rem] w-full max-w-2xl max-h-[90dvh] shadow-2xl flex flex-col" onclick="event.stopPropagation()">
+            <div class="p-6 md:p-8 overflow-y-auto no-scrollbar flex-1 relative">
+                <button onclick="ui.closeModal('courseModal')" class="absolute top-6 right-6 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                
+                <div id="course-modal-icon" class="w-12 h-12 bg-blue-100 text-brand-blue rounded-2xl flex items-center justify-center mb-6"></div>
+                <h2 id="course-modal-title" class="text-2xl font-extrabold text-brand-dark mb-2 pr-8"></h2>
+                <p id="course-modal-desc" class="text-slate-500 text-sm mb-6 leading-relaxed"></p>
+                
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <i data-lucide="clock" class="w-[18px] h-[18px] text-brand-blue"></i> 
+                        <div><span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Duration</span> <span id="course-modal-duration" class="font-bold"></span></div>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <i data-lucide="calendar" class="w-[18px] h-[18px] text-brand-blue"></i> 
+                        <div><span class="block text-[10px] text-slate-400 uppercase font-bold tracking-wider">Level</span> <span id="course-modal-level" class="font-bold"></span></div>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-6">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Curriculum Overview</h4>
+                    <ul id="course-modal-curriculum" class="space-y-3"></ul>
+                </div>
+            </div>
+            <div class="p-6 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 rounded-b-[2rem]">
+                <div class="text-center sm:text-left">
+                    <span class="block text-xs font-bold uppercase tracking-wider text-slate-400">Tuition Fee</span>
+                    <span class="text-2xl font-extrabold text-brand-dark">₦<span id="course-modal-price"></span></span>
+                </div>
+                <button id="course-modal-btn" class="w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                    <!-- Text injected by JS -->
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal-overlay fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm hidden-safely" onclick="ui.closeModal('authModal')">
+        <div class="modal-content bg-white rounded-[2rem] w-full max-w-md p-8 relative shadow-2xl" onclick="event.stopPropagation()">
+            <button onclick="ui.closeModal('authModal')" class="absolute top-6 right-6 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            
+            <div class="w-12 h-12 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-6">
+                <i data-lucide="lock" class="w-6 h-6"></i>
+            </div>
+            <h2 id="auth-title" class="text-2xl font-extrabold text-brand-dark mb-2">Welcome Back</h2>
+            <p id="auth-desc" class="text-slate-500 text-sm mb-6">Sign in to manage your enrollments and access courses.</p>
+
+            <form id="auth-form" class="space-y-4">
+                <input type="email" id="auth-email" required placeholder="Email Address" class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" />
+                <input type="password" id="auth-password" required placeholder="Password (Min. 6 chars)" minlength="6" class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" />
+                <button type="submit" id="auth-submit-btn" class="w-full py-3.5 mt-2 bg-brand-blue text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:bg-brand-blueHover hover:-translate-y-0.5 transition-all flex justify-center items-center h-[52px]">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center border-t border-slate-100 pt-6">
+                <button onclick="app.toggleAuthMode()" id="auth-toggle-btn" class="text-sm font-bold text-slate-600 hover:text-brand-blue transition-colors">
+                    Don't have an account? Sign Up
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enroll/Checkout Modal -->
+    <div id="enrollModal" class="modal-overlay fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm hidden-safely" onclick="ui.closeModal('enrollModal')">
+        <div class="modal-content bg-white rounded-[2rem] w-full max-w-md p-8 relative shadow-2xl" onclick="event.stopPropagation()">
+            <button onclick="ui.closeModal('enrollModal')" class="absolute top-6 right-6 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            
+            <h3 class="text-xl font-extrabold text-brand-dark mb-2">Secure Checkout</h3>
+            <p class="text-slate-500 text-sm mb-6">Complete your payment to secure your spot.</p>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Selected Courses</span>
+                    <span id="checkout-count" class="text-xs font-extrabold bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded">0</span>
+                </div>
+                <p id="checkout-titles" class="text-sm font-bold text-slate-700 truncate"></p>
+                <div class="mt-4 flex justify-between items-end border-t border-slate-200 pt-4">
+                    <span class="text-sm font-bold text-slate-600">Total Amount</span>
+                    <span class="text-2xl font-extrabold text-brand-dark">₦<span id="checkout-total">0</span></span>
+                </div>
+            </div>
+
+            <form id="checkout-form" class="space-y-4">
+                <input required type="text" id="checkout-name" placeholder="Full Legal Name" class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" />
+                <input required type="email" id="checkout-email" placeholder="Email Address" class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" />
+                <input required type="tel" id="checkout-phone" placeholder="WhatsApp Number" class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-sm font-medium focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" />
+                
+                <button type="submit" class="w-full py-4 mt-2 bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:bg-black hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="credit-card" class="w-[18px] h-[18px]"></i> Pay with Paystack
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tutor/Assignment Modal -->
+    <div id="tutorModal" class="modal-overlay fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm hidden-safely" onclick="ui.closeModal('tutorModal')">
+        <div class="modal-content bg-white rounded-[2rem] w-full max-w-2xl max-h-[90dvh] overflow-y-auto no-scrollbar shadow-2xl relative" onclick="event.stopPropagation()">
+            <div class="sticky top-0 bg-white/95 backdrop-blur-md p-6 border-b border-slate-100 flex justify-between items-center z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-orange-50 text-brand-orange rounded-xl flex items-center justify-center"><i data-lucide="help-circle" class="w-5 h-5"></i></div>
+                    <div><h2 class="text-lg font-extrabold text-brand-dark leading-tight">Get a Private Tutor</h2><p class="text-xs font-bold text-slate-500">Or request assignment help</p></div>
+                </div>
+                <button onclick="ui.closeModal('tutorModal')" class="p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <form id="tutor-form" class="p-6 md:p-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Student Name</label><input required type="text" id="tutor-name" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none" /></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Student Age</label><input required type="number" id="tutor-age" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none" /></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Parent Name (If &lt; 16)</label><input type="text" id="tutor-parent-name" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none" /></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Parent Phone</label><input type="tel" id="tutor-parent-phone" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none" /></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email Address</label><input type="email" id="tutor-email" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none" /></div>
+                    <div><label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">WhatsApp Number</label><input required type="tel" id="tutor-phone" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none" /></div>
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Academic Level</label>
+                        <select id="tutor-level" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none appearance-none">
+                            <option value="JSS">JSS 1-3</option><option value="SSS">SSS 1-3</option><option value="WAEC">WAEC/NECO</option><option value="JAMB">JAMB UTME</option><option value="IGCSE">IGCSE/British</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Curriculum</label>
+                        <select id="tutor-curriculum" class="w-full border border-slate-200 bg-slate-50 p-3 rounded-xl focus:ring-2 focus:ring-brand-orange outline-none appearance-none">
+                            <option>West African</option><option>British</option><option>American</option><option>Hybrid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="bg-orange-50 p-4 rounded-xl border border-orange-100">
+                    <label class="block text-xs font-bold text-orange-600 mb-3 uppercase tracking-wider">Select Subjects</label>
+                    <div id="tutor-subjects" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Preferred Platform</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer"><input type="radio" name="tutor-platform" value="WhatsApp" checked class="text-brand-orange"/> WhatsApp</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer"><input type="radio" name="tutor-platform" value="Google Meet" class="text-brand-orange"/> G-Meet</label>
+                        <label class="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer"><input type="radio" name="tutor-platform" value="Zoom" class="text-brand-orange"/> Zoom</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full py-4 bg-brand-orange text-white font-bold rounded-xl shadow-lg hover:bg-orange-600 hover:-translate-y-0.5 transition-all">
+                    Submit Request via WhatsApp
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Legal Modal -->
+    <div id="legalModal" class="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm hidden-safely" onclick="ui.closeModal('legalModal')">
+        <div class="modal-content bg-white rounded-[2rem] w-full max-w-md shadow-2xl relative" onclick="event.stopPropagation()">
+            <button onclick="ui.closeModal('legalModal')" class="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="p-6 md:p-8">
+                <div id="legal-icon-container" class="w-12 h-12 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-4"></div>
+                <h2 id="legal-title" class="text-2xl font-extrabold text-brand-dark mb-4"></h2>
+                <p id="legal-content" class="text-slate-600 text-sm leading-relaxed"></p>
+                <button onclick="ui.closeModal('legalModal')" class="w-full py-3.5 mt-8 bg-brand-blue text-white font-bold rounded-xl shadow-md hover:bg-brand-blueHover transition-colors">I Understand</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT APPLICATION -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
         import { getFirestore, collection, onSnapshot, doc, setDoc, serverTimestamp, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // --- CONFIG & CONSTANTS ---
+        const WHATSAPP_NUMBER = "2347084672771";
+        const TUTOR_WHATSAPP = "2348109006065";
+        const getPaystackKey = () => atob("cGlfbGl2ZV82YjI1NWIzNTliYmJmNmFhZjVhNjlkMDNkMjI2MmYwYmQ2MGI3ZTNj");
         
         const firebaseConfig = {
             apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
@@ -67,487 +521,493 @@
             messagingSenderId: "1083008774596",
             appId: "1:1083008774596:web:110b651c6426116ed43491"
         };
-        const app = initializeApp(firebaseConfig);
-        window.auth = getAuth(app);
-        window.db = getFirestore(app);
-        window.appId = 'mbtech-public-store';
-        
-        // Obfuscated Paystack live key
-        window.getPaystackKey = () => atob("cGlfbGl2ZV82YjI1NWIzNTliYmJmNmFhZjVhNjlkMDNkMjI2MmYwYmQ2MGI3ZTNj");
-        window.WHATSAPP_NUMBER = "2347084672771";
-        window.TUTOR_WHATSAPP = "2348109006065";
-    </script>
-    
-    <!-- Paystack -->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-    
-    <!-- Main application script (vanilla JS) -->
-    <script type="module">
-        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { collection, onSnapshot, doc, setDoc, serverTimestamp, addDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        
-        const auth = window.auth;
-        const db = window.db;
-        const appId = window.appId;
-        const WHATSAPP_NUMBER = window.WHATSAPP_NUMBER;
-        const TUTOR_WHATSAPP = window.TUTOR_WHATSAPP;
-        
-        // Fallback courses with Lucide icon names
+
+        const appInstance = initializeApp(firebaseConfig);
+        const auth = getAuth(appInstance);
+        const db = getFirestore(appInstance);
+        const appId = 'mbtech-public-store';
+
         const FALLBACK_COURSES = [
-            { id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", price: 50000, icon: "Palette", description: "Master Figma, prototyping, and user research." },
-            { id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", price: 50000, icon: "Brush", description: "Photoshop, Illustrator, brand identity." },
-            { id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", price: 50000, icon: "Video", description: "Premiere Pro, After Effects, CapCut." },
-            { id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", price: 50000, icon: "Megaphone", description: "SEO, Ads, social media management." },
-            { id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, icon: "Code", description: "HTML, CSS, JS, React, Tailwind." },
-            { id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", price: 100000, icon: "Database", description: "Node.js, Express, MongoDB, APIs." },
-            { id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", price: 100000, icon: "BarChart", description: "Python, SQL, PowerBI, Tableau." },
-            { id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", price: 100000, icon: "Shield", description: "Network security, Kali Linux, pen testing." },
-            { id: "e1", title: "Solar & Hybrid Inverter Installation", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Sun", description: "Solar sizing, wiring, installation practical." },
-            { id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Camera", description: "IP cameras, DVR, remote viewing." },
-            { id: "e3", title: "Computer Hardware & Software Installation", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Cpu", description: "PC diagnostics, OS, driver management." },
-            { id: "e4", title: "Electrical Installation & Troubleshooting", category: "Engineering", duration: "10 Weeks", price: 150000, icon: "Zap", description: "Wiring, breakers, fault finding." }
+            { id: "d1", title: "UI/UX Product Design", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "palette", image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&q=80&w=800", description: "Learn how to design intuitive, beautiful, and user-friendly digital products using Figma.", curriculum: ["Design Thinking & User Research", "Wireframing & Prototyping", "Figma Mastery", "Color Theory", "Building a Case Study"] },
+            { id: "d2", title: "Graphics Design & Branding", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "monitor", image: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&q=80&w=800", description: "Master Adobe Photoshop, Illustrator, and CorelDraw to create stunning visual identities.", curriculum: ["Principles of Visual Design", "Adobe Photoshop Mastery", "Vector Graphics", "Logo Design", "Print vs Digital"] },
+            { id: "d3", title: "Video Editing & Animation", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "video", image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&q=80&w=800", description: "Learn professional video editing using Premiere Pro, After Effects, and CapCut.", curriculum: ["Timeline Management", "Color Grading", "Audio Mixing", "Motion Graphics", "Exporting"] },
+            { id: "d4", title: "Digital Marketing", category: "Design", duration: "6 Weeks", level: "Beginner", price: 50000, iconName: "megaphone", image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?auto=format&fit=crop&q=80&w=800", description: "Master SEO, Social Media Marketing, and Paid Advertising (Facebook/Google Ads).", curriculum: ["Search Engine Optimization", "Social Media Strategy", "Running Ad Campaigns", "Email Marketing", "Analytics"] },
+            { id: "t1", title: "Frontend Web Development", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "code", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800", description: "Learn to build responsive, modern, and interactive websites from scratch.", curriculum: ["HTML5 & CSS3", "JavaScript Essentials", "Git & GitHub", "React.js Framework", "Tailwind CSS"] },
+            { id: "t2", title: "Backend Web Development", category: "Tech", duration: "8 Weeks", level: "Intermediate", price: 100000, iconName: "database", image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=800", description: "Master server-side programming. Learn to build robust APIs and manage databases.", curriculum: ["Node.js & Express", "RESTful APIs", "MongoDB/SQL", "User Authentication", "Server Deployment"] },
+            { id: "t3", title: "Data Analytics & Science", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "file-text", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800", description: "Extract actionable insights from raw data. Learn Python, SQL, and PowerBI.", curriculum: ["Excel for Data", "SQL Querying", "Python Programming", "Data Visualization", "Predictive Modeling"] },
+            { id: "t4", title: "Cybersecurity & Ethical Hacking", category: "Tech", duration: "8 Weeks", level: "Beginner", price: 100000, iconName: "shield", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=800", description: "Protect systems from digital attacks. Learn how hackers think to secure infrastructures.", curriculum: ["Networking Fundamentals", "Linux Essentials", "Vulnerability Assessment", "Penetration Testing", "Incident Response"] },
+            { id: "e1", title: "Solar & Hybrid Inverter", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "zap", image: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=800", description: "Master the complete process of sizing, installing, and maintaining solar systems.", curriculum: ["Renewable Energy Safety", "Load Calculation", "Battery Technologies", "Inverter Configurations", "Live Practical Projects"] },
+            { id: "e2", title: "CCTV & Intercom Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "shield-alert", image: "https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&q=80&w=800", description: "Become a security systems engineer. Learn to design, wire, and configure surveillance.", curriculum: ["Types of Cameras", "DVR/NVR Setup", "Cabling & Power Supply", "Network Setup", "Intercom Basics"] },
+            { id: "e3", title: "Computer Hardware & Software", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "settings", image: "https://images.unsplash.com/photo-1629654291663-b91ad427698f?auto=format&fit=crop&q=80&w=800", description: "Master PC diagnostics, component replacements, OS installations, and drivers.", curriculum: ["PC Architecture", "Motherboard Diagnostics", "OS Installation", "Driver Management", "Data Backup"] },
+            { id: "e4", title: "Electrical Installation", category: "Engineering", duration: "10 Weeks", level: "Beginner", price: 150000, iconName: "plug", image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=800", description: "Master residential and commercial electrical wiring, fault finding, and load balancing.", curriculum: ["Electrical Safety Codes", "Residential Wiring", "Circuit Breakers", "Fault Diagnostics", "Earthing & Power Mgt"] }
         ];
-        
-        let courses = [];
+
+        // --- GLOBAL STATE ---
+        let user = null;
+        let courses = FALLBACK_COURSES;
         let selectedCourses = [];
-        let currentUser = null;
+        let currentFilter = 'All Courses';
         
-        // DOM elements
-        const coursesContainer = document.getElementById('coursesContainer');
-        const totalSpan = document.getElementById('totalPrice');
-        const enrollBtn = document.getElementById('enrollBtn');
-        const authModal = document.getElementById('authModal');
-        const enrollModal = document.getElementById('enrollModal');
-        const tutorModal = document.getElementById('tutorModal');
-        const userDisplay = document.getElementById('userDisplay');
-        const logoutBtn = document.getElementById('logoutBtn');
-        
-        // Helper: render courses with Lucide icons
-        function renderCourses() {
-            if (!coursesContainer) return;
-            const categories = ['Design', 'Tech', 'Engineering'];
-            let html = '';
-            for (const cat of categories) {
-                const catCourses = courses.filter(c => c.category === cat);
-                if (catCourses.length === 0) continue;
-                const colorClass = cat === 'Design' ? 'bg-pink-500' : (cat === 'Tech' ? 'bg-brand-blue' : 'bg-brand-orange');
-                html += `<div class="mb-12"><h2 class="text-2xl font-extrabold mb-6 flex items-center gap-2"><span class="w-2 h-6 rounded-full ${colorClass}"></span>${cat} Courses</h2><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">`;
-                for (const course of catCourses) {
-                    const isChecked = selectedCourses.some(c => c.id === course.id);
-                    const iconName = course.icon || 'BookOpen';
-                    html += `
-                        <div class="course-card bg-white rounded-2xl border border-slate-200 p-5 transition-all">
-                            <div class="flex items-start justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-brand-blue">
-                                        <i data-lucide="${iconName}" class="w-5 h-5"></i>
-                                    </div>
-                                    <div><h3 class="font-bold text-lg">${escapeHtml(course.title)}</h3><p class="text-xs text-slate-500">${course.duration}</p></div>
+        let isLoginMode = true;
+        let pendingCheckout = false;
+        let mobileMenuOpen = false;
+
+        // --- UTILS ---
+        const getCategoryColor = (category) => {
+            const colors = { 'Design': 'bg-pink-500', 'Tech': 'bg-brand-blue', 'Engineering': 'bg-brand-orange' };
+            return colors[category] || 'bg-brand-blue';
+        };
+        const escapeHtml = (unsafe) => {
+            return (unsafe || '').toString()
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        };
+
+        // --- UI RENDER FUNCTIONS ---
+        window.ui = {
+            notify: (msg, type = 'success') => {
+                const toast = document.getElementById('toast');
+                const toastBody = document.getElementById('toast-body');
+                const toastIcon = document.getElementById('toast-icon');
+                const toastMsg = document.getElementById('toast-msg');
+
+                toastMsg.innerText = msg;
+                toastBody.className = `px-6 py-3.5 rounded-full shadow-xl shadow-black/10 text-white font-bold flex items-center gap-2 backdrop-blur-md ${type === 'error' ? 'bg-red-600/90' : type === 'info' ? 'bg-slate-800/90' : 'bg-brand-blue/90'}`;
+                toastIcon.setAttribute('data-lucide', type === 'error' ? 'shield-alert' : type === 'info' ? 'help-circle' : 'check-circle');
+                lucide.createIcons();
+
+                toast.classList.remove('-translate-y-8', 'opacity-0', 'scale-95', 'pointer-events-none');
+                toast.classList.add('translate-y-0', 'opacity-100', 'scale-100');
+
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-0', 'opacity-100', 'scale-100');
+                    toast.classList.add('-translate-y-8', 'opacity-0', 'scale-95', 'pointer-events-none');
+                }, 3500);
+            },
+            openModal: (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('hidden-safely');
+                    // slight delay to allow display:block to apply before animating opacity
+                    setTimeout(() => modal.classList.add('active'), 10);
+                }
+            },
+            closeModal: (modalId) => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('active');
+                    setTimeout(() => modal.classList.add('hidden-safely'), 300); // Wait for transition
+                }
+            },
+            toggleMobileMenu: () => {
+                mobileMenuOpen = !mobileMenuOpen;
+                const menu = document.getElementById('mobile-menu');
+                const icon = document.getElementById('mobile-menu-icon');
+                if (mobileMenuOpen) {
+                    menu.classList.remove('hidden-safely');
+                    icon.setAttribute('data-lucide', 'x');
+                } else {
+                    menu.classList.add('hidden-safely');
+                    icon.setAttribute('data-lucide', 'menu');
+                }
+                lucide.createIcons();
+            },
+            openLegalModal: (type) => {
+                const titleEl = document.getElementById('legal-title');
+                const contentEl = document.getElementById('legal-content');
+                const iconContainer = document.getElementById('legal-icon-container');
+
+                if (type === 'privacy') {
+                    titleEl.innerText = 'Privacy Policy';
+                    contentEl.innerText = "We take your privacy seriously. We only collect essential information required to process your enrollments securely. Your data is protected using industry-standard measures and is never sold.";
+                    iconContainer.innerHTML = '<i data-lucide="shield-check" class="w-6 h-6"></i>';
+                } else if (type === 'terms') {
+                    titleEl.innerText = 'Terms of Service';
+                    contentEl.innerText = "By using MBTECH NG, you agree to abide by our academy guidelines. Course fees must be paid before commencement. We reserve the right to update curriculum to match industry standards.";
+                    iconContainer.innerHTML = '<i data-lucide="file-key" class="w-6 h-6"></i>';
+                } else if (type === 'refund') {
+                    titleEl.innerText = 'Refund Policy';
+                    contentEl.innerText = "Refunds are available within the first 7 days of enrollment, provided you have not accessed more than 20% of materials. Assignment help and software installations are non-refundable.";
+                    iconContainer.innerHTML = '<i data-lucide="refresh-ccw" class="w-6 h-6"></i>';
+                }
+                
+                lucide.createIcons();
+                ui.openModal('legalModal');
+            },
+            openCourseDetails: (courseId) => {
+                const course = courses.find(c => c.id === courseId);
+                if (!course) return;
+                
+                document.getElementById('course-modal-title').innerText = course.title;
+                document.getElementById('course-modal-desc').innerText = course.description || '';
+                document.getElementById('course-modal-duration').innerText = course.duration;
+                document.getElementById('course-modal-level').innerText = course.level;
+                document.getElementById('course-modal-price').innerText = (course.price || 0).toLocaleString();
+                document.getElementById('course-modal-icon').innerHTML = `<i data-lucide="${course.iconName?.toLowerCase() || 'book-open'}" class="w-6 h-6"></i>`;
+                
+                const currList = document.getElementById('course-modal-curriculum');
+                if (course.curriculum && Array.isArray(course.curriculum)) {
+                    currList.innerHTML = course.curriculum.map(item => `
+                        <li class="flex items-start gap-2 text-sm text-slate-700">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-brand-orange shrink-0 mt-0.5"></i>
+                            <span class="leading-tight">${escapeHtml(item)}</span>
+                        </li>`).join('');
+                } else { currList.innerHTML = ''; }
+
+                const btn = document.getElementById('course-modal-btn');
+                const isSelected = selectedCourses.some(c => c.id === course.id);
+                
+                if (isSelected) {
+                    btn.className = "w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 bg-red-50 text-red-600 hover:bg-red-100";
+                    btn.innerHTML = "Remove Selection";
+                } else {
+                    btn.className = "w-full sm:w-auto px-8 py-3.5 font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 bg-brand-blue text-white hover:bg-brand-blueHover";
+                    btn.innerHTML = `<i data-lucide="plus" class="w-[18px] h-[18px]"></i> Add to Selection`;
+                }
+
+                btn.onclick = () => {
+                    app.toggleCourse(course.id);
+                    ui.closeModal('courseModal');
+                };
+
+                lucide.createIcons();
+                ui.openModal('courseModal');
+            }
+        };
+
+        // --- CORE APPLICATION LOGIC ---
+        window.app = {
+            renderFilters: () => {
+                const categories = ["All Courses", ...Array.from(new Set(courses.map(c => c.category)))];
+                const container = document.getElementById('filters-container');
+                container.innerHTML = categories.map(c => `
+                    <button onclick="app.setFilter('${c}')" class="snap-start px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all border ${currentFilter === c ? 'bg-brand-blue text-white border-brand-blue shadow-md shadow-blue-500/20' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">
+                        ${c}
+                    </button>
+                `).join('');
+            },
+            renderCourses: () => {
+                const grid = document.getElementById('courses-grid');
+                const filtered = currentFilter === 'All Courses' ? courses : courses.filter(c => c.category === currentFilter);
+                
+                grid.innerHTML = filtered.map(course => {
+                    const isSelected = selectedCourses.some(c => c.id === course.id);
+                    const safeDesc = escapeHtml(course.description);
+                    const safeTitle = escapeHtml(course.title);
+                    const iconAttr = course.iconName ? course.iconName.toLowerCase() : 'book-open';
+                    
+                    return `
+                        <div class="group bg-white rounded-[2rem] border overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col ${isSelected ? 'border-brand-blue ring-2 ring-brand-blue/20' : 'border-slate-200'}">
+                            <div class="relative h-48 overflow-hidden bg-slate-100">
+                                <img src="${course.image}" alt="${safeTitle}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" onerror="this.src='https://placehold.co/800x400?text=Course'" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent"></div>
+                                <div class="absolute top-4 right-4">
+                                    <span class="bg-white/95 backdrop-blur text-brand-dark text-xs font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
+                                        ₦${(course.price || 0).toLocaleString()}
+                                    </span>
                                 </div>
-                                <input type="checkbox" class="course-checkbox w-5 h-5 accent-brand-blue" data-id="${course.id}" data-title="${escapeHtml(course.title)}" data-price="${course.price}" ${isChecked ? 'checked' : ''}>
+                                <div class="absolute bottom-4 left-4 flex gap-2">
+                                    <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center text-white">
+                                        <i data-lucide="${iconAttr}" class="w-4 h-4"></i>
+                                    </div>
+                                    <span class="text-white text-[10px] font-bold px-3 flex items-center rounded-lg uppercase tracking-wider shadow-sm ${getCategoryColor(course.category)}">
+                                        ${course.category}
+                                    </span>
+                                </div>
                             </div>
-                            <p class="text-sm text-slate-600 mt-3 line-clamp-2">${escapeHtml(course.description)}</p>
-                            <div class="mt-4 flex justify-between items-center">
-                                <span class="font-extrabold text-brand-dark">₦${course.price.toLocaleString()}</span>
-                                <button class="select-toggle text-xs font-bold text-brand-blue underline" data-id="${course.id}">${isChecked ? 'Deselect' : 'Select'}</button>
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="font-extrabold text-brand-dark text-lg leading-tight mb-2 group-hover:text-brand-blue transition-colors">${safeTitle}</h3>
+                                <p class="text-slate-500 text-sm mb-5 line-clamp-2 leading-relaxed">${safeDesc}</p>
+                                
+                                <div class="flex gap-4 mb-6 mt-auto">
+                                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-600"><i data-lucide="clock" class="w-3.5 h-3.5 text-brand-orange"></i>${course.duration}</div>
+                                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-600"><i data-lucide="calendar" class="w-3.5 h-3.5 text-brand-orange"></i>${course.level}</div>
+                                </div>
+
+                                <div class="flex gap-2">
+                                    <button onclick="ui.openCourseDetails('${course.id}')" class="flex-1 py-3 bg-slate-50 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-100 transition-colors border border-slate-200">
+                                        Details
+                                    </button>
+                                    <button onclick="app.toggleCourse('${course.id}')" class="flex-1 py-3 font-bold text-sm rounded-xl transition-all border flex items-center justify-center gap-2 ${isSelected ? 'bg-brand-blue text-white border-brand-blue shadow-lg shadow-blue-500/20' : 'bg-white text-brand-blue border-brand-blue hover:bg-blue-50'}">
+                                        <i data-lucide="${isSelected ? 'check' : 'plus'}" class="w-4 h-4"></i>
+                                        ${isSelected ? 'Selected' : 'Select'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
+                }).join('');
+                
+                lucide.createIcons();
+            },
+            renderCart: () => {
+                const floatCart = document.getElementById('floating-cart');
+                const badge = document.getElementById('mobile-cart-badge');
+                
+                if (selectedCourses.length > 0) {
+                    const total = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
+                    document.getElementById('cart-count').innerText = selectedCourses.length;
+                    document.getElementById('cart-total').innerText = total.toLocaleString();
+                    document.getElementById('mobile-cart-count').innerText = selectedCourses.length;
+                    
+                    floatCart.classList.remove('hidden-safely');
+                    badge.classList.remove('hidden-safely');
+                } else {
+                    floatCart.classList.add('hidden-safely');
+                    badge.classList.add('hidden-safely');
                 }
-                html += `</div></div>`;
+            },
+            updateAuthUI: () => {
+                const isAuth = user && !user.isAnonymous;
+                const emailStr = isAuth ? user.email : '';
+
+                // Desktop Nav
+                if (isAuth) {
+                    document.getElementById('nav-user-view').classList.remove('hidden-safely');
+                    document.getElementById('nav-user-view').classList.add('flex');
+                    document.getElementById('nav-login-btn').classList.add('hidden-safely');
+                    document.getElementById('nav-user-email').innerText = emailStr;
+                } else {
+                    document.getElementById('nav-user-view').classList.add('hidden-safely');
+                    document.getElementById('nav-user-view').classList.remove('flex');
+                    document.getElementById('nav-login-btn').classList.remove('hidden-safely');
+                }
+
+                // Mobile Nav
+                if (isAuth) {
+                    document.getElementById('mobile-user-view').classList.remove('hidden-safely');
+                    document.getElementById('mobile-user-view').classList.add('flex');
+                    document.getElementById('mobile-login-btn').classList.add('hidden-safely');
+                    document.getElementById('mobile-user-email').innerText = emailStr;
+                } else {
+                    document.getElementById('mobile-user-view').classList.add('hidden-safely');
+                    document.getElementById('mobile-user-view').classList.remove('flex');
+                    document.getElementById('mobile-login-btn').classList.remove('hidden-safely');
+                }
+                
+                if(isAuth && document.getElementById('checkout-email')) {
+                    document.getElementById('checkout-email').value = emailStr;
+                }
+            },
+            setFilter: (f) => {
+                currentFilter = f;
+                app.renderFilters();
+                app.renderCourses();
+            },
+            toggleCourse: (id) => {
+                const cIndex = selectedCourses.findIndex(c => c.id === id);
+                if (cIndex > -1) {
+                    selectedCourses.splice(cIndex, 1);
+                } else {
+                    const course = courses.find(c => c.id === id);
+                    if (course) selectedCourses.push(course);
+                }
+                app.renderCourses();
+                app.renderCart();
+            },
+            handleCheckoutClick: () => {
+                if (selectedCourses.length === 0) return;
+                if (!user || user.isAnonymous) {
+                    pendingCheckout = true;
+                    ui.openModal('authModal');
+                } else {
+                    app.prepCheckout();
+                }
+            },
+            prepCheckout: () => {
+                document.getElementById('checkout-count').innerText = selectedCourses.length;
+                document.getElementById('checkout-titles').innerText = selectedCourses.map(c=>c.title).join(', ');
+                const total = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
+                document.getElementById('checkout-total').innerText = total.toLocaleString();
+                if(user && !user.isAnonymous) document.getElementById('checkout-email').value = user.email;
+                ui.openModal('enrollModal');
+            },
+            toggleAuthMode: () => {
+                isLoginMode = !isLoginMode;
+                document.getElementById('auth-title').innerText = isLoginMode ? 'Welcome Back' : 'Create Account';
+                document.getElementById('auth-desc').innerText = isLoginMode ? 'Sign in to manage your enrollments and access courses.' : 'Join Mbtech Academy to start your tech journey.';
+                const btn = document.getElementById('auth-submit-btn');
+                btn.innerText = isLoginMode ? 'Sign In' : 'Sign Up';
+                document.getElementById('auth-toggle-btn').innerText = isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Sign In";
+            },
+            logout: async () => {
+                try {
+                    await signOut(auth);
+                    await signInAnonymously(auth);
+                    selectedCourses = [];
+                    app.renderCourses();
+                    app.renderCart();
+                    ui.notify("Logged out successfully.");
+                } catch(e) { console.error(e); }
             }
-            coursesContainer.innerHTML = html;
-            
-            // Initialize Lucide icons
-            if (window.lucide) window.lucide.createIcons();
-            
-            // Attach event listeners
-            document.querySelectorAll('.course-checkbox').forEach(cb => {
-                cb.addEventListener('change', (e) => {
-                    const id = cb.dataset.id;
-                    const course = courses.find(c => c.id === id);
-                    if (cb.checked) {
-                        if (!selectedCourses.find(c => c.id === id)) selectedCourses.push(course);
-                    } else {
-                        selectedCourses = selectedCourses.filter(c => c.id !== id);
-                    }
-                    updateTotal();
-                    renderCourses(); // re-render to update toggle button text
-                });
+        };
+
+        // --- DOM EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set Year
+            document.getElementById('current-year').innerText = new Date().getFullYear();
+
+            // Populate Tutor Subjects visually
+            const tutorSubs = document.getElementById('tutor-subjects');
+            tutorSubs.innerHTML = ['Math', 'English', 'Physics', 'Chemistry', 'Biology', 'Economics', 'ICT', 'Programming'].map(sub => `
+                <label class="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer">
+                    <input type="checkbox" name="subjects" value="${sub}" class="w-4 h-4 text-brand-orange rounded focus:ring-brand-orange" /> ${sub}
+                </label>
+            `).join('');
+
+            // Scroll Effect
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    nav.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-md');
+                } else {
+                    nav.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-md');
+                }
             });
-            document.querySelectorAll('.select-toggle').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.dataset.id;
-                    const course = courses.find(c => c.id === id);
-                    const isSelected = selectedCourses.some(c => c.id === id);
-                    if (isSelected) {
-                        selectedCourses = selectedCourses.filter(c => c.id !== id);
+
+            // Auth Form Submission
+            document.getElementById('auth-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                const btn = document.getElementById('auth-submit-btn');
+                btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processing...`;
+                lucide.createIcons();
+
+                try {
+                    if (isLoginMode) {
+                        await signInWithEmailAndPassword(auth, email, password);
+                        ui.notify("Welcome back!");
                     } else {
-                        selectedCourses.push(course);
+                        await createUserWithEmailAndPassword(auth, email, password);
+                        ui.notify("Account created successfully!");
                     }
-                    updateTotal();
-                    renderCourses(); // re-render to sync checkboxes and toggle text
-                });
+                    ui.closeModal('authModal');
+                    if (pendingCheckout) {
+                        pendingCheckout = false;
+                        app.prepCheckout();
+                    }
+                } catch (err) {
+                    ui.notify(err.message.replace('Firebase: ', ''), "error");
+                } finally {
+                    btn.innerHTML = isLoginMode ? 'Sign In' : 'Sign Up';
+                }
             });
-            updateSelectedCount();
-        }
-        
-        function updateTotal() {
-            const total = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
-            totalSpan.innerText = total.toLocaleString();
-            enrollBtn.disabled = selectedCourses.length === 0;
-            updateSelectedCount();
-        }
-        
-        function updateSelectedCount() {
-            const countSpan = document.getElementById('selectedCount');
-            if (countSpan) countSpan.innerText = selectedCourses.length;
-        }
-        
-        function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-        
-        // Load courses from Firestore or fallback
-        function loadCourses() {
+
+            // Checkout Form Submission (Paystack)
+            document.getElementById('checkout-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('checkout-name').value.trim();
+                const email = document.getElementById('checkout-email').value.trim();
+                const phone = document.getElementById('checkout-phone').value.trim();
+                const total = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
+                const coursesStr = selectedCourses.map(c=>c.title).join(', ');
+
+                const handler = window.PaystackPop.setup({
+                    key: getPaystackKey(),
+                    email: email,
+                    amount: total * 100,
+                    currency: 'NGN',
+                    metadata: { custom_fields: [{ display_name: "Full Name", value: name }, { display_name: "Courses", value: coursesStr }, { display_name: "Phone", value: phone }] },
+                    callback: async (response) => {
+                        try {
+                            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
+                                type: 'course_enrollment', name, email, phone,
+                                courses: coursesStr, totalAmount: total, transactionRef: response.reference,
+                                status: 'Paid', createdAt: serverTimestamp()
+                            });
+                        } catch(err) { console.error(err); }
+
+                        const msg = `✅ Payment successful! Enrolled in: ${coursesStr}. Total: ₦${total.toLocaleString()}. Name: ${name}.`;
+                        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+
+                        selectedCourses = [];
+                        app.renderCourses();
+                        app.renderCart();
+                        ui.closeModal('enrollModal');
+                        ui.notify("Enrollment Successful! Welcome to Mbtech.");
+                    },
+                    onClose: () => ui.notify("Payment window closed.", "info")
+                });
+                handler.openIframe();
+            });
+
+            // Tutor Form Submission
+            document.getElementById('tutor-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const subjects = Array.from(e.target.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value).join(', ');
+                const platformNode = e.target.querySelector('input[name="tutor-platform"]:checked');
+                const platform = platformNode ? platformNode.value : 'WhatsApp';
+                
+                const data = {
+                    name: document.getElementById('tutor-name').value,
+                    age: document.getElementById('tutor-age').value,
+                    parentName: document.getElementById('tutor-parent-name').value,
+                    parentPhone: document.getElementById('tutor-parent-phone').value,
+                    email: document.getElementById('tutor-email').value,
+                    phone: document.getElementById('tutor-phone').value,
+                    level: document.getElementById('tutor-level').value,
+                    curriculum: document.getElementById('tutor-curriculum').value,
+                };
+                
+                const payload = {
+                    type: 'tutor_request', studentName: data.name, studentAge: parseInt(data.age),
+                    parentName: data.parentName, parentPhone: data.parentPhone,
+                    level: data.level, curriculum: data.curriculum, subjects, platform: platform,
+                    email: data.email, phone: data.phone, timestamp: serverTimestamp(), status: 'New'
+                };
+
+                try {
+                    await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), payload);
+                } catch(err) { console.error(err); }
+
+                const msg = `Hello Tutor! New booking request.%0AStudent: ${data.name} (Age ${data.age})%0ALevel: ${data.level}%0ASubjects: ${subjects}%0APlatform: ${platform}%0APhone: ${data.phone}`;
+                window.open(`https://wa.me/${TUTOR_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+                ui.closeModal('tutorModal');
+                ui.notify("Tutor request logged!");
+                e.target.reset();
+            });
+
+            // --- INIT FIREBASE LISTENERS ---
+            const initAuth = async () => {
+                try {
+                    if (!auth.currentUser) await signInAnonymously(auth);
+                } catch (e) { console.error(e); }
+            };
+            initAuth();
+
+            onAuthStateChanged(auth, (u) => {
+                user = u;
+                app.updateAuthUI();
+            });
+
             const q = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses');
-            onSnapshot(q, (snapshot) => {
+            onSnapshot(q, async (snapshot) => {
                 if (!snapshot.empty) {
                     courses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 } else {
-                    courses = [...FALLBACK_COURSES];
-                    // Auto-seed
-                    courses.forEach(async (c) => {
-                        const ref = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses', c.id);
-                        await setDoc(ref, { ...c, published: true, createdAt: serverTimestamp() }).catch(()=>{});
-                    });
-                }
-                renderCourses();
-            }, (err) => {
-                console.error(err);
-                courses = [...FALLBACK_COURSES];
-                renderCourses();
-            });
-        }
-        
-        // Auth state
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (user) {
-                userDisplay.innerText = user.email;
-                userDisplay.classList.remove('hidden');
-                logoutBtn.classList.remove('hidden');
-                document.getElementById('loginBtn').classList.add('hidden');
-            } else {
-                userDisplay.innerText = '';
-                userDisplay.classList.add('hidden');
-                logoutBtn.classList.add('hidden');
-                document.getElementById('loginBtn').classList.remove('hidden');
-            }
-        });
-        
-        // Logout
-        window.handleLogout = async () => {
-            await signOut(auth);
-            selectedCourses = [];
-            updateTotal();
-            renderCourses();
-        };
-        
-        // Auth Modal handlers
-        let pendingEnroll = false;
-        function openAuthModal() { document.getElementById('authModal').classList.remove('hidden'); }
-        function closeAuthModal() { document.getElementById('authModal').classList.add('hidden'); }
-        
-        window.handleAuthSubmit = async (e) => {
-            e.preventDefault();
-            const honey = document.getElementById('authHoney').value;
-            if (honey !== '') return;
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
-            const isLogin = document.getElementById('authIsLogin').value === 'true';
-            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { alert('Valid email required'); return; }
-            if (password.length < 6) { alert('Password must be at least 6 characters'); return; }
-            try {
-                if (isLogin) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
-                closeAuthModal();
-                if (pendingEnroll) {
-                    pendingEnroll = false;
-                    openEnrollModal();
-                }
-            } catch (err) { alert(err.message); }
-        };
-        
-        window.toggleAuthMode = () => {
-            const isLogin = document.getElementById('authIsLogin').value === 'true';
-            document.getElementById('authIsLogin').value = (!isLogin).toString();
-            document.getElementById('authTitle').innerText = isLogin ? 'Create Account' : 'Sign In';
-            document.getElementById('authSubmitBtn').innerText = isLogin ? 'Sign Up' : 'Sign In';
-            document.getElementById('authToggleText').innerHTML = isLogin ? 'Already have an account? Sign In' : "Don't have an account? Sign Up";
-        };
-        
-        // Enrollment Modal
-        function openEnrollModal() {
-            if (selectedCourses.length === 0) return;
-            if (!currentUser) { pendingEnroll = true; openAuthModal(); return; }
-            document.getElementById('enrollName').value = '';
-            document.getElementById('enrollEmail').value = currentUser.email || '';
-            document.getElementById('enrollPhone').value = '';
-            document.getElementById('enrollModal').classList.remove('hidden');
-        }
-        function closeEnrollModal() { document.getElementById('enrollModal').classList.add('hidden'); }
-        
-        window.processPayment = async () => {
-            const honey = document.getElementById('enrollHoney').value;
-            if (honey !== '') return;
-            const name = document.getElementById('enrollName').value.trim();
-            const email = document.getElementById('enrollEmail').value.trim();
-            const phone = document.getElementById('enrollPhone').value.trim();
-            if (name.length < 2) { alert('Full name required'); return; }
-            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { alert('Valid email required'); return; }
-            if (!phone.match(/^[0-9+\-\s()]{8,15}$/)) { alert('Valid phone number required'); return; }
-            const total = selectedCourses.reduce((s,c)=>s+(c.price||0),0);
-            const coursesList = selectedCourses.map(c=>c.title).join(', ');
-            const handler = PaystackPop.setup({
-                key: window.getPaystackKey(),
-                email: email,
-                amount: total * 100,
-                currency: 'NGN',
-                metadata: { custom_fields: [{ display_name: "Full Name", value: name }, { display_name: "Courses", value: coursesList }, { display_name: "Phone", value: phone }] },
-                callback: async (response) => {
+                    courses = FALLBACK_COURSES;
                     try {
-                        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
-                            type: 'course_enrollment', name, email, phone, courses: coursesList, totalAmount: total,
-                            transactionRef: response.reference, status: 'Paid', timestamp: serverTimestamp()
-                        });
-                    } catch(e) { console.error(e); }
-                    const msg = `✅ Payment successful! Enrolled: ${coursesList}. Total: ₦${total.toLocaleString()}. Name: ${name}. Please send registration details.`;
-                    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-                    closeEnrollModal();
-                },
-                onClose: () => { alert('Payment window closed.'); }
+                        for (const c of FALLBACK_COURSES) {
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_courses', c.id), { ...c, published: true, createdAt: serverTimestamp() });
+                        }
+                    } catch (e) {}
+                }
+                app.renderFilters();
+                app.renderCourses();
+                app.renderCart();
+            }, () => {
+                courses = FALLBACK_COURSES;
+                app.renderFilters();
+                app.renderCourses();
+                app.renderCart();
             });
-            handler.openIframe();
-        };
-        
-        // Tutor Modal
-        function openTutorModal() { document.getElementById('tutorModal').classList.remove('hidden'); }
-        function closeTutorModal() { document.getElementById('tutorModal').classList.add('hidden'); }
-        
-        window.updateGuardianField = () => {
-            const age = parseInt(document.getElementById('tutorAge').value);
-            const guardianDiv = document.getElementById('guardianFields');
-            if (age < 16) guardianDiv.classList.remove('hidden');
-            else guardianDiv.classList.add('hidden');
-        };
-        
-        window.updateSubjects = () => {
-            const level = document.getElementById('tutorLevel').value;
-            const subjects = {
-                JSS: ['Math', 'English', 'Basic Sci', 'Basic Tech', 'ICT'],
-                SSS: ['Math', 'English', 'Physics', 'Chemistry', 'Biology'],
-                WAEC: ['Math', 'English', 'Physics', 'Chemistry', 'Biology', 'Economics'],
-                JAMB: ['Use of English', 'Math', 'Physics', 'Chemistry', 'Biology'],
-                IGCSE: ['Math', 'English', 'Physics', 'Chemistry', 'ICT']
-            };
-            const list = subjects[level] || subjects['SSS'];
-            const container = document.getElementById('subjectsContainer');
-            container.innerHTML = list.map(sub => `<label class="flex items-center gap-2 text-sm"><input type="checkbox" name="subjects" value="${sub}" class="w-4 h-4">${sub}</label>`).join('');
-        };
-        
-        window.submitTutorRequest = async (e) => {
-            e.preventDefault();
-            const honey = document.getElementById('tutorHoney').value;
-            if (honey !== '') return;
-            const name = document.getElementById('tutorName').value.trim();
-            const phone = document.getElementById('tutorPhone').value.trim();
-            if (name.length < 2) { alert('Valid name required'); return; }
-            if (!phone.match(/^[0-9+\-\s()]{8,15}$/)) { alert('Valid phone required'); return; }
-            const age = parseInt(document.getElementById('tutorAge').value);
-            const subjects = Array.from(document.querySelectorAll('#subjectsContainer input:checked')).map(cb => cb.value).join(', ');
-            const parentName = age < 16 ? document.getElementById('parentName').value : '';
-            const parentPhone = age < 16 ? document.getElementById('parentPhone').value : '';
-            const payload = {
-                type: 'tutor_request', studentName: name, studentAge: age, parentName, parentPhone,
-                level: document.getElementById('tutorLevel').value, curriculum: document.getElementById('tutorCurriculum').value,
-                subjects, platform: document.querySelector('input[name="platform"]:checked').value,
-                email: document.getElementById('tutorEmail').value || '', phone, timestamp: serverTimestamp(), status: 'New'
-            };
-            try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), payload);
-            } catch(err) { console.error(err); }
-            const msg = `Hello Tutor! New booking request.%0AStudent: ${name} (Age ${age})%0ALevel: ${payload.level}%0ASubjects: ${subjects}%0APlatform: ${payload.platform}%0APhone: ${phone}`;
-            window.open(`https://wa.me/${TUTOR_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
-            closeTutorModal();
-        };
-        
-        // Fallback if user cancels auth
-        window.handleAuthCancel = () => {
-            if (selectedCourses.length > 0) {
-                const coursesList = selectedCourses.map(c=>c.title).join(', ');
-                const total = selectedCourses.reduce((s,c)=>s+(c.price||0),0);
-                const msg = `Hello Mbtech, I am interested in these courses: ${coursesList}. Total: ₦${total.toLocaleString()}. Please contact me to complete enrollment.`;
-                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
-            }
-            closeAuthModal();
-        };
-        
-        // Initialize
-        loadCourses();
-        
-        // Mobile bottom nav active state
-        const setActiveNav = (path) => {
-            document.querySelectorAll('.mobile-nav a').forEach(link => link.classList.remove('active'));
-            if (path.includes('course.html')) document.querySelector('.mobile-nav a[href="course.html"]')?.classList.add('active');
-            else if (path.includes('index.html')) document.querySelector('.mobile-nav a[href="index.html"]')?.classList.add('active');
-            else if (path.includes('store.html')) document.querySelector('.mobile-nav a[href="store.html"]')?.classList.add('active');
-            else if (path.includes('connect.html')) document.querySelector('.mobile-nav a[href="connect.html"]')?.classList.add('active');
-        };
-        setActiveNav(window.location.pathname);
-        
-        // Expose globals for inline onclick
-        window.openEnrollModal = openEnrollModal;
-        window.closeEnrollModal = closeEnrollModal;
-        window.openTutorModal = openTutorModal;
-        window.closeTutorModal = closeTutorModal;
-        window.openAuthModal = openAuthModal;
-        window.closeAuthModal = closeAuthModal;
-        window.handleAuthCancel = handleAuthCancel;
-    </script>
-</head>
-<body class="bg-[#f8fafc] font-sans text-slate-900">
-    <!-- Header -->
-    <nav class="fixed top-0 w-full z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <a href="index.html" class="flex items-center gap-3">
-                    <img src="logo.png" alt="MBTECH NG" class="h-10 w-auto" onerror="this.style.display='none'">
-                    <div><span class="text-xl font-extrabold text-brand-dark">MBTECH <span class="text-brand-blue">NG</span></span><span class="text-[10px] text-brand-orange block font-bold">Innovating Africa</span></div>
-                </a>
-                <div class="hidden md:flex items-center gap-4">
-                    <span id="userDisplay" class="text-sm text-slate-600 hidden"></span>
-                    <button id="logoutBtn" onclick="window.handleLogout()" class="text-sm font-bold text-red-500 hidden">Logout</button>
-                    <button id="loginBtn" onclick="window.openAuthModal()" class="text-sm font-bold text-brand-blue">Sign In</button>
-                    <button onclick="window.openTutorModal()" class="text-sm font-bold text-slate-600 hover:text-brand-orange flex items-center gap-1.5"><i data-lucide="HelpCircle" class="w-4 h-4"></i> Get a Tutor</button>
-                    <a href="https://wa.me/2347084672771" target="_blank" class="bg-brand-blue text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-lg">Get in Touch</a>
-                </div>
-                <button id="mobileMenuBtn" class="md:hidden p-2"><i data-lucide="Menu" class="w-6 h-6"></i></button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <div class="relative bg-brand-dark text-white pt-24 pb-16">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <h1 class="text-4xl md:text-6xl font-extrabold">Build Your Future<span class="text-brand-orange">.</span></h1>
-            <p class="text-slate-300 mt-4 max-w-2xl mx-auto">Select multiple courses from Design, Tech, or Engineering. Pay once and start learning.</p>
-            <div class="mt-6 inline-flex items-center gap-4 bg-white/10 backdrop-blur rounded-full px-6 py-3">
-                <span class="font-bold">Total: ₦<span id="totalPrice">0</span></span>
-                <button id="enrollBtn" onclick="window.openEnrollModal()" disabled class="bg-brand-orange px-6 py-2 rounded-full text-sm font-bold disabled:opacity-50">Enroll Selected (<span id="selectedCount">0</span>)</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Courses Grid -->
-    <main class="max-w-7xl mx-auto px-4 py-12" id="coursesContainer">
-        <div class="text-center py-12">Loading courses...</div>
-    </main>
-
-    <!-- Mobile Bottom Navigation (App-like) -->
-    <div class="md:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <div class="flex justify-around items-center h-16">
-            <a href="index.html" class="mobile-nav flex flex-col items-center justify-center text-slate-400 transition-colors"><i data-lucide="Home" class="w-5 h-5"></i><span class="text-[10px] font-bold">Home</span></a>
-            <a href="course.html" class="mobile-nav flex flex-col items-center justify-center text-brand-blue transition-colors"><i data-lucide="BookOpen" class="w-5 h-5"></i><span class="text-[10px] font-bold">Courses</span></a>
-            <a href="store.html" class="mobile-nav flex flex-col items-center justify-center text-slate-400"><i data-lucide="Store" class="w-5 h-5"></i><span class="text-[10px] font-bold">Store</span></a>
-            <a href="connect.html" class="mobile-nav flex flex-col items-center justify-center text-slate-400"><i data-lucide="Users" class="w-5 h-5"></i><span class="text-[10px] font-bold">Connect</span></a>
-        </div>
-    </div>
-
-    <!-- Auth Modal -->
-    <div id="authModal" class="fixed inset-0 z-[90] hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm" style="display: none;">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
-            <button onclick="window.closeAuthModal()" class="absolute top-4 right-4"><i data-lucide="X" class="w-5 h-5"></i></button>
-            <h2 id="authTitle" class="text-2xl font-bold mb-4">Sign In</h2>
-            <form onsubmit="window.handleAuthSubmit(event)">
-                <input type="hidden" id="authIsLogin" value="true">
-                <input type="text" id="authHoney" class="bot-trap" autocomplete="off">
-                <input type="email" id="authEmail" placeholder="Email Address" class="w-full p-3 border rounded-xl mb-3" required>
-                <input type="password" id="authPassword" placeholder="Password" class="w-full p-3 border rounded-xl mb-4" required>
-                <button type="submit" id="authSubmitBtn" class="w-full bg-brand-blue text-white py-3 rounded-xl font-bold">Sign In</button>
-            </form>
-            <p class="text-center text-sm mt-4"><button onclick="window.toggleAuthMode()" id="authToggleText" class="text-brand-blue font-bold">Don't have an account? Sign Up</button></p>
-            <button onclick="window.handleAuthCancel()" class="w-full mt-3 text-slate-500 text-sm">Continue without account → WhatsApp</button>
-        </div>
-    </div>
-
-    <!-- Enrollment Modal -->
-    <div id="enrollModal" class="fixed inset-0 z-[80] hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm" style="display: none;">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 relative">
-            <button onclick="window.closeEnrollModal()" class="absolute top-4 right-4"><i data-lucide="X" class="w-5 h-5"></i></button>
-            <h3 class="text-xl font-bold">Complete Enrollment</h3>
-            <input type="text" id="enrollHoney" class="bot-trap" autocomplete="off">
-            <div class="space-y-4 mt-4">
-                <input type="text" id="enrollName" placeholder="Full Name" class="w-full p-3 border rounded-xl" required>
-                <input type="email" id="enrollEmail" placeholder="Email Address" class="w-full p-3 border rounded-xl" required>
-                <input type="tel" id="enrollPhone" placeholder="Phone Number" class="w-full p-3 border rounded-xl" required>
-                <button onclick="window.processPayment()" class="w-full bg-brand-blue text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"><i data-lucide="CreditCard" class="w-5 h-5"></i> Pay with Paystack</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tutor Modal -->
-    <div id="tutorModal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto" style="display: none;">
-        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
-            <div class="sticky top-0 bg-white p-4 border-b flex justify-between"><h2 class="text-2xl font-bold">Get a Private Tutor</h2><button onclick="window.closeTutorModal()"><i data-lucide="X" class="w-6 h-6"></i></button></div>
-            <form onsubmit="window.submitTutorRequest(event)" class="p-6 space-y-5">
-                <input type="text" id="tutorHoney" class="bot-trap" autocomplete="off">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input id="tutorName" required placeholder="Student's Full Name" class="p-3 border rounded-xl bg-slate-50">
-                    <input id="tutorAge" type="number" required placeholder="Age" oninput="window.updateGuardianField()" class="p-3 border rounded-xl bg-slate-50">
-                    <div id="guardianFields" class="hidden md:col-span-2 grid grid-cols-2 gap-4"><input id="parentName" placeholder="Parent/Guardian Name" class="p-3 border rounded-xl"><input id="parentPhone" placeholder="Parent Phone" class="p-3 border rounded-xl"></div>
-                    <input id="tutorEmail" type="email" placeholder="Email (optional)" class="p-3 border rounded-xl bg-slate-50">
-                    <input id="tutorPhone" required placeholder="WhatsApp Number" class="p-3 border rounded-xl bg-slate-50">
-                    <select id="tutorLevel" onchange="window.updateSubjects()" class="p-3 border rounded-xl bg-slate-50"><option value="JSS">JSS 1-3</option><option value="SSS" selected>SSS 1-3</option><option value="WAEC">WAEC/NECO</option><option value="JAMB">JAMB UTME</option><option value="IGCSE">IGCSE</option></select>
-                    <select id="tutorCurriculum" class="p-3 border rounded-xl bg-slate-50"><option>West African</option><option>British</option><option>American</option></select>
-                </div>
-                <div><label class="font-bold text-sm">Select Subjects</label><div id="subjectsContainer" class="grid grid-cols-3 gap-2 mt-2"></div></div>
-                <div><label class="font-bold text-sm">Preferred Platform</label><div class="flex gap-4 mt-2"><label><input type="radio" name="platform" value="whatsapp" checked> WhatsApp</label><label><input type="radio" name="platform" value="telegram"> Telegram</label><label><input type="radio" name="platform" value="gmeet"> Google Meet</label></div></div>
-                <button type="submit" class="w-full bg-brand-orange text-white py-3 rounded-xl font-bold">Submit & Chat on WhatsApp</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-brand-dark text-slate-400 pt-12 pb-8 mt-16">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-            <div><img src="logo.png" class="h-10 mx-auto md:mx-auto mb-3" onerror="this.style.display='none'"><p class="text-sm">MBTECH NG — Innovating Africa through tech & engineering.</p></div>
-            <div><h4 class="text-white font-bold mb-4">Quick Links</h4><ul class="space-y-2"><li><a href="index.html">Home</a></li><li><a href="course.html">Courses</a></li><li><a href="store.html">Store</a></li></ul></div>
-            <div><h4 class="text-white font-bold mb-4">Legal</h4><ul class="space-y-2"><li><button onclick="alert('Privacy Policy: We protect your data.')">Privacy</button></li><li><button onclick="alert('Terms: Use of platform.')">Terms</button></li></ul></div>
-            <div><h4 class="text-white font-bold mb-4">Contact</h4><p><i data-lucide="Phone" class="inline w-4 h-4 mr-1"></i> +234 708 467 2771</p><p><i data-lucide="Mail" class="inline w-4 h-4 mr-1"></i> info@mbtech.ng</p></div>
-        </div>
-        <div class="text-center text-xs pt-8 border-t border-slate-800 mt-8">&copy; 2026 Mesobest Technology. All rights reserved.</div>
-    </footer>
-
-    <script>
-        // Initialize Lucide icons on page load and after dynamic updates
-        if (window.lucide) {
-            window.lucide.createIcons();
-            // Observe dynamic content to reinitialize icons
-            const observer = new MutationObserver(() => window.lucide.createIcons());
-            observer.observe(document.body, { childList: true, subtree: true });
-        }
-        // Update selected count on any change
-        function updateSelectedCountDisplay() {
-            const count = document.querySelectorAll('.course-checkbox:checked').length;
-            document.getElementById('selectedCount').innerText = count;
-        }
-        const countObserver = new MutationObserver(() => updateSelectedCountDisplay());
-        countObserver.observe(document.getElementById('coursesContainer'), { childList: true, subtree: true });
-        // Mobile menu placeholder
-        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
-            alert('Use bottom navigation for quick access');
+            
+            // Initial render
+            app.renderFilters();
+            app.renderCourses();
+            lucide.createIcons();
         });
     </script>
 </body>
