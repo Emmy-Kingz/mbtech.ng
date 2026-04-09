@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MBTECH Workspace | Analytics & Supervision</title>
+    <title>MBTECH Admin Portal | CRM & Workspace</title>
     
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="favicon.png">
@@ -34,620 +34,641 @@
         }
     </script>
 
-    <!-- Import Map for React and Lucide -->
+    <!-- Import Map for React, Lucide, Firebase, and EmailJS -->
     <script type="importmap">
     {
         "imports": {
             "react": "https://esm.sh/react@18.2.0",
             "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "lucide-react": "https://esm.sh/lucide-react@0.284.0",
-            "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
-            "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
-            "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+            "lucide-react": "https://esm.sh/lucide-react@0.294.0",
+            "@emailjs/browser": "https://esm.sh/@emailjs/browser@4.1.0",
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
         }
     }
     </script>
+
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body { background-color: #f8fafc; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-brand-light text-slate-800 font-sans antialiased overflow-x-hidden">
-    <div id="root"></div>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col overflow-x-hidden">
+    <div id="root" class="flex-1 flex flex-col h-screen"></div>
 
     <script type="text/babel" data-type="module">
-        import React, { useState, useEffect } from 'react';
+        import React, { useState, useEffect, useMemo } from 'react';
         import { createRoot } from 'react-dom/client';
+        import emailjs from '@emailjs/browser';
         import { 
-            Activity, ShieldAlert, Link as LinkIcon, Lock, User, 
-            ChevronRight, XCircle, CheckCircle, Clock, Menu, X,
-            LogOut, ShieldCheck, Zap, Server, AlertTriangle, 
-            RefreshCw, Globe, ArrowUpRight, Search, FileCode
+            LayoutDashboard, Users, ShoppingBag, Mail, Lock, LogOut, Check, Menu, X,
+            ShieldAlert, Loader2, CreditCard, Search, Phone, MapPin, Activity,
+            Clock, Package, CheckCircle, XCircle, Send, ShieldCheck, Link as LinkIcon,
+            Download, UploadCloud, ChevronLeft, ChevronRight, Zap, Server, AlertTriangle, FileCode
         } from 'lucide-react';
+
         import { initializeApp } from 'firebase/app';
-        import { getAuth, signInWithEmailAndPassword, signInWithCustomToken, signInAnonymously, onAuthStateChanged, signOut } from 'firebase/auth';
-        import { getFirestore } from 'firebase/firestore';
+        import { getAuth, signInWithEmailAndPassword, signInAnonymously, onAuthStateChanged, signOut, signInWithCustomToken } from 'firebase/auth';
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 
-        // --- Firebase Initialization ---
-        let auth = null;
-        let db = null;
-        try {
-            const firebaseConfig = {
-                apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
-                authDomain: "mbtechstore-17984.firebaseapp.com",
-                projectId: "mbtechstore-17984",
-                storageBucket: "mbtechstore-17984.firebasestorage.app",
-                messagingSenderId: "1083008774596",
-                appId: "1:1083008774596:web:110b651c6426116ed43491",
-                measurementId: "G-213C6T6EJ0"
-            };
-            
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch (error) {
-            console.error("Error initializing Firebase:", error);
-        }
+        // --- FIREBASE CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+            authDomain: "mbtechstore-17984.firebaseapp.com",
+            projectId: "mbtechstore-17984",
+            storageBucket: "mbtechstore-17984.firebasestorage.app",
+            messagingSenderId: "1083008774596",
+            appId: "1:1083008774596:web:110b651c6426116ed43491"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = 'mbtech-public-store';
 
-        // --- Mock Data ---
+        // --- EMAILJS CREDENTIALS ---
+        const EMAILJS_PUBLIC_KEY = "odITHEAREqUsBlrPG";
+        const EMAILJS_SERVICE_ID = "service_4mlv33s";
+        const EMAILJS_TEMPLATE_ID = "template_mj6xzob";
+
+        // --- MOCK WORKSPACE DATA ---
         const performanceData = {
-            score: 92,
-            loadTime: '1.2s',
-            ttfb: '200ms',
-            lcp: '1.5s',
-            uptime: '99.98%',
+            score: 92, loadTime: '1.2s', ttfb: '200ms', lcp: '1.5s', uptime: '99.98%',
             recentTests: [
                 { id: 1, time: '2 mins ago', page: '/index.html', load: '1.1s', status: 'Good' },
                 { id: 2, time: '1 hour ago', page: '/store.html', load: '1.8s', status: 'Average' },
-                { id: 3, time: '3 hours ago', page: '/course.html', load: '1.2s', status: 'Good' },
             ]
         };
-
         const linkHealthData = {
-            totalScanned: 145,
-            brokenLinks: 3,
-            lastScanned: '10 mins ago',
+            totalScanned: 145, brokenLinks: 3, lastScanned: '10 mins ago',
             issues: [
-                { id: 1, url: 'https://mbtech.ng/old-course-promo', status: 404, referringPage: '/index.html', type: 'Internal' },
-                { id: 2, url: 'https://external-resource.com/doc.pdf', status: 500, referringPage: '/course.html', type: 'External' },
-                { id: 3, url: 'https://mbtech.ng/assets/missing-img.png', status: 404, referringPage: '/info.html', type: 'Asset' },
+                { id: 1, url: 'https://mbtech.ng/old-promo', status: 404, referringPage: '/index.html', type: 'Internal' },
+                { id: 2, url: 'https://external.com/doc.pdf', status: 500, referringPage: '/course.html', type: 'External' }
             ]
         };
-
         const securityData = {
-            score: 85,
-            sslStatus: 'Valid',
-            sslExpiry: '240 days',
-            unresolvedAlerts: 2,
+            score: 85, sslStatus: 'Valid', sslExpiry: '240 days', unresolvedAlerts: 2,
             auditLogs: [
                 { id: 1, time: '2026-03-01 09:12 AM', event: 'Failed Admin Login Attempt', ip: '192.168.1.45', severity: 'Medium' },
                 { id: 2, time: '2026-03-01 08:30 AM', event: 'Admin Login Successful', ip: '10.0.0.1', severity: 'Info' },
-                { id: 3, time: '2026-02-28 11:45 PM', event: 'Suspicious API Rate Limit Exceeded', ip: '45.22.11.9', severity: 'High' },
-                { id: 4, time: '2026-02-28 02:00 PM', event: 'SSL Certificate Auto-Renewed', ip: 'System', severity: 'Info' },
+                { id: 3, time: '2026-02-28 11:45 PM', event: 'Suspicious API Rate Limit Exceeded', ip: '45.22.11.9', severity: 'High' }
             ]
         };
 
-        // --- Components ---
-
-        const LoginScreen = ({ onLogin }) => {
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [error, setError] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-
-            const handleLogin = async (e) => {
-                e.preventDefault();
-                if (!auth) {
-                    setError('Firebase is not configured in this environment.');
-                    return;
-                }
-                
-                setIsLoading(true);
-                setError('');
-                
-                try {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    onLogin();
-                } catch (err) {
-                    console.error("Login error:", err);
-                    setError(err.message || 'Invalid supervisor credentials. Please try again.');
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
+        // --- COMPONENTS ---
+        function Toast({ message, type, onClose }) {
+            useEffect(() => { const timer = setTimeout(onClose, 3500); return () => clearTimeout(timer); }, [onClose]);
+            const bgClass = type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-slate-800';
             return (
-                <div className="min-h-screen flex items-center justify-center bg-brand-dark px-4 relative overflow-hidden">
-                    {/* Background accents */}
-                    <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-orange rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-brand-blue rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
-                    
-                    <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md relative z-10 border border-slate-100">
-                        <div className="text-center mb-8">
-                            <div className="w-16 h-16 bg-brand-dark rounded-xl mx-auto flex items-center justify-center shadow-lg shadow-brand-dark/30 mb-4">
-                                <Activity size={32} className="text-brand-orange" />
-                            </div>
-                            <h1 className="text-2xl font-extrabold text-slate-800">Workspace Login</h1>
-                            <p className="text-slate-500 mt-2 text-sm">Analytics & Supervisor Access</p>
-                        </div>
-                        
-                        {error && (
-                            <div className="mb-6 p-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center gap-2 border border-red-100">
-                                <XCircle size={16} /> {error}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleLogin} className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Supervisor Email</label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <User size={18} className="text-slate-400" />
-                                    </div>
-                                    <input 
-                                        type="email" 
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock size={18} className="text-slate-400" />
-                                    </div>
-                                    <input 
-                                        type="password" 
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <button 
-                                type="submit" 
-                                disabled={isLoading}
-                                className="w-full bg-brand-dark text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
-                            >
-                                {isLoading ? 'Authenticating...' : 'Enter Workspace'} <ChevronRight size={18} />
-                            </button>
-                        </form>
+                <div className="fixed bottom-6 right-6 z-[80] animate-in slide-in-from-bottom-5">
+                    <div className={bgClass + " text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 font-bold"}>
+                        {type === 'success' ? <Check size={18}/> : <ShieldAlert size={18}/>}
+                        {message}
                     </div>
                 </div>
             );
-        };
+        }
 
-        const MetricCard = ({ title, value, subtext, icon: Icon, colorClass, trend }) => (
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-4">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorClass}`}>
+        function MetricCard({ title, value, subtext, icon: Icon, colorClass }) {
+            return (
+                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${colorClass}`}>
                         <Icon size={24} />
                     </div>
-                    {trend && (
-                        <div className={`text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 ${trend > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                            {trend > 0 ? <ArrowUpRight size={12}/> : null} {Math.abs(trend)}%
-                        </div>
-                    )}
-                </div>
-                <div>
                     <h3 className="text-slate-500 font-semibold text-sm mb-1">{title}</h3>
                     <div className="text-3xl font-extrabold text-slate-800">{value}</div>
                     {subtext && <p className="text-xs text-slate-400 mt-2 font-medium">{subtext}</p>}
                 </div>
-            </div>
-        );
+            );
+        }
 
-        const App = () => {
-            const [isAuthenticated, setIsAuthenticated] = useState(false);
+        // --- MAIN APP ---
+        function App() {
+            const [hasAdminAccess, setHasAdminAccess] = useState(false);
             const [user, setUser] = useState(null);
-            const [activeTab, setActiveTab] = useState('overview'); // overview, performance, links, security
+            const [isAuthenticating, setIsAuthenticating] = useState(false);
+            const [authError, setAuthError] = useState('');
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            
+            const [activeTab, setActiveTab] = useState('dashboard');
             const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-            const [isScanning, setIsScanning] = useState(false);
+            const [toast, setToast] = useState(null);
 
+            // Data State
+            const [orders, setOrders] = useState([]);
+            const [leads, setLeads] = useState([]);
+            
+            // CRM Pagination & Search
+            const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+            const [orderSearchTerm, setOrderSearchTerm] = useState('');
+            const [orderCurrentPage, setOrderCurrentPage] = useState(1);
+            const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
+            const [selectedOrder, setSelectedOrder] = useState(null);
+            
+            // Campaign State
+            const [selectedEmails, setSelectedEmails] = useState(new Set());
+            const [sendingCampaign, setSendingCampaign] = useState(false);
+
+            // Auth Listener
             useEffect(() => {
-                if (!auth) return;
-
                 const initAuth = async () => {
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         try { await signInWithCustomToken(auth, __initial_auth_token); } catch(e){}
-                    } else if (!auth.currentUser) {
-                        try { await signInAnonymously(auth); } catch(e){}
                     }
                 };
                 initAuth();
 
                 const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
                     setUser(currentUser);
-                    if (currentUser && currentUser.email) {
-                        setIsAuthenticated(true);
-                    } else {
-                        setIsAuthenticated(false);
-                    }
+                    if (currentUser && currentUser.email) setHasAdminAccess(true);
+                    else setHasAdminAccess(false);
                 });
-
                 return () => unsubscribe();
             }, []);
 
-            const handleLogout = async () => {
-                if (auth) {
-                    await signOut(auth);
+            // Data Fetching
+            useEffect(() => {
+                if (!hasAdminAccess) return;
+                const qOrders = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_orders');
+                const unsubOrders = onSnapshot(qOrders, (snap) => {
+                    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    data.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                    setOrders(data);
+                });
+                const qLeads = collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads');
+                const unsubLeads = onSnapshot(qLeads, (snap) => {
+                    const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    data.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                    setLeads(data);
+                });
+                return () => { unsubOrders(); unsubLeads(); };
+            }, [hasAdminAccess]);
+
+            // Derived Customers Data
+            const customers = useMemo(() => {
+                const map = new Map();
+                leads.forEach(l => { if (l.email) map.set(l.email.toLowerCase(), { name: l.name, email: l.email, phone: l.phone, source: 'Connect Lead', date: l.createdAt }); });
+                orders.forEach(o => {
+                    if (o.email) {
+                        if (!map.has(o.email.toLowerCase())) map.set(o.email.toLowerCase(), { name: o.userName, email: o.email, phone: o.contact, source: 'Store Customer', date: o.createdAt });
+                        else map.get(o.email.toLowerCase()).source = 'Customer & Lead';
+                    }
+                });
+                return Array.from(map.values()).sort((a,b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+            }, [orders, leads]);
+
+            // Handlers
+            const showToast = (msg, type='success') => setToast({message: msg, type});
+            
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setIsAuthenticating(true);
+                setAuthError('');
+                let loginEmail = username.trim();
+                if (!loginEmail.includes('@')) loginEmail = `${loginEmail}@mbtech.ng`;
+                try {
+                    await signInWithEmailAndPassword(auth, loginEmail, password);
+                } catch (err) {
+                    setAuthError(err.message.includes('credential') ? "Invalid credentials." : err.message);
                 }
-                setIsAuthenticated(false);
+                setIsAuthenticating(false);
+            };
+            const handleLogout = async () => { await signOut(auth); setHasAdminAccess(false); };
+
+            const updateOrderStatus = async (orderId, newStatus) => {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_orders', orderId);
+                    await updateDoc(docRef, { status: newStatus });
+                    showToast(`Order status updated to ${newStatus}`);
+                    setSelectedOrder(prev => prev ? {...prev, status: newStatus} : null);
+                } catch (e) { showToast(e.message, 'error'); }
             };
 
-            const handleScan = () => {
-                setIsScanning(true);
-                setTimeout(() => setIsScanning(false), 2000);
+            // --- EMAILJS CAMPAIGN LOGIC ---
+            const handleSendCampaign = async () => {
+                if (selectedEmails.size === 0) { showToast("Select at least one customer", "error"); return; }
+                setSendingCampaign(true);
+                let successCount = 0;
+                let errorCount = 0;
+                
+                const recipients = Array.from(selectedEmails);
+                
+                for (const email of recipients) {
+                    try {
+                        const customer = customers.find(c => c.email === email);
+                        
+                        // Map Template Variables carefully
+                        const templateParams = {
+                            to_name: customer?.name || 'Valued Customer',
+                            to_email: email, // IMPORTANT: Must map to "To" field in EmailJS dashboard
+                            unsubscribe_link: `https://emmy-kingz.github.io/mbtech.ng/unsubscribe?email=${encodeURIComponent(email)}`,
+                            current_year: new Date().getFullYear()
+                        };
+
+                        await emailjs.send(
+                            EMAILJS_SERVICE_ID, 
+                            EMAILJS_TEMPLATE_ID, 
+                            templateParams, 
+                            { publicKey: EMAILJS_PUBLIC_KEY }
+                        );
+                        successCount++;
+                    } catch (err) {
+                        console.error("EmailJS Error for", email, err);
+                        errorCount++;
+                    }
+                }
+                setSendingCampaign(false);
+                showToast(`Campaign Complete: ${successCount} sent, ${errorCount} failed.`, errorCount > 0 ? 'error' : 'success');
+                if (successCount > 0) setSelectedEmails(new Set());
             };
 
-            if (!isAuthenticated) {
-                return <LoginScreen onLogin={() => setIsAuthenticated(true)} />;
+            const toggleEmailSelection = (email) => {
+                const newSet = new Set(selectedEmails);
+                if (newSet.has(email)) newSet.delete(email);
+                else newSet.add(email);
+                setSelectedEmails(newSet);
+            };
+            const selectAllEmails = () => {
+                if (selectedEmails.size === customers.length) setSelectedEmails(new Set());
+                else setSelectedEmails(new Set(customers.map(c => c.email)));
+            };
+
+            // --- RENDER LOGIN ---
+            if (!hasAdminAccess) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-brand-dark px-4 relative overflow-hidden">
+                        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand-orange rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-brand-blue rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+                        
+                        <div className="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md relative z-10 border border-slate-100">
+                            <div className="text-center mb-8">
+                                <div className="w-16 h-16 bg-brand-dark rounded-xl mx-auto flex items-center justify-center shadow-lg mb-4">
+                                    <Lock size={32} className="text-brand-orange" />
+                                </div>
+                                <h1 className="text-2xl font-extrabold text-slate-800">Admin Portal</h1>
+                                <p className="text-slate-500 mt-2 text-sm">Workspace & CRM Access</p>
+                            </div>
+                            
+                            <form onSubmit={handleLogin} className="space-y-5">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Admin Email/Username</label>
+                                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"/>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all"/>
+                                </div>
+                                {authError && <div className="text-red-600 text-sm font-bold bg-red-50 p-3 rounded-lg border border-red-100 flex items-center gap-2"><XCircle size={16}/> {authError}</div>}
+                                <button type="submit" disabled={isAuthenticating} className="w-full bg-brand-dark text-white py-3.5 rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2">
+                                    {isAuthenticating ? <Loader2 className="animate-spin"/> : 'Access Portal'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                );
             }
 
-            return (
-                <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
-                    
-                    {/* Mobile Header */}
-                    <div className="md:hidden bg-brand-dark text-white p-4 flex items-center justify-between sticky top-0 z-40 shadow-md">
-                        <div className="font-bold text-lg flex items-center gap-2">
-                            <Activity className="text-brand-orange" /> Workspace
-                        </div>
-                        <button onClick={() => setIsSidebarOpen(true)} className="p-2 hover:bg-slate-800 rounded-lg">
-                            <Menu size={24} />
-                        </button>
-                    </div>
+            // --- ADMIN LAYOUT ---
+            const revenue = orders.filter(o => o.status !== 'cancelled').reduce((acc, o) => acc + (o.total || 0), 0);
+            
+            // Filtering/Pagination Logic
+            let filteredOrders = orders;
+            if (orderStatusFilter !== 'all') filteredOrders = filteredOrders.filter(o => o.status === orderStatusFilter);
+            if (orderSearchTerm) {
+                const term = orderSearchTerm.toLowerCase();
+                filteredOrders = filteredOrders.filter(o => o.id.toLowerCase().includes(term) || (o.userName && o.userName.toLowerCase().includes(term)) || (o.email && o.email.toLowerCase().includes(term)));
+            }
+            const paginatedOrders = filteredOrders.slice((orderCurrentPage - 1) * 10, orderCurrentPage * 10);
+            const paginatedCustomers = customers.slice((customerCurrentPage - 1) * 10, customerCurrentPage * 10);
 
-                    {/* SidebarOverlay */}
-                    {isSidebarOpen && (
-                        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsSidebarOpen(false)}></div>
-                    )}
+            return (
+                <div className="flex h-screen overflow-hidden bg-slate-50">
+                    {/* Mobile Sidebar Overlay */}
+                    {isSidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setIsSidebarOpen(false)}></div>}
 
                     {/* Sidebar */}
-                    <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 w-64 bg-brand-dark text-slate-300 transition-transform duration-300 ease-in-out z-50 flex flex-col shadow-2xl md:shadow-none`}>
+                    <aside className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 w-64 bg-brand-dark text-slate-300 transition-transform duration-300 ease-in-out z-50 flex flex-col shadow-2xl md:shadow-none`}>
                         <div className="p-6 flex items-center justify-between border-b border-slate-800">
                             <div className="font-extrabold text-xl text-white flex items-center gap-2 tracking-tight">
-                                <div className="w-8 h-8 bg-brand-orange rounded-lg flex items-center justify-center">
-                                    <Activity size={20} className="text-white" />
-                                </div>
-                                Analytics
+                                <div className="w-8 h-8 bg-brand-orange rounded-lg flex items-center justify-center"><LayoutDashboard size={18} className="text-white" /></div>
+                                Admin Portal
                             </div>
-                            <button className="md:hidden p-1 hover:text-white" onClick={() => setIsSidebarOpen(false)}>
-                                <X size={20} />
-                            </button>
+                            <button className="md:hidden p-1 hover:text-white" onClick={() => setIsSidebarOpen(false)}><X size={20} /></button>
                         </div>
 
-                        <div className="p-4 flex-1">
-                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 ml-2 mt-4">Supervision</div>
-                            <nav className="space-y-2">
-                                <button 
-                                    onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'overview' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
-                                >
-                                    <Globe size={18} /> Overview
-                                </button>
-                                <button 
-                                    onClick={() => { setActiveTab('performance'); setIsSidebarOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'performance' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
-                                >
-                                    <Zap size={18} /> Page Speed
-                                </button>
-                                <button 
-                                    onClick={() => { setActiveTab('links'); setIsSidebarOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'links' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
-                                >
-                                    <LinkIcon size={18} /> Link Health
-                                </button>
-                                <button 
-                                    onClick={() => { setActiveTab('security'); setIsSidebarOpen(false); }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${activeTab === 'security' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}
-                                >
-                                    <ShieldAlert size={18} /> Security & Audits
-                                </button>
+                        <div className="p-4 flex-1 overflow-y-auto">
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 ml-2">Store CRM</div>
+                            <nav className="space-y-1 mb-6">
+                                <button onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all font-medium ${activeTab === 'dashboard' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}><LayoutDashboard size={18} /> Dashboard</button>
+                                <button onClick={() => { setActiveTab('orders'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all font-medium ${activeTab === 'orders' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}><ShoppingBag size={18} /> Orders</button>
+                                <button onClick={() => { setActiveTab('customers'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all font-medium ${activeTab === 'customers' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}><Users size={18} /> Customers</button>
+                                <button onClick={() => { setActiveTab('campaigns'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all font-medium ${activeTab === 'campaigns' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}><Mail size={18} /> Campaigns</button>
+                            </nav>
+
+                            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 ml-2">System Workspace</div>
+                            <nav className="space-y-1">
+                                <button onClick={() => { setActiveTab('performance'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all font-medium ${activeTab === 'performance' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}><Zap size={18} /> Page Speed</button>
+                                <button onClick={() => { setActiveTab('links'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all font-medium ${activeTab === 'links' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}><LinkIcon size={18} /> Link Health</button>
+                                <button onClick={() => { setActiveTab('security'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all font-medium ${activeTab === 'security' ? 'bg-slate-800 text-brand-orange shadow-lg' : 'hover:bg-slate-800 hover:text-white'}`}><ShieldAlert size={18} /> Security</button>
                             </nav>
                         </div>
 
                         <div className="p-4 border-t border-slate-800">
-                            <div className="flex items-center gap-3 px-4 py-3 mb-2 bg-slate-800/50 rounded-xl">
-                                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold">
-                                    {user?.email ? user.email.charAt(0).toUpperCase() : 'S'}
-                                </div>
-                                <div className="overflow-hidden">
-                                    <div className="text-sm font-bold text-white">Supervisor</div>
-                                    <div className="text-xs text-slate-400 truncate">{user?.email || 'admin@mbtech.ng'}</div>
-                                </div>
-                            </div>
                             <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-400/10 transition-colors font-medium">
                                 <LogOut size={18} /> Logout
                             </button>
                         </div>
+                    </aside>
+
+                    {/* Main Content Area */}
+                    <div className="flex-1 flex flex-col h-screen overflow-hidden">
+                        {/* Header */}
+                        <header className="bg-white border-b border-slate-200 p-4 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                                    <Menu size={20} />
+                                </button>
+                                <h2 className="text-xl font-extrabold text-slate-800 capitalize tracking-tight flex items-center gap-2">
+                                    {activeTab === 'dashboard' && <><Activity className="text-brand-orange"/> System & Sales Overview</>}
+                                    {activeTab === 'orders' && <><ShoppingBag className="text-brand-blue"/> Order Management</>}
+                                    {activeTab === 'customers' && <><Users className="text-brand-blue"/> Customer Database</>}
+                                    {activeTab === 'campaigns' && <><Mail className="text-brand-blue"/> Email Campaigns</>}
+                                    {activeTab === 'performance' && <><Zap className="text-amber-500"/> Speed & Performance</>}
+                                    {activeTab === 'links' && <><LinkIcon className="text-slate-500"/> Link Health Monitor</>}
+                                    {activeTab === 'security' && <><ShieldAlert className="text-red-500"/> Security Audits</>}
+                                </h2>
+                            </div>
+                            <div className="text-sm font-bold text-slate-500 hidden sm:block">Logged in as {user?.email}</div>
+                        </header>
+
+                        {/* Scrollable Content */}
+                        <main className="flex-1 overflow-y-auto p-4 md:p-8">
+                            <div className="max-w-6xl mx-auto space-y-8 pb-12">
+
+                                {/* --- DASHBOARD TAB --- */}
+                                {activeTab === 'dashboard' && (
+                                    <div className="space-y-8 animate-in fade-in duration-300">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                            <MetricCard title="Total Orders" value={orders.length} icon={ShoppingBag} colorClass="bg-blue-100 text-blue-600" />
+                                            <MetricCard title="Gross Revenue" value={`₦${revenue.toLocaleString()}`} icon={CreditCard} colorClass="bg-emerald-100 text-emerald-600" />
+                                            <MetricCard title="Performance Score" value={`${performanceData.score}/100`} subtext="Core Web Vitals" icon={Zap} colorClass="bg-amber-100 text-amber-600" />
+                                            <MetricCard title="Security Alerts" value={securityData.unresolvedAlerts} subtext="Unresolved issues" icon={ShieldAlert} colorClass="bg-red-100 text-red-600" />
+                                        </div>
+
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                                                <div className="flex justify-between items-center mb-6">
+                                                    <h3 className="font-bold text-slate-800 flex items-center gap-2"><ShoppingBag size={18} className="text-brand-blue"/> Recent Orders</h3>
+                                                    <button onClick={() => setActiveTab('orders')} className="text-sm font-semibold text-brand-blue hover:underline">View All</button>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    {orders.slice(0,4).map(o => (
+                                                        <div key={o.id} className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                                            <div><p className="font-bold text-slate-800 text-sm">{o.userName}</p><p className="text-xs text-slate-500">₦{(o.total||0).toLocaleString()}</p></div>
+                                                            <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded ${o.status === 'completed'?'bg-emerald-100 text-emerald-700':'bg-slate-200 text-slate-600'}`}>{o.status}</span>
+                                                        </div>
+                                                    ))}
+                                                    {orders.length === 0 && <p className="text-sm text-slate-500">No recent orders.</p>}
+                                                </div>
+                                            </div>
+                                            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                                                <div className="flex justify-between items-center mb-6">
+                                                    <h3 className="font-bold text-slate-800 flex items-center gap-2"><ShieldAlert size={18} className="text-brand-orange"/> Security Logs</h3>
+                                                    <button onClick={() => setActiveTab('security')} className="text-sm font-semibold text-brand-blue hover:underline">View All</button>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    {securityData.auditLogs.map(log => (
+                                                        <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                                            <div className={`mt-0.5 w-2 h-2 rounded-full ${log.severity === 'High' ? 'bg-red-500' : (log.severity === 'Medium' ? 'bg-orange-500' : 'bg-blue-500')}`}></div>
+                                                            <div className="flex-1"><div className="text-sm font-bold text-slate-800">{log.event}</div><div className="text-xs text-slate-500 mt-1">{log.time}</div></div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* --- ORDERS TAB --- */}
+                                {activeTab === 'orders' && (
+                                    <div className="space-y-6 animate-in fade-in">
+                                        <div className="flex flex-wrap gap-3 items-center justify-between">
+                                            <div className="flex gap-2 flex-wrap">
+                                                {['all', 'pending', 'processing', 'completed', 'cancelled'].map(status => (
+                                                    <button key={status} onClick={() => { setOrderStatusFilter(status); setOrderCurrentPage(1); }} className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${orderStatusFilter === status ? 'bg-brand-dark text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}`}>{status.charAt(0).toUpperCase() + status.slice(1)}</button>
+                                                ))}
+                                            </div>
+                                            <div className="relative w-full sm:w-auto">
+                                                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
+                                                <input type="text" placeholder="Search orders..." value={orderSearchTerm} onChange={(e) => { setOrderSearchTerm(e.target.value); setOrderCurrentPage(1); }} className="w-full sm:w-64 pl-10 pr-4 py-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-brand-blue outline-none"/>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left border-collapse min-w-[800px]">
+                                                    <thead><tr className="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-widest border-b border-slate-200"><th className="p-4 font-bold">Order ID</th><th className="p-4 font-bold">Customer</th><th className="p-4 font-bold">Amount</th><th className="p-4 font-bold">Status</th><th className="p-4 font-bold text-right">Action</th></tr></thead>
+                                                    <tbody className="divide-y divide-slate-100">
+                                                        {paginatedOrders.map(order => (
+                                                            <tr key={order.id} className="hover:bg-slate-50">
+                                                                <td className="p-4"><p className="font-bold text-slate-900 text-sm">#{order.id.slice(-6).toUpperCase()}</p></td>
+                                                                <td className="p-4"><p className="font-bold text-slate-800 text-sm">{order.userName}</p><p className="text-xs text-slate-500">{order.contact}</p></td>
+                                                                <td className="p-4"><div className="font-extrabold text-brand-dark text-sm">₦{(order.total||0).toLocaleString()}</div></td>
+                                                                <td className="p-4"><span className={`text-[10px] font-extrabold uppercase px-2 py-1 rounded ${order.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>{order.status || 'pending'}</span></td>
+                                                                <td className="p-4 text-right"><button onClick={() => setSelectedOrder(order)} className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 font-bold text-xs rounded-lg hover:text-brand-blue">Manage</button></td>
+                                                            </tr>
+                                                        ))}
+                                                        {paginatedOrders.length === 0 && <tr><td colSpan="5" className="p-8 text-center text-slate-500">No orders found.</td></tr>}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* --- CUSTOMERS TAB --- */}
+                                {activeTab === 'customers' && (
+                                    <div className="space-y-6 animate-in fade-in">
+                                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left border-collapse min-w-[700px]">
+                                                    <thead><tr className="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-widest border-b border-slate-200"><th className="p-4 font-bold">Name</th><th className="p-4 font-bold">Email</th><th className="p-4 font-bold">Phone</th><th className="p-4 font-bold">Source</th></tr></thead>
+                                                    <tbody className="divide-y divide-slate-100">
+                                                        {paginatedCustomers.map((c, i) => (
+                                                            <tr key={i} className="hover:bg-slate-50">
+                                                                <td className="p-4 font-bold text-slate-900 text-sm">{c.name}</td>
+                                                                <td className="p-4 font-medium text-slate-600 text-sm">{c.email}</td>
+                                                                <td className="p-4 font-medium text-slate-600 text-sm">{c.phone || 'N/A'}</td>
+                                                                <td className="p-4"><span className="text-[10px] font-bold uppercase bg-slate-100 text-slate-600 px-2 py-1 rounded">{c.source}</span></td>
+                                                            </tr>
+                                                        ))}
+                                                        {paginatedCustomers.length === 0 && <tr><td colSpan="4" className="p-8 text-center text-slate-500">No customers found.</td></tr>}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* --- CAMPAIGNS TAB (EMAILJS) --- */}
+                                {activeTab === 'campaigns' && (
+                                    <div className="space-y-6 animate-in fade-in">
+                                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                                            <CheckCircle className="text-brand-blue shrink-0 mt-0.5" size={20} />
+                                            <div>
+                                                <h4 className="font-bold text-brand-dark">EmailJS Template Ready</h4>
+                                                <p className="text-sm text-slate-600 mt-1">This uses your specified template <code>template_mj6xzob</code>. <b>Important:</b> Ensure your EmailJS template settings map the "To" field to the variable <code>&#123;&#123;to_email&#125;&#125;</code> for emails to send correctly.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid lg:grid-cols-3 gap-6">
+                                            <div className="lg:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col h-[500px]">
+                                                <div className="flex justify-between items-center mb-4">
+                                                    <h3 className="font-bold text-slate-900">Recipients</h3>
+                                                    <button onClick={selectAllEmails} className="text-xs font-bold text-brand-blue hover:underline">{selectedEmails.size === customers.length ? 'Deselect All' : 'Select All'}</button>
+                                                </div>
+                                                <div className="flex-1 overflow-y-auto space-y-2 pr-2 hide-scrollbar">
+                                                    {customers.map((c, i) => (
+                                                        <label key={i} className="flex items-center gap-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors">
+                                                            <input type="checkbox" checked={selectedEmails.has(c.email)} onChange={() => toggleEmailSelection(c.email)} className="w-4 h-4 text-brand-blue rounded border-slate-300 focus:ring-brand-blue"/>
+                                                            <div className="overflow-hidden"><p className="text-sm font-bold text-slate-800 truncate">{c.name}</p><p className="text-xs text-slate-500 truncate">{c.email}</p></div>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col h-[500px]">
+                                                <h3 className="font-extrabold text-xl text-slate-900 mb-6">Launch Campaign</h3>
+                                                <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 flex-1 flex flex-col justify-center items-center text-center">
+                                                    <Mail size={48} className="text-brand-blue opacity-50 mb-4" />
+                                                    <h4 className="font-bold text-slate-800 mb-2">Using "Welcome" Template</h4>
+                                                    <p className="text-sm text-slate-500 max-w-sm mb-6">The email body and subject are controlled by your EmailJS template settings. We will automatically inject the customer's name, unsubscribe link, and current year.</p>
+                                                </div>
+                                                <div className="mt-6 flex justify-between items-center pt-6 border-t border-slate-100">
+                                                    <div className="text-sm font-bold text-slate-500">{selectedEmails.size} Selected</div>
+                                                    <button onClick={handleSendCampaign} disabled={sendingCampaign} className="px-8 py-3 bg-brand-dark text-white rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all flex items-center gap-2">
+                                                        {sendingCampaign ? <Loader2 className="animate-spin"/> : <Send size={18}/>} 
+                                                        {sendingCampaign ? 'Sending Emails...' : 'Send Now'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* --- WORKSPACE: PERFORMANCE --- */}
+                                {activeTab === 'performance' && (
+                                    <div className="space-y-6 animate-in fade-in">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center"><div className="text-sm font-bold text-slate-500 mb-2 uppercase">Avg Load Time</div><div className="text-4xl font-extrabold text-emerald-600">{performanceData.loadTime}</div></div>
+                                            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center"><div className="text-sm font-bold text-slate-500 mb-2 uppercase">TTFB</div><div className="text-4xl font-extrabold text-blue-600">{performanceData.ttfb}</div></div>
+                                            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center"><div className="text-sm font-bold text-slate-500 mb-2 uppercase">LCP</div><div className="text-4xl font-extrabold text-orange-500">{performanceData.lcp}</div></div>
+                                        </div>
+                                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-6">
+                                            <h3 className="font-bold text-slate-800 mb-4">Page Speed History</h3>
+                                            <div className="space-y-2">
+                                                {performanceData.recentTests.map(t => (
+                                                    <div key={t.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                                                        <span className="text-sm font-medium">{t.page}</span>
+                                                        <span className="text-sm font-bold">{t.load}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* --- WORKSPACE: LINK HEALTH --- */}
+                                {activeTab === 'links' && (
+                                    <div className="space-y-6 animate-in fade-in">
+                                        <div className="bg-orange-50 border border-orange-200 p-4 rounded-xl flex items-start gap-3">
+                                            <AlertTriangle size={20} className="text-orange-600 mt-0.5" />
+                                            <div><h4 className="font-bold text-orange-800">Broken Links Detected</h4><p className="text-sm text-orange-700 mt-1">Found {linkHealthData.brokenLinks} issues during the last scan.</p></div>
+                                        </div>
+                                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-6">
+                                            <h3 className="font-bold text-slate-800 mb-4">Link Audit Log</h3>
+                                            <div className="space-y-3">
+                                                {linkHealthData.issues.map(i => (
+                                                    <div key={i.id} className="p-3 border border-slate-100 rounded-lg bg-slate-50">
+                                                        <div className="font-medium text-red-600 break-all text-sm mb-1">{i.url}</div>
+                                                        <div className="flex gap-3 text-xs text-slate-500"><span>Status: {i.status}</span><span>Source: {i.referringPage}</span></div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* --- WORKSPACE: SECURITY --- */}
+                                {activeTab === 'security' && (
+                                    <div className="space-y-6 animate-in fade-in">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4"><div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center"><Lock size={32} className="text-emerald-600"/></div><div><div className="text-sm font-bold text-slate-500 uppercase">SSL Certificate</div><div className="text-2xl font-extrabold text-slate-800">{securityData.sslStatus}</div></div></div>
+                                            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4"><div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center"><ShieldAlert size={32} className="text-red-600"/></div><div><div className="text-sm font-bold text-slate-500 uppercase">Active Threats</div><div className="text-2xl font-extrabold text-slate-800">{securityData.unresolvedAlerts}</div></div></div>
+                                        </div>
+                                        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-6">
+                                            <h3 className="font-bold text-slate-800 mb-4">Audit Logs</h3>
+                                            <div className="space-y-3">
+                                                {securityData.auditLogs.map(l => (
+                                                    <div key={l.id} className="p-3 border border-slate-100 rounded-lg bg-slate-50 flex justify-between items-center">
+                                                        <div><div className="font-bold text-sm text-slate-800">{l.event}</div><div className="text-xs text-slate-500 font-mono mt-1">IP: {l.ip} • {l.time}</div></div>
+                                                        <span className={`text-[10px] px-2 py-1 rounded font-bold ${l.severity === 'High'?'bg-red-100 text-red-700':l.severity === 'Medium'?'bg-orange-100 text-orange-700':'bg-blue-100 text-blue-700'}`}>{l.severity}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                            </div>
+                        </main>
                     </div>
 
-                    {/* Main Content */}
-                    <div className="flex-1 overflow-y-auto h-screen p-4 md:p-8">
-                        <div className="max-w-6xl mx-auto space-y-8">
-                            
-                            {/* Header Section */}
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                                <div>
-                                    <h1 className="text-3xl font-extrabold text-slate-800 capitalize tracking-tight flex items-center gap-3">
-                                        {activeTab === 'overview' && 'System Overview'}
-                                        {activeTab === 'performance' && 'Speed & Performance'}
-                                        {activeTab === 'links' && 'Link Health Monitor'}
-                                        {activeTab === 'security' && 'Security Audits'}
-                                    </h1>
-                                    <p className="text-slate-500 mt-1">
-                                        {activeTab === 'overview' && "High-level analytics and health status of MBTECH platform."}
-                                        {activeTab === 'performance' && "Monitor page load times and core web vitals."}
-                                        {activeTab === 'links' && "Track 404s, broken resources, and dead external links."}
-                                        {activeTab === 'security' && "Supervise suspicious activities and security configurations."}
-                                    </p>
+                    {/* Order Details Modal Overlay */}
+                    {selectedOrder && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+                            <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+                                <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                                    <h3 className="text-lg font-extrabold text-brand-dark">Manage Order #{selectedOrder.id.slice(-6).toUpperCase()}</h3>
+                                    <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-slate-700"><XCircle size={24}/></button>
                                 </div>
-                                <div className="flex gap-3">
-                                    <button 
-                                        onClick={handleScan}
-                                        disabled={isScanning}
-                                        className="px-5 py-2.5 bg-brand-blue hover:bg-brand-blueHover text-white rounded-xl font-bold shadow-lg shadow-brand-blue/30 transition-all flex items-center gap-2 disabled:opacity-70"
-                                    >
-                                        <RefreshCw size={16} className={isScanning ? 'animate-spin' : ''} />
-                                        {isScanning ? 'Scanning...' : 'Run Diagnostics'}
-                                    </button>
+                                <div className="p-6 overflow-y-auto flex-1 space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-slate-50 p-4 rounded-xl"><p className="text-xs text-slate-500 font-bold mb-1">Customer</p><p className="font-bold text-sm">{selectedOrder.userName}</p><p className="text-xs text-slate-500 mt-1">{selectedOrder.contact}</p></div>
+                                        <div className="bg-blue-50 p-4 rounded-xl"><p className="text-xs text-brand-blue font-bold mb-1">Total</p><p className="font-bold text-lg">₦{(selectedOrder.total || 0).toLocaleString()}</p><p className="text-xs font-bold uppercase mt-1 text-slate-600">{selectedOrder.paymentStatus || 'PENDING'}</p></div>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-sm mb-3">Items</h4>
+                                        <div className="space-y-2">
+                                            {(selectedOrder.items || []).map((item, idx) => (
+                                                <div key={idx} className="flex justify-between items-center p-3 border border-slate-100 rounded-lg text-sm">
+                                                    <span>{item.name} (x{item.qty})</span>
+                                                    <span className="font-bold">₦{(item.price * item.qty).toLocaleString()}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-sm mb-3">Update Fulfillment Status</h4>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {['pending', 'processing', 'completed', 'cancelled'].map(status => (
+                                                <button key={status} onClick={() => updateOrderStatus(selectedOrder.id, status)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all ${selectedOrder.status === status ? 'bg-brand-dark text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{status}</button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-                            {/* --- OVERVIEW TAB --- */}
-                            {activeTab === 'overview' && (
-                                <div className="space-y-8 animate-in fade-in duration-300">
-                                    {/* Metrics Grid */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                        <MetricCard 
-                                            title="Performance Score" 
-                                            value={`${performanceData.score}/100`} 
-                                            subtext="Based on Core Web Vitals"
-                                            icon={Zap} 
-                                            colorClass="bg-blue-100 text-blue-600"
-                                            trend={2}
-                                        />
-                                        <MetricCard 
-                                            title="Broken Links" 
-                                            value={linkHealthData.brokenLinks} 
-                                            subtext={`Out of ${linkHealthData.totalScanned} scanned`}
-                                            icon={LinkIcon} 
-                                            colorClass="bg-orange-100 text-orange-600"
-                                        />
-                                        <MetricCard 
-                                            title="Security Score" 
-                                            value={`${securityData.score}/100`} 
-                                            subtext={`${securityData.unresolvedAlerts} unresolved alerts`}
-                                            icon={ShieldCheck} 
-                                            colorClass="bg-emerald-100 text-emerald-600"
-                                            trend={5}
-                                        />
-                                        <MetricCard 
-                                            title="System Uptime" 
-                                            value={performanceData.uptime} 
-                                            subtext="Last 30 days"
-                                            icon={Server} 
-                                            colorClass="bg-purple-100 text-purple-600"
-                                        />
-                                    </div>
-
-                                    {/* Two Column Layout for Quick Logs */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                        {/* Security Quick View */}
-                                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                                            <div className="flex justify-between items-center mb-6">
-                                                <h3 className="font-bold text-slate-800 flex items-center gap-2"><ShieldAlert size={18} className="text-brand-orange"/> Recent Security Logs</h3>
-                                                <button onClick={() => setActiveTab('security')} className="text-sm font-semibold text-brand-blue hover:underline">View All</button>
-                                            </div>
-                                            <div className="space-y-4">
-                                                {securityData.auditLogs.slice(0,3).map(log => (
-                                                    <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                                        <div className={`mt-0.5 w-2 h-2 rounded-full ${log.severity === 'High' ? 'bg-red-500' : (log.severity === 'Medium' ? 'bg-orange-500' : 'bg-blue-500')}`}></div>
-                                                        <div className="flex-1">
-                                                            <div className="text-sm font-bold text-slate-800">{log.event}</div>
-                                                            <div className="text-xs text-slate-500 mt-1 flex justify-between">
-                                                                <span>IP: {log.ip}</span>
-                                                                <span>{log.time}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Performance Quick View */}
-                                        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-                                            <div className="flex justify-between items-center mb-6">
-                                                <h3 className="font-bold text-slate-800 flex items-center gap-2"><Activity size={18} className="text-emerald-500"/> Speed Tests</h3>
-                                                <button onClick={() => setActiveTab('performance')} className="text-sm font-semibold text-brand-blue hover:underline">View All</button>
-                                            </div>
-                                            <div className="space-y-4">
-                                                {performanceData.recentTests.map(test => (
-                                                    <div key={test.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                                        <div className="flex items-center gap-3">
-                                                            <FileCode size={16} className="text-slate-400"/>
-                                                            <span className="text-sm font-semibold text-slate-700">{test.page}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-4">
-                                                            <span className="text-sm font-bold text-slate-800">{test.load}</span>
-                                                            <span className={`text-xs px-2 py-1 rounded-full font-bold ${test.status === 'Good' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>{test.status}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* --- PERFORMANCE TAB --- */}
-                            {activeTab === 'performance' && (
-                                <div className="space-y-6 animate-in fade-in duration-300">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
-                                            <div className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">Average Load Time</div>
-                                            <div className="text-4xl font-extrabold text-emerald-600">{performanceData.loadTime}</div>
-                                            <div className="text-xs text-slate-400 mt-2">Target: &lt; 2.0s</div>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
-                                            <div className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">TTFB (Time to First Byte)</div>
-                                            <div className="text-4xl font-extrabold text-blue-600">{performanceData.ttfb}</div>
-                                            <div className="text-xs text-slate-400 mt-2">Target: &lt; 600ms</div>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center">
-                                            <div className="text-sm font-bold text-slate-500 mb-2 uppercase tracking-wider">LCP (Largest Contentful Paint)</div>
-                                            <div className="text-4xl font-extrabold text-orange-500">{performanceData.lcp}</div>
-                                            <div className="text-xs text-slate-400 mt-2">Target: &lt; 2.5s</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                                            <h3 className="font-bold text-slate-800">Page Speed History</h3>
-                                        </div>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left text-sm">
-                                                <thead className="bg-slate-50 text-slate-600 font-semibold uppercase text-xs tracking-wider">
-                                                    <tr>
-                                                        <th className="px-6 py-4">Page</th>
-                                                        <th className="px-6 py-4">Time Tested</th>
-                                                        <th className="px-6 py-4">Load Time</th>
-                                                        <th className="px-6 py-4">Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-slate-100">
-                                                    {performanceData.recentTests.map((test, idx) => (
-                                                        <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                                            <td className="px-6 py-4 font-semibold text-slate-700">{test.page}</td>
-                                                            <td className="px-6 py-4 text-slate-500">{test.time}</td>
-                                                            <td className="px-6 py-4 font-bold">{test.load}</td>
-                                                            <td className="px-6 py-4">
-                                                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${test.status === 'Good' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
-                                                                    {test.status}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* --- LINK HEALTH TAB --- */}
-                            {activeTab === 'links' && (
-                                <div className="space-y-6 animate-in fade-in duration-300">
-                                    <div className="flex items-center gap-4 bg-orange-50 border border-orange-200 p-4 rounded-xl text-orange-800">
-                                        <AlertTriangle size={24} className="shrink-0" />
-                                        <div>
-                                            <div className="font-bold text-sm">Action Required</div>
-                                            <div className="text-xs mt-0.5">Found {linkHealthData.brokenLinks} broken links during the last scan ({linkHealthData.lastScanned}).</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left text-sm">
-                                                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-xs tracking-wider">
-                                                    <tr>
-                                                        <th className="px-6 py-4">Broken URL</th>
-                                                        <th className="px-6 py-4">Status Code</th>
-                                                        <th className="px-6 py-4">Found On (Referrer)</th>
-                                                        <th className="px-6 py-4">Type</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-slate-100">
-                                                    {linkHealthData.issues.map(issue => (
-                                                        <tr key={issue.id} className="hover:bg-slate-50 transition-colors">
-                                                            <td className="px-6 py-4">
-                                                                <div className="font-medium text-red-600 break-all max-w-xs">{issue.url}</div>
-                                                            </td>
-                                                            <td className="px-6 py-4">
-                                                                <span className="bg-red-100 text-red-700 px-2 py-1 rounded font-mono font-bold text-xs">{issue.status} Error</span>
-                                                            </td>
-                                                            <td className="px-6 py-4 text-slate-600 font-medium">{issue.referringPage}</td>
-                                                            <td className="px-6 py-4">
-                                                                <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-bold">{issue.type}</span>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* --- SECURITY TAB --- */}
-                            {activeTab === 'security' && (
-                                <div className="space-y-6 animate-in fade-in duration-300">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-                                            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
-                                                <Lock size={32} className="text-emerald-600"/>
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">SSL Certificate</div>
-                                                <div className="text-2xl font-extrabold text-slate-800">{securityData.sslStatus}</div>
-                                                <div className="text-xs text-slate-400 font-medium mt-1">Expires in {securityData.sslExpiry}</div>
-                                            </div>
-                                        </div>
-                                        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
-                                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                                                <ShieldAlert size={32} className="text-red-600"/>
-                                            </div>
-                                            <div>
-                                                <div className="text-sm font-bold text-slate-500 uppercase tracking-wider">Active Threats / Alerts</div>
-                                                <div className="text-2xl font-extrabold text-slate-800">{securityData.unresolvedAlerts}</div>
-                                                <div className="text-xs text-slate-400 font-medium mt-1">Review audit logs below</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                                        <div className="p-6 border-b border-slate-100">
-                                            <h3 className="font-bold text-slate-800">System Audit Logs</h3>
-                                        </div>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-left text-sm">
-                                                <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200 uppercase text-xs tracking-wider">
-                                                    <tr>
-                                                        <th className="px-6 py-4">Timestamp</th>
-                                                        <th className="px-6 py-4">Event Description</th>
-                                                        <th className="px-6 py-4">IP Address</th>
-                                                        <th className="px-6 py-4">Severity</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-slate-100">
-                                                    {securityData.auditLogs.map(log => (
-                                                        <tr key={log.id} className="hover:bg-slate-50 transition-colors">
-                                                            <td className="px-6 py-4 text-slate-500 text-xs font-mono">{log.time}</td>
-                                                            <td className="px-6 py-4 font-semibold text-slate-700">{log.event}</td>
-                                                            <td className="px-6 py-4 text-slate-600 font-mono text-xs">{log.ip}</td>
-                                                            <td className="px-6 py-4">
-                                                                <span className={`px-2 py-1 rounded text-xs font-bold ${
-                                                                    log.severity === 'High' ? 'bg-red-100 text-red-700' : 
-                                                                    (log.severity === 'Medium' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700')
-                                                                }`}>
-                                                                    {log.severity}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
                         </div>
-                    </div>
+                    )}
+
+                    {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
                 </div>
             );
-        };
+        }
 
         const root = createRoot(document.getElementById('root'));
         root.render(<App />);
