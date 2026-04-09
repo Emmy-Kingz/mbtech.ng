@@ -209,6 +209,17 @@
         </div>
     </div>
 
+    <!-- Mobile Tutor Floating Button -->
+    <div class="md:hidden fixed bottom-[140px] right-4 z-[45]">
+        <button onclick="ui.openModal('tutorModal')" class="bg-brand-orange hover:bg-orange-600 text-white w-12 h-12 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] shadow-orange-500/30 flex items-center justify-center relative transition-transform transform hover:scale-105 active:scale-95">
+            <span class="absolute right-full mr-3 bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
+                Get a Tutor
+                <div class="absolute top-1/2 -right-1 w-2 h-2 bg-slate-900 rotate-45 -translate-y-1/2"></div>
+            </span>
+            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+        </button>
+    </div>
+
     <!-- Hero -->
     <div class="relative bg-brand-dark text-white overflow-hidden pt-20">
         <div class="absolute inset-0 opacity-10" style="background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png')"></div>
@@ -575,6 +586,9 @@
         let isLoginMode = true;
         let mobileMenuOpen = false;
 
+        // Add a global variable to track if paystack is pending after auth
+        window.pendingPaystack = false;
+
         // --- UTILS ---
         const getCategoryColor = (category) => {
             const colors = { 'Design': 'bg-pink-500', 'Tech': 'bg-brand-blue', 'Engineering': 'bg-brand-orange' };
@@ -700,6 +714,27 @@
 
         // --- CORE APPLICATION LOGIC ---
         window.app = {
+            toggleCourse: (courseId) => {
+                const course = courses.find(c => c.id === courseId);
+                if (!course) return;
+
+                const index = selectedCourses.findIndex(c => c.id === courseId);
+                if (index > -1) {
+                    selectedCourses.splice(index, 1);
+                    ui.notify(`${course.title} removed from selection`, 'info');
+                } else {
+                    selectedCourses.push(course);
+                    ui.notify(`${course.title} added to selection`);
+                }
+
+                app.renderCourses();
+                app.renderCart();
+
+                // If course details modal is active, update the button state
+                if (document.getElementById('courseModal').classList.contains('active')) {
+                    ui.openCourseDetails(courseId);
+                }
+            },
             renderFilters: () => {
                 const categories = ["All Courses", ...Array.from(new Set(courses.map(c => c.category)))];
                 const container = document.getElementById('filters-container');
@@ -819,7 +854,6 @@
             },
             handleCheckoutClick: () => {
                 if (selectedCourses.length === 0) return;
-                // Directly proceed to checkout without forcing auth
                 app.prepCheckout();
             },
             prepCheckout: () => {
@@ -841,7 +875,11 @@
             logout: async () => {
                 try {
                     await signOut(auth);
-                    await signInAnonymously(auth);
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (err) {
+                        console.warn("Anonymous auth disabled. Proceeding as unauthenticated.", err.message);
+                    }
                     selectedCourses = [];
                     app.renderCourses();
                     app.renderCart();
@@ -890,7 +928,18 @@
                         await createUserWithEmailAndPassword(auth, email, password);
                         ui.notify("Account created successfully!");
                     }
+                    
                     ui.closeModal('authModal');
+                    
+                    // Resume checkout flow if they were interrupted by Paystack Auth Guard
+                    if (window.pendingPaystack) {
+                        window.pendingPaystack = false;
+                        setTimeout(() => {
+                            ui.openModal('enrollModal');
+                            ui.notify("Verified! You can now securely pay with Paystack.");
+                        }, 400); // give slight delay for modal transitions
+                    }
+
                 } catch (err) {
                     ui.notify(err.message.replace('Firebase: ', ''), "error");
                 } finally {
@@ -910,7 +959,10 @@
                 const email = document.getElementById('checkout-email').value.trim();
                 const phone = document.getElementById('checkout-phone').value.trim();
                 const total = selectedCourses.reduce((sum, c) => sum + (c.price || 0), 0);
+                
+                // Detailed courses string for DB, structured string for WhatsApp
                 const coursesStr = selectedCourses.map(c=>c.title).join(', ');
+                const structuredCourses = selectedCourses.map((c, i) => `${i + 1}. ${c.title}`).join('%0A');
 
                 const btn = document.getElementById('btn-whatsapp');
                 const originalContent = btn.innerHTML;
@@ -929,8 +981,10 @@
                     });
                 } catch(err) { console.error(err); }
 
-                const msg = `Hello! I want to register for the following courses:\n\n*Name:* ${name}\n*Email:* ${email}\n*Courses:* ${coursesStr}\n*Total Fee:* ₦${total.toLocaleString()}\n\nPlease guide me on the next steps.`;
-                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+                // Very neat WhatsApp message formatting
+                const msg = `🎓 *NEW COURSE ENROLLMENT* 🎓%0A%0A*👤 Student Details*%0AName: ${name}%0AEmail: ${email}%0APhone: ${phone}%0A%0A*📚 Selected Courses*%0A${structuredCourses}%0A%0A*💰 Payment Summary*%0ATotal Fee: ₦${total.toLocaleString()}%0APayment Method: WhatsApp Checkout%0A%0APlease guide me on the next steps to complete my registration.`;
+                
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 
                 selectedCourses = [];
                 app.renderCourses();
@@ -943,6 +997,16 @@
             // Checkout Form - Paystack Submit
             document.getElementById('checkout-form').addEventListener('submit', (e) => {
                 e.preventDefault();
+
+                // Check if user is authenticated before allowing Paystack
+                if (!user || user.isAnonymous) {
+                    window.pendingPaystack = true; // flag to return them back here
+                    ui.closeModal('enrollModal');
+                    ui.openModal('authModal');
+                    ui.notify("Please sign in or create an account to pay securely with Paystack.", "info");
+                    return;
+                }
+
                 const name = document.getElementById('checkout-name').value.trim();
                 const email = document.getElementById('checkout-email').value.trim();
                 const phone = document.getElementById('checkout-phone').value.trim();
@@ -1027,7 +1091,9 @@
             const initAuth = async () => {
                 try {
                     if (!auth.currentUser) await signInAnonymously(auth);
-                } catch (e) { console.error(e); }
+                } catch (e) {
+                    console.warn("Firebase Anonymous Sign-in is disabled in your console. Proceeding as unauthenticated guest.", e.message);
+                }
             };
             initAuth();
 
