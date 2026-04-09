@@ -77,7 +77,7 @@
             LayoutDashboard, Store as StoreIcon, Calendar as Event, FileText as Info, 
             BookOpen as Course, Users, Settings, Plus, Edit, Trash2 as Delete, X as Close, 
             LogOut, Lock, Check, RefreshCcw as Sync, MapPin as Location, Phone, Mail, ShieldAlert,
-            Loader2 
+            Loader2, AlignLeft
         } from 'lucide-react';
 
         // --- FIREBASE IMPORTS ---
@@ -98,14 +98,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const appId = 'mbtech-public-store';
-
-        // --- CRYPTO HELPER ---
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
 
         // --- COMPONENTS ---
         function AnimatedCounter({ target, suffix = '' }) {
@@ -164,57 +156,57 @@
 
         function GlobalFooter() {
             return (
-                <footer className="bg-slate-900 text-white pt-16 pb-8 mt-auto w-full z-10 border-t border-slate-800">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <footer class="bg-slate-900 text-white pt-16 pb-8 mt-auto w-full z-10 border-t border-slate-800">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                         <div>
-                            <img src="logo.png" alt="MBTECH Logo" className="h-10 mb-4 object-contain" onError={(e)=>{e.target.style.display='none'}}/>
-                            <p className="text-slate-400 mb-4 text-sm leading-relaxed">
+                            <img src="logo.png" alt="MBTECH Logo" class="h-10 mb-4 object-contain" onError={(e)=>{e.target.style.display='none'}}/>
+                            <p class="text-slate-400 mb-4 text-sm leading-relaxed">
                                 Empowering Africa through innovative technology solutions, digital skills training, and sustainable energy.
                             </p>
-                            <div className="flex space-x-4">
-                                <a href="https://facebook.com/mbtech.ng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">f</a>
-                                <a href="https://x.com/mbtech_ng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">𝕏</a>
-                                <a href="https://linkedin.com/company/mbtech-ng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">in</a>
+                            <div class="flex space-x-4">
+                                <a href="https://facebook.com/mbtech.ng" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">f</a>
+                                <a href="https://x.com/mbtech_ng" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">𝕏</a>
+                                <a href="https://linkedin.com/company/mbtech-ng" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">in</a>
                             </div>
                         </div>
                         <div>
-                            <h4 className="text-lg font-bold mb-4 text-white">Quick Links</h4>
-                            <ul className="space-y-2 text-sm text-slate-400">
-                                <li><a href="index.html" className="hover:text-brand-500 transition-colors">Home</a></li>
-                                <li><a href="course.html" className="hover:text-brand-500 transition-colors">Academy</a></li>
-                                <li><a href="store.html" className="hover:text-brand-500 transition-colors">Tech Store</a></li>
-                                <li><a href="info.html" className="hover:text-brand-500 transition-colors">Updates & Info</a></li>
-                                <li><a href="connect.html" className="hover:text-brand-500 transition-colors">Connect Platform</a></li>
+                            <h4 class="text-lg font-bold mb-4 text-white">Quick Links</h4>
+                            <ul class="space-y-2 text-sm text-slate-400">
+                                <li><a href="index.html" class="hover:text-brand-500 transition-colors">Home</a></li>
+                                <li><a href="course.html" class="hover:text-brand-500 transition-colors">Academy</a></li>
+                                <li><a href="store.html" class="hover:text-brand-500 transition-colors">Tech Store</a></li>
+                                <li><a href="info.html" class="hover:text-brand-500 transition-colors">Updates & Info</a></li>
+                                <li><a href="connect.html" class="hover:text-brand-500 transition-colors">Connect Platform</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-lg font-bold mb-4 text-white">Our Services</h4>
-                            <ul className="space-y-2 text-sm text-slate-400">
-                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Digital Skills Training</span></li>
-                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Software Development</span></li>
-                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Solar Installation</span></li>
-                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Tech Consultancy</span></li>
+                            <h4 class="text-lg font-bold mb-4 text-white">Our Services</h4>
+                            <ul class="space-y-2 text-sm text-slate-400">
+                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Digital Skills Training</span></li>
+                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Software Development</span></li>
+                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Solar Installation</span></li>
+                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Tech Consultancy</span></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 className="text-lg font-bold mb-4 text-white">Contact Us</h4>
-                            <ul className="space-y-4 text-sm text-slate-400">
-                                <li className="flex items-start">
-                                    <span className="mr-3 mt-0.5 text-brand-500"><Location size={16} /></span>
+                            <h4 class="text-lg font-bold mb-4 text-white">Contact Us</h4>
+                            <ul class="space-y-4 text-sm text-slate-400">
+                                <li class="flex items-start">
+                                    <span class="mr-3 mt-0.5 text-brand-500"><Location size={16} /></span>
                                     <span>Lagos, Nigeria</span>
                                 </li>
-                                <li className="flex items-center">
-                                    <span className="mr-3 text-brand-500"><Phone size={16} /></span>
+                                <li class="flex items-center">
+                                    <span class="mr-3 text-brand-500"><Phone size={16} /></span>
                                     <span>+234 708 467 2771</span>
                                 </li>
-                                <li className="flex items-center">
-                                    <span className="mr-3 text-brand-500"><Mail size={16} /></span>
-                                    <a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-brand-500 transition-colors">support@mbtech.ng</a>
+                                <li class="flex items-center">
+                                    <span class="mr-3 text-brand-500"><Mail size={16} /></span>
+                                    <a href="mailto:mesobest.technology.org@gmail.com" class="hover:text-brand-500 transition-colors">support@mbtech.ng</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800 pt-8 text-center text-slate-500 text-sm font-medium">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800 pt-8 text-center text-slate-500 text-sm font-medium">
                         <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved. | Secured Workspace</p>
                     </div>
                 </footer>
@@ -305,13 +297,12 @@
             // Google Login specific to Admin Email
             const handleGoogleLogin = async () => {
                 setIsAuthenticating(true);
-                setAuthError(''); // Clear previous errors
+                setAuthError('');
                 try {
                     const provider = new GoogleAuthProvider();
-                    provider.setCustomParameters({ prompt: 'select_account' }); // Force account selection
+                    provider.setCustomParameters({ prompt: 'select_account' });
                     const result = await signInWithPopup(auth, provider);
                     
-                    // Allow the exact requested email address (including the potential typo version provided)
                     const allowedEmails = ['emmanuel.amobi03@gmail.com', 'emmanuel.amobi03@gmai.com', 'mesobest2000@gmail.com'];
                     
                     if (result.user.email && allowedEmails.includes(result.user.email.toLowerCase())) {
@@ -321,16 +312,14 @@
                     } else {
                         setAuthError(`Unauthorized Account (${result.user.email}). You do not have admin privileges.`);
                         await auth.signOut();
-                        await signInAnonymously(auth); // Re-establish public connection
+                        await signInAnonymously(auth);
                     }
                 } catch (err) {
-                    console.error("Google Auth Error Object:", err);
-                    
-                    // Detailed Error Handling for better debugging
+                    console.error("Google Auth Error:", err);
                     if (err.code === 'auth/unauthorized-domain') {
                         setAuthError('Error: This domain is not authorized. Add it in Firebase Console -> Auth -> Settings -> Authorized domains.');
                     } else if (err.code === 'auth/operation-not-supported-in-this-environment') {
-                        setAuthError('Error: Cannot run Google Login on file://. Please use a local web server (like VS Code Live Server).');
+                        setAuthError('Error: Cannot run Google Login on file://. Please use a local web server.');
                     } else if (err.code === 'auth/popup-closed-by-user') {
                         setAuthError('Sign-in cancelled. The popup was closed before finishing.');
                     } else if (err.code === 'auth/popup-blocked') {
@@ -342,7 +331,6 @@
                 setIsAuthenticating(false);
             };
 
-            // Email and Password Login
             const handleEmailLogin = async (e) => {
                 e.preventDefault();
                 setIsAuthenticating(true);
@@ -359,7 +347,7 @@
                     } else {
                         setAuthError(`Unauthorized Account (${result.user.email}). You do not have admin privileges.`);
                         await auth.signOut();
-                        await signInAnonymously(auth); // Re-establish public connection
+                        await signInAnonymously(auth);
                     }
                 } catch (err) {
                     console.error("Email Auth Error:", err);
@@ -381,7 +369,7 @@
 
             const showToast = (message, type = 'success') => setToast({ message, type });
 
-            // Universal CRUD Handler mapped to Firestore Collections
+            // Universal CRUD Handler
             const handleSave = async (e, tabName, setModalOpen, extraData = {}) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
@@ -423,7 +411,7 @@
             };
 
             const handleDelete = async (tabName, id) => {
-                if (window.confirm('Are you sure you want to permanently delete this item?')) {
+                if (window.confirm('⚠️ Are you sure you want to permanently delete this item? This action cannot be undone.')) {
                     const map = {
                         'store': 'mbtech_products',
                         'events': 'mbtech_events',
@@ -671,7 +659,7 @@
                             </div>
                         )}
 
-                        {/* STORE TAB */}
+                        {/* STORE TAB (UPDATED: Added Description field) */}
                         {activeTab === 'store' && (
                             <div className="animate-in fade-in">
                                 <div className="flex justify-between items-center mb-6">
@@ -682,13 +670,14 @@
                                 </div>
                                 <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden w-full">
                                     <div className="overflow-x-auto">
-                                        <table className="w-full text-left border-collapse min-w-[800px]">
+                                        <table className="w-full text-left border-collapse min-w-[900px]">
                                             <thead>
                                                 <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
                                                     <th className="p-5 font-bold">Product</th>
                                                     <th className="p-5 font-bold">Category</th>
                                                     <th className="p-5 font-bold">Type</th>
                                                     <th className="p-5 font-bold">Price (₦)</th>
+                                                    <th className="p-5 font-bold">Description</th>
                                                     <th className="p-5 font-bold text-right">Actions</th>
                                                 </tr>
                                             </thead>
@@ -709,6 +698,7 @@
                                                             </span>
                                                         </td>
                                                         <td className="p-5 text-base font-extrabold text-slate-800 whitespace-nowrap">{(item.price || 0).toLocaleString()}</td>
+                                                        <td className="p-5 text-sm text-slate-500 max-w-xs truncate">{item.description || '—'}</td>
                                                         <td className="p-5 text-right whitespace-nowrap">
                                                             <div className="flex justify-end gap-2">
                                                                 <button onClick={() => openModal(item, setStoreModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-white border border-slate-200 hover:border-brand-200 rounded-lg shadow-sm"><Edit size={16}/></button>
@@ -910,7 +900,7 @@
 
                     {/* MODALS FOR CRUD */}
                     
-                    {/* Store Modal */}
+                    {/* Store Modal (UPDATED: Added Description field) */}
                     <Modal isOpen={isStoreModalOpen} onClose={() => setStoreModalOpen(false)} title={currentItem ? "Edit Product/Service" : "Add to Store"}>
                         <form onSubmit={(e) => handleSave(e, 'store', setStoreModalOpen)} className="space-y-5">
                             <div>
@@ -953,6 +943,18 @@
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Image URL</label>
                                 <input name="image" type="url" required defaultValue={currentItem?.image} placeholder="https://..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all" />
+                            </div>
+                            {/* NEW DESCRIPTION FIELD */}
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Description</label>
+                                <textarea 
+                                    name="description" 
+                                    rows="3" 
+                                    defaultValue={currentItem?.description || ''} 
+                                    placeholder="Detailed description of the product or service..."
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all resize-y"
+                                ></textarea>
+                                <p className="text-[10px] text-slate-400 mt-1">This description will be shown on the product detail page.</p>
                             </div>
                             <div className="pt-6 flex justify-end gap-3 border-t border-slate-100">
                                 <button type="button" onClick={() => setStoreModalOpen(false)} className="px-5 py-3 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl font-bold transition-colors">Cancel</button>
