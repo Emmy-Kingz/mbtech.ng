@@ -77,3 +77,45 @@ Because this project relies on ES Modules and CDN imports, you do not need Node.
    ```bash
    git clone https://github.com/Emmy-Kingz/mbtech.ng.git
    cd mbtech.ng
+2. Run a local server:
+
+Using VS Code: Install the Live Server extension, right-click index.html, and select Open with Live Server.
+
+Using Python: Run python -m http.server 8000 and visit http://localhost:8000.
+
+Using Node (optional): Run npx serve.
+
+<hr />
+🤝 Call for Collaboration
+We are actively looking for contributors, developers, and partners! Whether you are a frontend wizard looking to optimise our React code, a UI/UX designer wanting to refine our interfaces, or a backend engineer interested in expanding our Firebase rules – there is a place for you here.
+
+How to Contribute
+Fork the repository.
+
+Create a new branch (git checkout -b feature/AmazingFeature).
+
+Commit your changes (git commit -m 'Add some AmazingFeature').
+
+Push to the branch (git push origin feature/AmazingFeature).
+
+Open a Pull Request and let's discuss your ideas!
+
+If you are an organisation or sponsor looking to support tech education in Nigeria, please reach out to us directly to discuss partnership opportunities.
+
+<hr />
+🛡️ Security & Administration
+We take the security of our users and data seriously. Read/Write access to the database is strictly governed by Firebase Security Rules, and our admin portal utilises client‑side SHA‑256 hashing alongside timestamp‑based rate limiting to prevent brute‑force attacks.
+
+For responsible vulnerability reporting, please refer to our Security Policy.
+
+<hr />
+📞 Contact & Support
+We are always online and ready to help.
+
+💬 WhatsApp: +234 708 467 2771
+
+📧 Email: emmanuel.amobi03@gmail.com
+
+🌐 Live Website: Visit Platform
+
+<hr /><div align="center"> <p>&copy; 2026 Mesobest Technology NG. All rights reserved.</p> <p><i>Innovating Africa's Digital Future</i></p> </div> ```
