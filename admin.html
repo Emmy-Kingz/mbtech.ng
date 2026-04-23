@@ -381,6 +381,12 @@
                 if (payload.price) payload.price = parseFloat(payload.price);
                 if (payload.oldPrice) payload.oldPrice = parseFloat(payload.oldPrice);
                 if (payload.stock) payload.stock = parseInt(payload.stock);
+                
+                // Parse rate for gigs if provided, otherwise clean it up
+                if (tabName === 'gigs') {
+                    if (payload.rate) payload.rate = parseFloat(payload.rate);
+                    else delete payload.rate;
+                }
 
                 if (tabName === 'courses' && payload.curriculumRaw) {
                     payload.curriculum = payload.curriculumRaw.split('\n').map(s => s.trim()).filter(s => s);
@@ -752,6 +758,14 @@
                                                 </div>
                                             </div>
                                             <h3 className="font-extrabold text-xl text-slate-900 leading-tight mb-2">{gig.title}</h3>
+                                            
+                                            {gig.rate && (
+                                                <div className="flex items-center gap-1.5 mt-1 mb-3">
+                                                    <span className="text-sm font-black text-emerald-600">{gig.currency === 'USD' ? '$' : '₦'}{gig.rate.toLocaleString()}</span>
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">/ {gig.rateType || 'Task'}</span>
+                                                </div>
+                                            )}
+
                                             <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-4 font-medium">
                                                 <Location size={14}/> {gig.location}
                                             </div>
@@ -1035,6 +1049,27 @@
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Location</label>
                                     <input name="location" required defaultValue={currentItem?.location} placeholder="Remote, Lagos, etc." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all" />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-5">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Rate (Optional)</label>
+                                    <input name="rate" type="number" defaultValue={currentItem?.rate} placeholder="e.g. 50000" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Currency</label>
+                                    <select name="currency" defaultValue={currentItem?.currency || 'NGN'} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all appearance-none">
+                                        <option value="NGN">NGN (₦)</option>
+                                        <option value="USD">USD ($)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Rate Type</label>
+                                    <select name="rateType" defaultValue={currentItem?.rateType || 'Task'} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all appearance-none">
+                                        <option value="Task">Per Task / Fixed</option>
+                                        <option value="Month">Per Month</option>
+                                        <option value="Hour">Per Hour</option>
+                                    </select>
                                 </div>
                             </div>
                             <div>
