@@ -77,7 +77,7 @@
             LayoutDashboard, Store as StoreIcon, Calendar as Event, FileText as Info, 
             BookOpen as Course, Users, Settings, Plus, Edit, Trash2 as Delete, X as Close, 
             LogOut, Lock, Check, RefreshCcw as Sync, MapPin as Location, Phone, Mail, ShieldAlert,
-            Loader2, AlignLeft
+            Loader2, AlignLeft, Briefcase
         } from 'lucide-react';
 
         // --- FIREBASE IMPORTS ---
@@ -156,57 +156,57 @@
 
         function GlobalFooter() {
             return (
-                <footer class="bg-slate-900 text-white pt-16 pb-8 mt-auto w-full z-10 border-t border-slate-800">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <footer className="bg-slate-900 text-white pt-16 pb-8 mt-auto w-full z-10 border-t border-slate-800">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                         <div>
-                            <img src="logo.png" alt="MBTECH Logo" class="h-10 mb-4 object-contain" onError={(e)=>{e.target.style.display='none'}}/>
-                            <p class="text-slate-400 mb-4 text-sm leading-relaxed">
+                            <img src="logo.png" alt="MBTECH Logo" className="h-10 mb-4 object-contain" onError={(e)=>{e.target.style.display='none'}}/>
+                            <p className="text-slate-400 mb-4 text-sm leading-relaxed">
                                 Empowering Africa through innovative technology solutions, digital skills training, and sustainable energy.
                             </p>
-                            <div class="flex space-x-4">
-                                <a href="https://facebook.com/mbtech.ng" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">f</a>
-                                <a href="https://x.com/mbtech_ng" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">𝕏</a>
-                                <a href="https://linkedin.com/company/mbtech-ng" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">in</a>
+                            <div className="flex space-x-4">
+                                <a href="https://facebook.com/mbtech.ng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">f</a>
+                                <a href="https://x.com/mbtech_ng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">𝕏</a>
+                                <a href="https://linkedin.com/company/mbtech-ng" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-brand-500 hover:text-white transition-colors">in</a>
                             </div>
                         </div>
                         <div>
-                            <h4 class="text-lg font-bold mb-4 text-white">Quick Links</h4>
-                            <ul class="space-y-2 text-sm text-slate-400">
-                                <li><a href="index.html" class="hover:text-brand-500 transition-colors">Home</a></li>
-                                <li><a href="course.html" class="hover:text-brand-500 transition-colors">Academy</a></li>
-                                <li><a href="store.html" class="hover:text-brand-500 transition-colors">Tech Store</a></li>
-                                <li><a href="info.html" class="hover:text-brand-500 transition-colors">Updates & Info</a></li>
-                                <li><a href="connect.html" class="hover:text-brand-500 transition-colors">Connect Platform</a></li>
+                            <h4 className="text-lg font-bold mb-4 text-white">Quick Links</h4>
+                            <ul className="space-y-2 text-sm text-slate-400">
+                                <li><a href="index.html" className="hover:text-brand-500 transition-colors">Home</a></li>
+                                <li><a href="course.html" className="hover:text-brand-500 transition-colors">Academy</a></li>
+                                <li><a href="store.html" className="hover:text-brand-500 transition-colors">Tech Store</a></li>
+                                <li><a href="info.html" className="hover:text-brand-500 transition-colors">Updates & Info</a></li>
+                                <li><a href="connect.html" className="hover:text-brand-500 transition-colors">Connect Platform</a></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="text-lg font-bold mb-4 text-white">Our Services</h4>
-                            <ul class="space-y-2 text-sm text-slate-400">
-                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Digital Skills Training</span></li>
-                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Software Development</span></li>
-                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Solar Installation</span></li>
-                                <li><span class="hover:text-brand-500 transition-colors cursor-default">Tech Consultancy</span></li>
+                            <h4 className="text-lg font-bold mb-4 text-white">Our Services</h4>
+                            <ul className="space-y-2 text-sm text-slate-400">
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Digital Skills Training</span></li>
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Software Development</span></li>
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Solar Installation</span></li>
+                                <li><span className="hover:text-brand-500 transition-colors cursor-default">Tech Consultancy</span></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="text-lg font-bold mb-4 text-white">Contact Us</h4>
-                            <ul class="space-y-4 text-sm text-slate-400">
-                                <li class="flex items-start">
-                                    <span class="mr-3 mt-0.5 text-brand-500"><Location size={16} /></span>
+                            <h4 className="text-lg font-bold mb-4 text-white">Contact Us</h4>
+                            <ul className="space-y-4 text-sm text-slate-400">
+                                <li className="flex items-start">
+                                    <span className="mr-3 mt-0.5 text-brand-500"><Location size={16} /></span>
                                     <span>Lagos, Nigeria</span>
                                 </li>
-                                <li class="flex items-center">
-                                    <span class="mr-3 text-brand-500"><Phone size={16} /></span>
+                                <li className="flex items-center">
+                                    <span className="mr-3 text-brand-500"><Phone size={16} /></span>
                                     <span>+234 708 467 2771</span>
                                 </li>
-                                <li class="flex items-center">
-                                    <span class="mr-3 text-brand-500"><Mail size={16} /></span>
-                                    <a href="mailto:mesobest.technology.org@gmail.com" class="hover:text-brand-500 transition-colors">support@mbtech.ng</a>
+                                <li className="flex items-center">
+                                    <span className="mr-3 text-brand-500"><Mail size={16} /></span>
+                                    <a href="mailto:mesobest.technology.org@gmail.com" className="hover:text-brand-500 transition-colors">support@mbtech.ng</a>
                                 </li>
                             </ul>
                         </div>
                     </div>
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800 pt-8 text-center text-slate-500 text-sm font-medium">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800 pt-8 text-center text-slate-500 text-sm font-medium">
                         <p>&copy; {new Date().getFullYear()} Mesobest Technology. All rights reserved. | Secured Workspace</p>
                     </div>
                 </footer>
@@ -224,7 +224,7 @@
             const [toast, setToast] = useState(null);
             
             // Data State
-            const [data, setData] = useState({ courses: [], store: [], info: [], connect: [], events: [] });
+            const [data, setData] = useState({ courses: [], store: [], info: [], connect: [], events: [], gigs: [] });
             const [syncProgress, setSyncProgress] = useState(0);
             const [isSyncing, setIsSyncing] = useState(true);
             const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -235,6 +235,7 @@
             const [isStoreModalOpen, setStoreModalOpen] = useState(false);
             const [isEventModalOpen, setEventModalOpen] = useState(false);
             const [isInfoModalOpen, setInfoModalOpen] = useState(false);
+            const [isGigModalOpen, setGigModalOpen] = useState(false);
             const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
 
             // Connect Anonymously to allow public reading of stats
@@ -246,7 +247,7 @@
             useEffect(() => {
                 const unsubscribes = [];
                 let loadedCount = 0;
-                const totalCollections = 5;
+                const totalCollections = 6;
 
                 const getCollectionPath = (tab) => {
                     const map = {
@@ -254,12 +255,13 @@
                         'events': 'mbtech_events',
                         'info': 'mbtech_updates',
                         'courses': 'mbtech_courses',
-                        'connect': 'mbtech_connect_leads'
+                        'connect': 'mbtech_connect_leads',
+                        'gigs': 'mbtech_gigs'
                     };
                     return map[tab];
                 };
 
-                const tabs = ['store', 'events', 'info', 'courses', 'connect'];
+                const tabs = ['store', 'events', 'info', 'courses', 'connect', 'gigs'];
                 
                 tabs.forEach(tab => {
                     const colPath = getCollectionPath(tab);
@@ -389,7 +391,8 @@
                     'store': 'mbtech_products',
                     'events': 'mbtech_events',
                     'info': 'mbtech_updates',
-                    'courses': 'mbtech_courses'
+                    'courses': 'mbtech_courses',
+                    'gigs': 'mbtech_gigs'
                 };
                 const colPath = map[tabName];
 
@@ -417,7 +420,8 @@
                         'events': 'mbtech_events',
                         'info': 'mbtech_updates',
                         'courses': 'mbtech_courses',
-                        'connect': 'mbtech_connect_leads'
+                        'connect': 'mbtech_connect_leads',
+                        'gigs': 'mbtech_gigs'
                     };
                     try {
                         await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', map[tabName], id));
@@ -443,11 +447,15 @@
             };
 
             const activeEventsCount = data.events.filter(e => e.status === 'Active').length;
+            const activeGigsCount = data.gigs.filter(g => g.status === 'Active').length;
+            
             const dashboardStats = [
                 { label: 'Products in Store', val: data.store.length, icon: StoreIcon, color: 'text-emerald-600', bg: 'bg-emerald-50' },
                 { label: 'Blog Updates', val: data.info.length, icon: Info, color: 'text-purple-600', bg: 'bg-purple-50' },
                 { label: 'Active Events', val: activeEventsCount, icon: Event, color: 'text-blue-600', bg: 'bg-blue-50' },
                 { label: 'Academy Courses', val: data.courses.length, icon: Course, color: 'text-amber-600', bg: 'bg-amber-50' },
+                { label: 'Active Gigs', val: activeGigsCount, icon: Briefcase, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                { label: 'Connect Leads', val: data.connect.length, icon: Users, color: 'text-brand-600', bg: 'bg-brand-50' },
             ];
 
             // --- VIEW 1: PUBLIC WEBSITE OVERVIEW ---
@@ -471,10 +479,10 @@
                         <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                              <div className="text-center mb-12">
                                  <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">MBTECH System Overview</h1>
-                                 <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed">Public analytics dashboard. Log in as an administrator to manage the store inventory, publish blog posts, configure events, and review user inquiries.</p>
+                                 <p className="text-slate-600 max-w-2xl mx-auto text-lg leading-relaxed">Public analytics dashboard. Log in as an administrator to manage the store inventory, publish blog posts, configure events, gigs and review user inquiries.</p>
                              </div>
 
-                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
                                  {dashboardStats.map((stat, i) => (
                                      <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col items-center text-center gap-4 hover:shadow-xl transition-all">
                                          <div className={"w-16 h-16 rounded-2xl flex items-center justify-center " + stat.bg + " " + stat.color}>
@@ -484,7 +492,7 @@
                                              <p className="text-4xl font-extrabold text-slate-800 mb-1">
                                                  {isSyncing && stat.val === 0 ? <span className="text-2xl text-slate-400 animate-pulse">...</span> : <AnimatedCounter target={stat.val} />}
                                              </p>
-                                             <p className="text-slate-500 font-bold uppercase tracking-wider text-xs mt-2">{stat.label}</p>
+                                             <p className="text-slate-500 font-bold uppercase tracking-wider text-[10px] mt-2">{stat.label}</p>
                                          </div>
                                      </div>
                                  ))}
@@ -561,11 +569,12 @@
             // --- VIEW 3: ADMIN DASHBOARD (Authenticated) ---
             const navItems = [
                 { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                { id: 'store', label: 'Store Inventory', icon: StoreIcon },
-                { id: 'events', label: 'Events Mgt', icon: Event },
-                { id: 'info', label: 'Blog & News', icon: Info },
+                { id: 'store', label: 'Store', icon: StoreIcon },
+                { id: 'gigs', label: 'Gigs Mgt', icon: Briefcase },
+                { id: 'events', label: 'Events', icon: Event },
+                { id: 'info', label: 'Blog', icon: Info },
                 { id: 'courses', label: 'Academy', icon: Course },
-                { id: 'connect', label: 'Users & Leads', icon: Users },
+                { id: 'connect', label: 'Leads', icon: Users },
             ];
 
             return (
@@ -581,7 +590,7 @@
                                     </div>
                                     
                                     {/* Desktop Tabs */}
-                                    <div className="hidden lg:flex space-x-6">
+                                    <div className="hidden lg:flex space-x-6 overflow-x-auto hide-scrollbar">
                                         {navItems.map(item => (
                                             <button 
                                                 key={item.id} 
@@ -636,7 +645,7 @@
                         {activeTab === 'dashboard' && (
                             <div className="space-y-6 animate-in fade-in">
                                 <h2 className="text-3xl font-extrabold text-slate-900">System Dashboard</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {dashboardStats.map((stat, i) => (
                                         <div key={i} className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center gap-5 hover:shadow-md transition-shadow">
                                             <div className={"w-14 h-14 rounded-xl flex items-center justify-center " + stat.bg + " " + stat.color}>
@@ -654,12 +663,12 @@
                                 
                                 <div className="mt-12 bg-white rounded-[2rem] border border-slate-200 p-8 text-center shadow-sm">
                                     <h3 className="text-xl font-bold text-slate-900 mb-2">Welcome to your connected Workspace</h3>
-                                    <p className="text-slate-500">Select a tab above to manage your Store, Courses, News Updates, and view user leads generated from your platform.</p>
+                                    <p className="text-slate-500">Select a tab above to manage your Store, Courses, Gigs, News Updates, and view user leads generated from your platform.</p>
                                 </div>
                             </div>
                         )}
 
-                        {/* STORE TAB (UPDATED: Added Description field) */}
+                        {/* STORE TAB */}
                         {activeTab === 'store' && (
                             <div className="animate-in fade-in">
                                 <div className="flex justify-between items-center mb-6">
@@ -677,7 +686,6 @@
                                                     <th className="p-5 font-bold">Category</th>
                                                     <th className="p-5 font-bold">Type</th>
                                                     <th className="p-5 font-bold">Price (₦)</th>
-                                                    <th className="p-5 font-bold">Description</th>
                                                     <th className="p-5 font-bold text-right">Actions</th>
                                                 </tr>
                                             </thead>
@@ -698,7 +706,6 @@
                                                             </span>
                                                         </td>
                                                         <td className="p-5 text-base font-extrabold text-slate-800 whitespace-nowrap">{(item.price || 0).toLocaleString()}</td>
-                                                        <td className="p-5 text-sm text-slate-500 max-w-xs truncate">{item.description || '—'}</td>
                                                         <td className="p-5 text-right whitespace-nowrap">
                                                             <div className="flex justify-end gap-2">
                                                                 <button onClick={() => openModal(item, setStoreModalOpen)} className="p-2 text-slate-400 hover:text-brand-600 bg-white border border-slate-200 hover:border-brand-200 rounded-lg shadow-sm"><Edit size={16}/></button>
@@ -715,6 +722,51 @@
                                             </div>
                                         )}
                                     </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* GIGS TAB */}
+                        {activeTab === 'gigs' && (
+                            <div className="animate-in fade-in">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-2xl font-extrabold text-slate-900">Gigs & Opportunities</h2>
+                                    <button onClick={() => openModal(null, setGigModalOpen)} className="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center shadow-sm transition-all hover:-translate-y-0.5">
+                                        <Plus size={18}/> <span className="ml-2">Post Gig</span>
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {data.gigs.map(gig => {
+                                        let badgeColor = "bg-slate-100 text-slate-700";
+                                        if(gig.type?.includes("Intern")) badgeColor = "bg-blue-100 text-blue-700";
+                                        if(gig.type?.includes("Freelance")) badgeColor = "bg-purple-100 text-purple-700";
+                                        if(gig.type?.includes("Full-Time")) badgeColor = "bg-emerald-100 text-emerald-700";
+                                        if(gig.type?.includes("NYSC")) badgeColor = "bg-orange-100 text-orange-700";
+
+                                        return (
+                                        <div key={gig.id} className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden flex flex-col group hover:shadow-xl transition-all p-6">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${badgeColor}`}>{gig.type}</span>
+                                                <div className={"px-2.5 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider " + (gig.status === 'Active' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600')}>
+                                                    {gig.status || 'Active'}
+                                                </div>
+                                            </div>
+                                            <h3 className="font-extrabold text-xl text-slate-900 leading-tight mb-2">{gig.title}</h3>
+                                            <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-4 font-medium">
+                                                <Location size={14}/> {gig.location}
+                                            </div>
+                                            <p className="text-sm text-slate-500 line-clamp-3 mb-6 flex-1 leading-relaxed">{gig.description}</p>
+                                            <div className="flex justify-end gap-2 pt-4 border-t border-slate-100">
+                                                <button onClick={() => openModal(gig, setGigModalOpen)} className="p-2.5 text-slate-400 hover:text-brand-600 bg-slate-50 hover:bg-brand-50 rounded-xl transition-colors"><Edit size={16}/></button>
+                                                <button onClick={() => handleDelete('gigs', gig.id)} className="p-2.5 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-xl transition-colors"><Delete size={16}/></button>
+                                            </div>
+                                        </div>
+                                    )})}
+                                    {data.gigs.length === 0 && (
+                                        <div className="col-span-full py-16 text-center text-slate-400 bg-white rounded-[2rem] border border-slate-200 border-dashed">
+                                            {isSyncing ? <span>Syncing gigs...</span> : <span>No gigs found. Post a new opportunity above.</span>}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -900,7 +952,7 @@
 
                     {/* MODALS FOR CRUD */}
                     
-                    {/* Store Modal (UPDATED: Added Description field) */}
+                    {/* Store Modal */}
                     <Modal isOpen={isStoreModalOpen} onClose={() => setStoreModalOpen(false)} title={currentItem ? "Edit Product/Service" : "Add to Store"}>
                         <form onSubmit={(e) => handleSave(e, 'store', setStoreModalOpen)} className="space-y-5">
                             <div>
@@ -944,7 +996,6 @@
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Image URL</label>
                                 <input name="image" type="url" required defaultValue={currentItem?.image} placeholder="https://..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all" />
                             </div>
-                            {/* NEW DESCRIPTION FIELD */}
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Description</label>
                                 <textarea 
@@ -954,11 +1005,52 @@
                                     placeholder="Detailed description of the product or service..."
                                     className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all resize-y"
                                 ></textarea>
-                                <p className="text-[10px] text-slate-400 mt-1">This description will be shown on the product detail page.</p>
                             </div>
                             <div className="pt-6 flex justify-end gap-3 border-t border-slate-100">
                                 <button type="button" onClick={() => setStoreModalOpen(false)} className="px-5 py-3 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl font-bold transition-colors">Cancel</button>
                                 <button type="submit" className="px-6 py-3 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-bold shadow-lg shadow-brand-500/30 transition-all hover:-translate-y-0.5">Save Product</button>
+                            </div>
+                        </form>
+                    </Modal>
+
+                    {/* Gigs Modal */}
+                    <Modal isOpen={isGigModalOpen} onClose={() => setGigModalOpen(false)} title={currentItem ? "Edit Gig" : "Post Opportunity"}>
+                        <form onSubmit={(e) => handleSave(e, 'gigs', setGigModalOpen)} className="space-y-5">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Job/Gig Title</label>
+                                <input name="title" required defaultValue={currentItem?.title} placeholder="e.g. React Developer Intern" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-5">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Type</label>
+                                    <select name="type" defaultValue={currentItem?.type || 'Internship'} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all appearance-none">
+                                        <option value="Internship">Internship</option>
+                                        <option value="Freelance/Gig">Freelance / Gig</option>
+                                        <option value="NYSC PPA">NYSC PPA</option>
+                                        <option value="Full-Time Job">Full-Time Job</option>
+                                        <option value="Volunteer">Volunteer</option>
+                                        <option value="Mentorship">Mentorship</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Location</label>
+                                    <input name="location" required defaultValue={currentItem?.location} placeholder="Remote, Lagos, etc." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Short Description</label>
+                                <textarea name="description" required rows="3" defaultValue={currentItem?.description} placeholder="Briefly describe the role, requirements, or scope..." className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Status</label>
+                                <select name="status" defaultValue={currentItem?.status || 'Active'} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none text-slate-900 font-medium transition-all appearance-none">
+                                    <option value="Active">Active</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                            </div>
+                            <div className="pt-6 flex justify-end gap-3 border-t border-slate-100">
+                                <button type="button" onClick={() => setGigModalOpen(false)} className="px-5 py-3 text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl font-bold transition-colors">Cancel</button>
+                                <button type="submit" className="px-6 py-3 text-white bg-brand-600 rounded-xl hover:bg-brand-700 font-bold shadow-lg shadow-brand-500/30 transition-all hover:-translate-y-0.5">Save Opportunity</button>
                             </div>
                         </form>
                     </Modal>
