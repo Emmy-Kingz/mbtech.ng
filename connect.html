@@ -7,7 +7,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-213C6T6EJ0');
     </script>
 
@@ -43,7 +42,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind Config matching index.html colors -->
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
@@ -67,17 +66,14 @@
     <style>
         html { scroll-behavior: smooth; }
         
-        /* Mobile Bottom Nav Padding with Safe Area (iOS support) */
+        /* Mobile Bottom Nav Padding with Safe Area */
         body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
         @media (min-width: 768px) { body { padding-bottom: 0; } }
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 
-        /* Hide scrollbar for swipable elements on mobile */
+        /* Hide scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Dynamic viewport height for modals on mobile */
-        .dvh-screen { height: 100vh; height: 100dvh; }
 
         .animated-gradient-text {
             background: linear-gradient(to right, #0056b3, #f97316, #0056b3);
@@ -234,7 +230,7 @@
                 </div>
 
                 <!-- Right Content: The Form -->
-                <div class="relative">
+                <div class="relative" id="talent-form">
                     <div class="hidden lg:block absolute inset-0 bg-brand-blue/5 rounded-[2.5rem] transform rotate-3 scale-105"></div>
                     <div class="relative bg-white p-6 sm:p-10 rounded-[2rem] shadow-2xl border border-slate-100">
                         <h2 class="text-2xl font-extrabold text-brand-dark mb-2">Join the Waitlist</h2>
@@ -243,7 +239,7 @@
                         <form id="connectForm" class="space-y-5">
                             
                             <!-- Selected Gig Reference (Hidden by default) -->
-                            <div id="selectedGigAlert" class="hidden bg-blue-50 border border-brand-blue/20 p-4 rounded-xl flex justify-between items-center mb-4">
+                            <div id="selectedGigAlert" class="hidden bg-blue-50 border border-brand-blue/20 p-4 rounded-xl flex justify-between items-center mb-4 transition-all">
                                 <div>
                                     <span class="text-xs font-bold text-brand-blue uppercase tracking-wider block mb-1">Applying For:</span>
                                     <span id="selectedGigTitle" class="font-bold text-brand-dark">Frontend Developer</span>
@@ -344,16 +340,28 @@
         </section>
     </main>
 
-    <!-- Success Modal -->
+    <!-- Community & Registration Success Modal -->
     <div id="successModal" class="hidden fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6 bg-slate-900/80 backdrop-blur-sm">
         <div class="bg-white rounded-[2rem] w-full max-w-md max-h-[90dvh] overflow-y-auto no-scrollbar shadow-2xl p-8 text-center animate-in zoom-in-95 duration-200">
             <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
             <h2 class="text-3xl font-extrabold text-brand-dark mb-3">Profile Submitted!</h2>
-            <p class="text-slate-600 leading-relaxed mb-8">Thank you for joining the MBTECH Talent Network. We've received your details and will be in touch with matches.</p>
-            <button onclick="closeSuccessModal()" class="w-full py-4 bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:bg-slate-800 transition-colors">
-                Back to Platform
+            <p class="text-slate-600 leading-relaxed mb-8">Thank you for joining the MBTECH Talent Network. <span class="font-bold text-brand-dark">Join our community channels</span> to receive instant updates when new gigs drop.</p>
+            
+            <div class="flex flex-col gap-3">
+                <a href="https://wa.me/2347084672771?text=Hello%20MBTECH,%20I%20just%20registered%20on%20the%20Connect%20Network!" target="_blank" onclick="closeSuccessModal()" class="w-full py-3.5 bg-[#25D366] text-white font-bold rounded-xl shadow-lg hover:bg-[#1EBE5D] transition-colors flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Join via WhatsApp
+                </a>
+                <a href="https://t.me/mbtech_connect" target="_blank" onclick="closeSuccessModal()" class="w-full py-3.5 bg-[#229ED9] text-white font-bold rounded-xl shadow-lg hover:bg-[#1CA2C1] transition-colors flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                    Join via Telegram
+                </a>
+            </div>
+            
+            <button type="button" onclick="closeSuccessModal()" class="mt-5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors w-full text-center py-2">
+                Skip for now
             </button>
         </div>
     </div>
@@ -375,7 +383,7 @@
         </div>
     </div>
 
-    <!-- Corporate Footer matching Homepage -->
+    <!-- Corporate Footer -->
     <footer class="bg-brand-dark text-slate-400 pt-16 pb-12 border-t-4 border-brand-blue mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-slate-800 pb-12 mb-8">
@@ -456,7 +464,7 @@
             closeIcon.classList.toggle('hidden');
         });
 
-        // Apply for Specific Gig Logic
+        // Apply for Specific Gig Logic with smooth scroll + offset
         function applyForGig(gigTitle) {
             const alertBox = document.getElementById('selectedGigAlert');
             const titleSpan = document.getElementById('selectedGigTitle');
@@ -466,7 +474,12 @@
             inputField.value = gigTitle;
             alertBox.classList.remove('hidden');
             
-            document.getElementById('talent-form').scrollIntoView({ behavior: 'smooth' });
+            // Smooth scroll with precise offset for sticky header
+            const formElement = document.getElementById('talent-form');
+            const yOffset = -80; // Height of the top navbar
+            const y = formElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            
+            window.scrollTo({top: y, behavior: 'smooth'});
         }
 
         function clearSelectedGig() {
@@ -509,13 +522,13 @@
         }
     </script>
 
-    <!-- FIREBASE AND FORM SUBMISSION SCRIPT -->
+    <!-- FIREBASE ARCHITECTURE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Setup Firebase Configurations with Environment fallback handling
+        // Setup Firebase Configurations
         const userConfig = {
             apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
             authDomain: "mbtechstore-17984.firebaseapp.com",
@@ -532,7 +545,7 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'mbtech-public-store';
         
         // --- AUTHENTICATION LOGIC ---
-        // Ensure anonymous login for viewers to read data
+        // Ensure anonymous login for viewers to securely read data
         const initAuth = async () => {
             if(!auth.currentUser) {
                 await signInAnonymously(auth).catch(console.error);
@@ -570,26 +583,41 @@
                 activeGigs.forEach(gig => {
                     let badgeColor = "bg-slate-100 text-slate-700";
                     if(gig.type?.includes("Intern")) badgeColor = "bg-blue-100 text-blue-700";
-                    if(gig.type?.includes("Freelance")) badgeColor = "bg-purple-100 text-purple-700";
+                    if(gig.type?.includes("Freelance") || gig.type?.includes("Gig")) badgeColor = "bg-purple-100 text-purple-700";
                     if(gig.type?.includes("Full-Time")) badgeColor = "bg-emerald-100 text-emerald-700";
                     if(gig.type?.includes("NYSC")) badgeColor = "bg-orange-100 text-orange-700";
 
+                    // Dynamic Rate Formatting (Allows NGN or USD depending on admin entry)
+                    const currencySymbol = gig.currency === 'USD' ? '$' : '₦';
+                    const rateDisplay = gig.rate 
+                        ? `<div class="flex items-center gap-1.5 mt-3 mb-1">
+                               <span class="text-sm font-black text-emerald-600">${currencySymbol}${gig.rate}</span>
+                               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">/ ${escapeHtml(gig.rateType || 'Task')}</span>
+                           </div>` 
+                        : '';
+
                     const card = document.createElement('div');
-                    card.className = "bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full";
+                    card.className = "bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-brand-blue/30 transition-all relative flex flex-col h-full";
                     
                     card.innerHTML = `
                         <div class="flex justify-between items-start mb-4">
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md ${badgeColor}">${escapeHtml(gig.type || 'Gig')}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-lg ${badgeColor}">${escapeHtml(gig.type || 'Gig')}</span>
                         </div>
-                        <h3 class="font-extrabold text-lg text-brand-dark leading-tight mb-2">${escapeHtml(gig.title)}</h3>
-                        <div class="flex items-center gap-1.5 text-xs text-slate-500 mb-3 font-medium">
+                        <h3 class="font-extrabold text-xl text-brand-dark leading-tight">${escapeHtml(gig.title)}</h3>
+                        
+                        ${rateDisplay}
+
+                        <div class="flex items-center gap-1.5 text-xs text-slate-500 mt-2 mb-4 font-medium">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                             ${escapeHtml(gig.location)}
                         </div>
                         <p class="text-sm text-slate-600 mb-6 flex-grow line-clamp-3">${escapeHtml(gig.description)}</p>
-                        <button onclick="applyForGig('${escapeHtml(gig.title)}')" class="w-full mt-auto py-2.5 bg-slate-50 hover:bg-brand-blue hover:text-white text-brand-dark text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-brand-blue">
-                            Apply Now
-                        </button>
+                        
+                        <div class="pt-4 border-t border-slate-100 mt-auto">
+                            <button onclick="applyForGig('${escapeHtml(gig.title)}')" class="w-full py-3 bg-slate-50 hover:bg-brand-blue hover:text-white text-brand-dark text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-brand-blue shadow-sm">
+                                Apply Now
+                            </button>
+                        </div>
                     `;
                     container.appendChild(card);
                 });
@@ -598,9 +626,9 @@
             });
         }
 
-        // Utility
+        // Utility Function
         function escapeHtml(unsafe) {
-            return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+            return (unsafe || '').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
 
@@ -615,7 +643,7 @@
             const formData = new FormData(this);
 
             try {
-                // Save to Firebase Database
+                // EXCLUSIVE: Save to Firebase Database only
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
                     name: formData.get('Name'),
                     email: formData.get('Email'),
