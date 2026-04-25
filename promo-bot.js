@@ -1,9 +1,9 @@
 /**
- * MBTECH Assistant Bot v3.3 - Resilient, Delay-Aware, and Network-Friendly
- * - Delays initialization on slow networks (2G/3G/slow 4G) to allow critical content to load.
- * - Retries Firebase REST API calls with exponential backoff (max 3 attempts).
- * - Only displays fallback data if all retries fail after a long timeout (~30 secs).
- * - Preserves all existing features (cookie consent, auto-fill, Facebook Pixel, etc.)
+ * MBTECH Assistant Bot v3.1 - Public Read + Logged-in User Compatible
+ * - Reads live courses, products, and news from Firestore (public read allowed)
+ * - Falls back to static data if Firebase is unavailable
+ * - Works without any user sign-in (anonymous or otherwise)
+ * - Auto-fills forms if user is logged in (detects from DOM)
  */
 
 class MbtechAssistant {
@@ -15,19 +15,12 @@ class MbtechAssistant {
         this.userEmail = '';
         this.cookiesAccepted = localStorage.getItem('mbtech_cookie_consent') === 'true';
         this.hasGreeted = false;
-        this.initialized = false;   // flag to prevent duplicate init
-
-        // --- BOT CONFIGURATION ---
-        this.botName = 'MBTECH AI';
-        this.greetingKnown = "Welcome back {name}! 👋 I am {botName}. Need help finding a specific course, gadget, or gig today?";
-        this.greetingUnknown = "Hi there! 👋 I am {botName}. How can I assist you with your tech journey today?";
 
         // Dynamic data stores
         this.dynamicCourses = [];
         this.dynamicProducts = [];
-        this.dynamicGigs = [];
 
-        // Static fallback data (only used after last retry fails)
+        // Static fallback data (used only if Firebase fails)
         this.staticCourses = [
             { title: 'Frontend Development', url: 'course.html', price: '₦100,000' },
             { title: 'Solar & Hybrid Inverter', url: 'course.html', price: '₦150,000' },
@@ -39,126 +32,109 @@ class MbtechAssistant {
             { title: 'Student Power Bank', url: 'store.html', price: '₦150,000' }
         ];
         this.staticFaqs = {
-            'location': 'We are located in Ikorodu, Lagos, Nigeria, but we operate globally online! 🌍',
-            'certificate': 'Yes! All our Academy courses come with recognized, verifiable certificates upon graduation. 🎓',
-            'payment': 'We securely process payments via Paystack, bank transfers, and automated WhatsApp checkouts. 💳',
-            'contact': 'You can reach human support at support@mbtech.ng or call/WhatsApp +234 708 467 2771. 📞'
+            'location': 'We are located in Ikorodu, Lagos, Nigeria. We also offer robust virtual classes! 🌍',
+            'certificate': 'Yes! All our Tech and Design courses come with recognized certificates upon project completion. 🎓',
+            'payment': 'We accept Paystack, secure bank transfers, and WhatsApp checkouts. 💳',
+            'contact': 'You can reach us at support@mbtech.ng or call/WhatsApp +234 708 467 2771. 📞'
         };
 
-        // Firebase REST API details
-        this.apiKey = "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY";
-        this.projectId = "mbtechstore-17984";
-        this.appId = "mbtech-public-store";
-        this.baseUrl = `https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents/artifacts/${this.appId}/public/data/`;
-
-        // Network detection & delay
-        this.networkType = null;
-        this.baseDelay = 0;      // will be set based on connection
-        this.retryCount = 0;
-        this.maxRetries = 3;
-        this.dataLoaded = false;
+        // Firebase config (same as your main app)
+        this.firebaseConfig = {
+            apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
+            authDomain: "mbtechstore-17984.firebaseapp.com",
+            projectId: "mbtechstore-17984",
+            storageBucket: "mbtechstore-17984.firebasestorage.app",
+            messagingSenderId: "1083008774596",
+            appId: "1:1083008774596:web:110b651c6426116ed43491"
+        };
+        this.appId = 'mbtech-public-store';
     }
 
-    // Detect network speed and determine initial delay
-    getNetworkDelay() {
-        if (navigator.connection) {
-            const type = navigator.connection.effectiveType;
-            this.networkType = type;
-            // 2G: very slow -> wait 15 seconds
-            if (type === '2g') return 15000;
-            // 3G: slow -> wait 8 seconds
-            if (type === '3g') return 8000;
-            // slow 4G / regular -> wait 5 seconds
-            if (type === '4g' && navigator.connection.downlink < 2) return 5000;
-        }
-        // Default delay for fast networks: 2 seconds
-        return 2000;
+    async init() {
+        this.injectStyles();
+        this.renderCookieBanner();
+        this.renderBotUI();
+
+        await this.loadFirebaseData();  // reads Firestore without any auth
+
+        this.setupEventListeners();
+        this.checkUserState();           // detects logged-in users from the page
+        setInterval(() => this.checkUserState(), 2000);
+
+        this.trackEvent('PageView');
     }
 
-    // Retry‑capable data fetcher with exponential backoff
-    async fetchWithRetry(url, retries = this.maxRetries, delay = 1000) {
+    // ------------------- FIREBASE DIRECT READ (NO AUTH) -------------------
+    async loadFirebaseData() {
         try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return await res.json();
-        } catch (err) {
-            if (retries === 0) throw err;
-            console.warn(`Retry attempt ${this.maxRetries - retries + 1} failed for ${url}. Retrying in ${delay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return this.fetchWithRetry(url, retries - 1, delay * 2);
-        }
-    }
-
-    async loadFirebaseDataREST() {
-        const parseFirestoreDoc = (doc) => {
-            const data = {};
-            if (doc.fields) {
-                for (const key in doc.fields) {
-                    const type = Object.keys(doc.fields[key])[0];
-                    const val = doc.fields[key][type];
-                    data[key] = (type === 'integerValue' || type === 'doubleValue') ? Number(val) : 
-                                (type === 'booleanValue') ? Boolean(val) : val;
-                }
+            // Load Firebase SDKs if not already present
+            if (!window.firebase) {
+                await this.loadFirebaseSDK();
             }
-            return data;
-        };
 
-        try {
-            // 1. Fetch Courses
-            const cJson = await this.fetchWithRetry(`${this.baseUrl}mbtech_courses?key=${this.apiKey}`);
-            if (cJson.documents) {
-                this.dynamicCourses = cJson.documents.map(d => {
-                    const data = parseFirestoreDoc(d);
+            const { initializeApp } = window.firebase;
+            const { getFirestore, collection, getDocs } = window.firebase.firestore;
+
+            // Initialize a separate Firebase app for the bot (avoids conflicts)
+            const botApp = initializeApp(this.firebaseConfig, 'mbtech-bot');
+            const db = getFirestore(botApp);
+
+            // No sign-in required – Firestore rules allow public read on these collections
+            const basePath = ['artifacts', this.appId, 'public', 'data'];
+
+            // Fetch courses
+            const coursesSnap = await getDocs(collection(db, ...basePath, 'mbtech_courses'));
+            if (!coursesSnap.empty) {
+                this.dynamicCourses = coursesSnap.docs.map(doc => {
+                    const data = doc.data();
                     return {
                         title: data.title || 'Untitled Course',
                         url: 'course.html',
                         price: `₦${(data.price || 0).toLocaleString()}`
                     };
                 });
+            } else {
+                this.dynamicCourses = [...this.staticCourses];
             }
 
-            // 2. Fetch Products
-            const pJson = await this.fetchWithRetry(`${this.baseUrl}mbtech_products?key=${this.apiKey}`);
-            if (pJson.documents) {
-                this.dynamicProducts = pJson.documents.map(d => {
-                    const data = parseFirestoreDoc(d);
+            // Fetch products
+            const productsSnap = await getDocs(collection(db, ...basePath, 'mbtech_products'));
+            if (!productsSnap.empty) {
+                this.dynamicProducts = productsSnap.docs.map(doc => {
+                    const data = doc.data();
                     return {
                         title: data.name || data.title || 'Untitled Product',
                         url: 'store.html',
                         price: `₦${(data.price || 0).toLocaleString()}`
                     };
                 });
+            } else {
+                this.dynamicProducts = [...this.staticProducts];
             }
-
-            // 3. Fetch Gigs
-            const gJson = await this.fetchWithRetry(`${this.baseUrl}mbtech_gigs?key=${this.apiKey}`);
-            if (gJson.documents) {
-                this.dynamicGigs = [];
-                gJson.documents.forEach(d => {
-                    const data = parseFirestoreDoc(d);
-                    if (data.status !== 'Closed') {
-                        const currencySymbol = data.currency === 'USD' ? '$' : '₦';
-                        this.dynamicGigs.push({
-                            title: data.title || 'Tech Opportunity',
-                            url: 'connect.html',
-                            price: data.rate ? `${currencySymbol}${Number(data.rate).toLocaleString()}/${data.rateType || 'Task'}` : 'Negotiable'
-                        });
-                    }
-                });
-            }
-
-            this.dataLoaded = true;
-            console.log("MBTECH Bot: Firebase data loaded successfully after retries.");
         } catch (err) {
-            console.warn("MBTECH Bot: All retries failed. Using static fallbacks.", err);
+            console.warn("Firebase data load failed, using static fallback:", err);
             this.dynamicCourses = [...this.staticCourses];
             this.dynamicProducts = [...this.staticProducts];
-            this.dynamicGigs = [];
-            this.dataLoaded = false; // still allow bot to work with fallback
         }
     }
 
-    // Check if user is logged in (detects from nav elements)
+    loadFirebaseSDK() {
+        return new Promise((resolve, reject) => {
+            const script1 = document.createElement('script');
+            script1.src = 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+            script1.onload = () => {
+                const script2 = document.createElement('script');
+                script2.src = 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+                script2.onload = () => resolve();
+                script2.onerror = reject;
+                document.head.appendChild(script2);
+            };
+            script1.onerror = reject;
+            document.head.appendChild(script1);
+        });
+    }
+
+    // ------------------- DETECT LOGGED-IN USERS FROM PAGE -------------------
     checkUserState() {
         const desktopEmailEl = document.getElementById('nav-user-email');
         const mobileEmailEl = document.getElementById('mobile-user-email');
@@ -183,6 +159,7 @@ class MbtechAssistant {
         emailInputs.forEach(input => { if (!input.value) input.value = this.userEmail; });
     }
 
+    // ------------------- BOT UI & MESSAGE HANDLERS (unchanged from previous) -------------------
     renderCookieBanner() {
         if (this.cookiesAccepted) return;
         const banner = document.createElement('div');
@@ -227,7 +204,7 @@ class MbtechAssistant {
                 <div class="chat-header">
                     <div class="chat-header-info">
                         <img src="${this.logoUrl}" onerror="this.src='${this.fallbackLogo}'" alt="MBTECH Bot">
-                        <div><h4>${this.botName}</h4><span>Online</span></div>
+                        <div><h4>MBTECH Assistant</h4><span>Online</span></div>
                     </div>
                     <button id="close-chat-btn">&times;</button>
                 </div>
@@ -235,7 +212,6 @@ class MbtechAssistant {
                 <div class="chat-input-area">
                     <div id="chat-quick-replies" class="quick-replies no-scrollbar">
                         <button class="qr-btn" data-action="courses">📚 Recommend Course</button>
-                        <button class="qr-btn" data-action="gigs">💼 View Gigs</button>
                         <button class="qr-btn" data-action="products">🛒 Recommend Product</button>
                         <button class="qr-btn" data-action="faqs">❓ FAQs</button>
                     </div>
@@ -272,8 +248,8 @@ class MbtechAssistant {
                 this.trackEvent('BotOpened');
                 if (!this.hasGreeted) {
                     const greeting = this.userName 
-                        ? this.greetingKnown.replace('{name}', this.userName).replace('{botName}', this.botName)
-                        : this.greetingUnknown.replace('{botName}', this.botName);
+                        ? `Hello ${this.userName}! 👋 I'm your MBTECH Assistant. How can I help you accelerate your tech journey today?`
+                        : `Hi there! 👋 I'm your MBTECH Assistant. How can I help you today?`;
                     this.addBotMessage(greeting);
                     this.hasGreeted = true;
                 }
@@ -305,7 +281,6 @@ class MbtechAssistant {
                 setTimeout(() => {
                     if (action === 'courses') this.sendCourseRecommendations();
                     if (action === 'products') this.sendProductRecommendations();
-                    if (action === 'gigs') this.sendGigRecommendations();
                     if (action === 'faqs') this.sendFaqs();
                 }, 800);
             });
@@ -355,8 +330,6 @@ class MbtechAssistant {
             this.sendCourseRecommendations();
         } else if (text.includes('store') || text.includes('buy') || text.includes('gadget') || text.includes('solar') || text.includes('inverter') || text.includes('laptop')) {
             this.sendProductRecommendations();
-        } else if (text.includes('gig') || text.includes('job') || text.includes('internship') || text.includes('work') || text.includes('hire')) {
-            this.sendGigRecommendations();
         } else if (text.includes('location') || text.includes('where')) {
             this.addBotMessage(this.staticFaqs['location']);
         } else if (text.includes('certificate')) {
@@ -392,20 +365,6 @@ class MbtechAssistant {
         this.trackEvent('BotRecommended', { type: 'Product' });
     }
 
-    sendGigRecommendations() {
-        if (!this.dynamicGigs || this.dynamicGigs.length === 0) {
-            this.addBotMessage("We don't have any open gigs right now, but check back soon or join our talent pool on the Connect page!");
-            return;
-        }
-        let html = '<div class="recommendation-list">';
-        this.dynamicGigs.slice(0, 4).forEach(g => {
-            html += `<a href="${g.url}" class="rec-card" style="border-color: #8b5cf6;"><div class="rec-title">${g.title}</div><div class="rec-price" style="color: #8b5cf6;">${g.price}</div></a>`;
-        });
-        html += `<a href="connect.html" class="rec-more" style="color: #8b5cf6;">View All Opportunities →</a></div>`;
-        this.addBotMessage("Here are some active gigs and opportunities:", html);
-        this.trackEvent('BotRecommended', { type: 'Gig' });
-    }
-
     sendFaqs() {
         let html = '<div class="faq-list">';
         html += `<button class="faq-btn" onclick="document.getElementById('chat-input').value='Where are you located?'; document.getElementById('chat-form').dispatchEvent(new Event('submit'))">📍 Where are you located?</button>`;
@@ -420,6 +379,7 @@ class MbtechAssistant {
         const style = document.createElement('style');
         style.id = 'mbtech-bot-styles';
         style.textContent = `
+            /* Your existing CSS styles – keep exactly as before */
             :root { --bot-blue: #0056b3; --bot-orange: #f97316; --bot-dark: #0f172a; --bot-bg: #f8fafc; }
             #mbtech-cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15,23,42,0.95); backdrop-filter: blur(10px); color: white; z-index: 10000; padding: 16px 20px; transition: transform 0.5s ease; box-shadow: 0 -10px 30px rgba(0,0,0,0.1); }
             #mbtech-cookie-banner.hide { transform: translateY(100%); }
@@ -490,46 +450,10 @@ class MbtechAssistant {
         `;
         document.head.appendChild(style);
     }
-
-    async init() {
-        if (this.initialized) return;
-        this.initialized = true;
-
-        // Delay based on network speed
-        const delay = this.getNetworkDelay();
-        console.log(`MBTECH Bot: Delaying startup for ${delay}ms (network: ${this.networkType || 'unknown'})`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-
-        this.injectStyles();
-        this.renderCookieBanner();
-        this.renderBotUI();
-
-        // Load Firebase data with retries
-        await this.loadFirebaseDataREST();
-
-        this.setupEventListeners();
-        this.checkUserState();
-        setInterval(() => this.checkUserState(), 2000);
-
-        this.trackEvent('PageView');
-        console.log("MBTECH Bot: Fully initialized.");
-    }
 }
 
-// Wait for DOM, then wait for window load (images, etc.) before initializing bot
-let botInitialized = false;
-function startBot() {
-    if (botInitialized) return;
-    botInitialized = true;
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
     const assistant = new MbtechAssistant();
     assistant.init();
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        // Also wait for window.load for all resources
-        window.addEventListener('load', startBot);
-    });
-} else {
-    window.addEventListener('load', startBot);
-}
+});
