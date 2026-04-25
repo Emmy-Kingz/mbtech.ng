@@ -203,29 +203,36 @@
                         Bridging the gap between talent and opportunity. Access exclusive internships, NYSC IT placements, and high-paying tech gigs tailored for developers, designers, and engineers.
                     </p>
 
-                    <!-- Feature Cards (Swipeable on Mobile) -->
-                    <div class="flex overflow-x-auto sm:grid sm:grid-cols-3 gap-4 pt-2 pb-4 snap-x snap-mandatory no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-                        <div class="snap-start min-w-[80%] sm:min-w-0 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start shrink-0">
-                            <div class="w-12 h-12 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="12" cy="7" r="4"/><path d="M12 14c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+                    <!-- Feature Cards (2x2 Grid for Mobile & Desktop) -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-2 pb-4">
+                        <a href="course.html" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-brand-orange hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-50 text-brand-orange rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                             </div>
-                            <h3 class="font-bold text-slate-900">Internships</h3>
-                            <p class="text-xs text-slate-500 mt-1">Real-world experience</p>
-                        </div>
-                        <div class="snap-start min-w-[80%] sm:min-w-0 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start shrink-0">
-                            <div class="w-12 h-12 bg-orange-50 text-brand-orange rounded-xl flex items-center justify-center mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Coaching &<br>Mentorship</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-500 mt-1">Get a private tutor</p>
+                        </a>
+                        <a href="#talent-form" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-brand-blue hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                             </div>
-                            <h3 class="font-bold text-slate-900">Tech Gigs</h3>
-                            <p class="text-xs text-slate-500 mt-1">Freelance projects</p>
-                        </div>
-                        <div class="snap-start min-w-[80%] sm:min-w-0 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center lg:items-start shrink-0">
-                            <div class="w-12 h-12 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Internships &<br>Volunteering</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-500 mt-1">Real-world experience</p>
+                        </a>
+                        <a href="#talent-form" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-green-500 hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-50 text-green-500 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
                             </div>
-                            <h3 class="font-bold text-slate-900">NYSC PPA</h3>
-                            <p class="text-xs text-slate-500 mt-1">IT Placement support</p>
-                        </div>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">NYSC<br>Support</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-500 mt-1">PPA & IT Placement</p>
+                        </a>
+                        <a href="#gigs-section" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-purple-500 hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            </div>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Tech Gigs &<br>Job Support</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-500 mt-1">Freelance & Full-time</p>
+                        </a>
                     </div>
                 </div>
 
@@ -268,29 +275,39 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Current Status</label>
-                                <select name="Status" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow text-slate-700">
+                                <select name="Status" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow text-slate-700 appearance-none">
                                     <option value="" disabled selected>Select your current status</option>
-                                    <option value="Student (Looking for SIWES)">Student (Looking for SIWES/IT)</option>
-                                    <option value="NYSC Member (Looking for PPA)">NYSC Member (Looking for PPA)</option>
+                                    <option value="Student (Undergraduate)">Student (Undergraduate)</option>
+                                    <option value="NYSC Member (Corper)">NYSC Member (Corper)</option>
                                     <option value="Graduate/Job Seeker">Graduate / Job Seeker</option>
                                     <option value="Freelancer">Freelancer / Gig Worker</option>
-                                    <option value="Request Tutor">I need a Personal Tutor</option>
+                                    <option value="Volunteer">Volunteer</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tech Skill Category</label>
-                                <select name="Skill" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow text-slate-700">
+                                <select name="Skill" id="skillSelect" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow text-slate-700 appearance-none mb-2">
                                     <option value="" disabled selected>Select your primary skill</option>
-                                    <option value="Frontend Development">Frontend Development</option>
-                                    <option value="Backend Development">Backend Development</option>
-                                    <option value="UI/UX Design">UI/UX Design</option>
-                                    <option value="Digital Marketing">Digital Marketing</option>
-                                    <option value="Solar/Inverter Installation">Solar & Inverter Engineering</option>
-                                    <option value="Hardware/Networking">Computer Hardware / Networking</option>
-                                    <option value="Data Analytics">Data Analytics</option>
-                                    <option value="Other">Other</option>
+                                    <optgroup label="Design">
+                                        <option value="UI/UX Design">UI/UX Product Design</option>
+                                        <option value="Graphics Design">Graphics Design</option>
+                                        <option value="Video/Animation">Video / Animation</option>
+                                    </optgroup>
+                                    <optgroup label="Engineering">
+                                        <option value="Solar/Inverter Installation">Solar & Inverter Engineering</option>
+                                        <option value="Hardware/Networking">Hardware / Networking</option>
+                                        <option value="CCTV Installation">CCTV Installation</option>
+                                    </optgroup>
+                                    <optgroup label="Tech">
+                                        <option value="Frontend Development">Frontend Development</option>
+                                        <option value="Backend Development">Backend Development</option>
+                                        <option value="Data Analytics">Data Analytics / Science</option>
+                                        <option value="Digital Marketing">Digital Marketing / SEO</option>
+                                    </optgroup>
+                                    <option value="Other">Other (Specify)</option>
                                 </select>
+                                <input type="text" id="customSkillInput" name="CustomSkill" placeholder="Enter your skill here..." class="hidden w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" maxlength="50">
                             </div>
 
                             <button type="submit" id="submitBtn" class="w-full py-4 mt-4 bg-brand-blue text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 hover:bg-brand-blueHover hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 text-lg">
@@ -464,6 +481,19 @@
             closeIcon.classList.toggle('hidden');
         });
 
+        // Skill Selector Logic (Custom Other Input)
+        document.getElementById('skillSelect').addEventListener('change', function() {
+            const customInput = document.getElementById('customSkillInput');
+            if (this.value === 'Other') {
+                customInput.classList.remove('hidden');
+                customInput.required = true;
+            } else {
+                customInput.classList.add('hidden');
+                customInput.required = false;
+                customInput.value = '';
+            }
+        });
+
         // Apply for Specific Gig Logic with smooth scroll + offset
         function applyForGig(gigTitle) {
             const alertBox = document.getElementById('selectedGigAlert');
@@ -587,11 +617,11 @@
                     if(gig.type?.includes("Full-Time")) badgeColor = "bg-emerald-100 text-emerald-700";
                     if(gig.type?.includes("NYSC")) badgeColor = "bg-orange-100 text-orange-700";
 
-                    // Dynamic Rate Formatting (Allows NGN or USD depending on admin entry)
+                    // Dynamic Rate Formatting
                     const currencySymbol = gig.currency === 'USD' ? '$' : '₦';
                     const rateDisplay = gig.rate 
                         ? `<div class="flex items-center gap-1.5 mt-3 mb-1">
-                               <span class="text-sm font-black text-emerald-600">${currencySymbol}${gig.rate}</span>
+                               <span class="text-sm font-black text-emerald-600">${currencySymbol}${gig.rate.toLocaleString()}</span>
                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">/ ${escapeHtml(gig.rateType || 'Task')}</span>
                            </div>` 
                         : '';
@@ -619,6 +649,51 @@
                             </button>
                         </div>
                     `;
+
+                    // Inject Google Jobs Schema Dynamically
+                    const script = document.createElement('script');
+                    script.type = 'application/ld+json';
+                    script.text = JSON.stringify({
+                        "@context" : "https://schema.org/",
+                        "@type" : "JobPosting",
+                        "title" : gig.title,
+                        "description" : gig.description,
+                        "identifier": {
+                            "@type": "PropertyValue",
+                            "name": "Mesobest Technology",
+                            "value": gig.id
+                        },
+                        "datePosted" : new Date().toISOString().split('T')[0],
+                        "employmentType" : gig.type.includes("Intern") ? "INTERN" : gig.type.includes("Full-Time") ? "FULL_TIME" : "CONTRACT",
+                        "hiringOrganization" : {
+                            "@type" : "Organization",
+                            "name" : "MBTECH NG",
+                            "sameAs" : "https://emmy-kingz.github.io/mbtech.ng/",
+                            "logo" : "https://emmy-kingz.github.io/mbtech.ng/logo.png"
+                        },
+                        "jobLocation": {
+                            "@type": "Place",
+                            "address": {
+                                "@type": "PostalAddress",
+                                "streetAddress": gig.location,
+                                "addressLocality": gig.location,
+                                "addressCountry": "NG"
+                            }
+                        },
+                        ...(gig.rate ? {
+                            "baseSalary": {
+                                "@type": "MonetaryAmount",
+                                "currency": gig.currency || "NGN",
+                                "value": {
+                                    "@type": "QuantitativeValue",
+                                    "value": gig.rate,
+                                    "unitText": gig.rateType?.toUpperCase() || "MONTH"
+                                }
+                            }
+                        } : {})
+                    });
+                    document.head.appendChild(script);
+
                     container.appendChild(card);
                 });
             }, (error) => {
@@ -626,7 +701,7 @@
             });
         }
 
-        // Utility Function
+        // Utility Function for sanitization
         function escapeHtml(unsafe) {
             return (unsafe || '').toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
@@ -641,15 +716,23 @@
             document.getElementById('loadingBtn').classList.remove('hidden');
 
             const formData = new FormData(this);
+            
+            // Handle Custom Skill Logic
+            const rawSkill = formData.get('Skill');
+            let finalSkill = rawSkill;
+            if (rawSkill === 'Other') {
+                const customSkill = formData.get('CustomSkill');
+                finalSkill = escapeHtml(customSkill).substring(0, 50); // Sanitize and limit length
+            }
 
             try {
-                // EXCLUSIVE: Save to Firebase Database only
+                // Save to Firebase Database
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads'), {
                     name: formData.get('Name'),
                     email: formData.get('Email'),
                     phone: formData.get('Phone'),
                     status: formData.get('Status'),
-                    skill: formData.get('Skill'),
+                    skill: finalSkill,
                     opportunity: formData.get('OpportunityOfInterest'),
                     link: formData.get('Link') || '',
                     createdAt: serverTimestamp()
@@ -658,6 +741,7 @@
                 // Show Success Modal
                 document.getElementById('successModal').classList.remove('hidden');
                 this.reset();
+                document.getElementById('customSkillInput').classList.add('hidden');
                 clearSelectedGig();
             } catch (err) {
                 console.error("Firestore sync error:", err);
