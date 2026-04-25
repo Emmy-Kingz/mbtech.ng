@@ -578,61 +578,174 @@
         </section>
 
         <!-- ================= CONNECT VIEW ================= -->
+                <!-- ================= CONNECT VIEW (OLD STYLE) ================= -->
         <section id="view-connect" class="page-view flex-1 bg-slate-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid lg:grid-cols-2 gap-12 items-start">
-                <div class="space-y-8">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 border border-purple-200 text-purple-700 text-sm font-bold shadow-sm">
-                        <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span></span>
-                        We Are Recruiting!
-                    </div>
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-brand-dark leading-[1.1] tracking-tight">
-                        Launch Your Career with <br class="hidden lg:block"/>
-                        <span class="text-purple-600">MBTECH Connect.</span>
-                    </h1>
-                    <p class="text-slate-600 text-lg leading-relaxed">Bridging the gap between talent and opportunity. Access exclusive internships, NYSC Support, Job placements, and high-paying tech gigs.</p>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+                <div class="grid lg:grid-cols-2 gap-10 lg:gap-20 items-center">
                     
-                    <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm relative overflow-hidden">
-                        <div class="absolute inset-0 bg-purple-50 opacity-50 transform rotate-3 scale-105 pointer-events-none"></div>
-                        <div class="relative z-10">
-                            <h2 class="text-2xl font-extrabold mb-2">Join Talent Network</h2>
-                            <p class="text-slate-500 text-sm mb-6">Register to receive alerts for new opportunities.</p>
-                            
-                            <div id="selectedGigAlert" class="hidden-safely bg-blue-50 border border-brand-blue/20 p-4 rounded-xl flex justify-between items-center mb-4 transition-all">
-                                <div><span class="text-xs font-bold text-brand-blue uppercase tracking-wider block mb-1">Applying For:</span><span id="selectedGigTitle" class="font-bold text-brand-dark"></span></div>
-                                <button type="button" onclick="window.mbtechApp.clearSelectedGig()" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
-                            </div>
+                    <!-- Left Content -->
+                    <div class="space-y-6 md:space-y-8 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-blue/10 border border-brand-blue/20 text-brand-blue text-sm font-bold shadow-sm mx-auto lg:mx-0">
+                            <span class="relative flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-orange"></span>
+                            </span>
+                            We Are Recruiting!
+                        </div>
+                        
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-[1.1] tracking-tight">
+                            Launch Your Tech Career with <br class="hidden lg:block" />
+                            <span class="animated-gradient-text">MBTECH Connect.</span>
+                        </h1>
+                        
+                        <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                            Bridging the gap between talent and opportunity. Access exclusive internships, NYSC Support, Job placements, and high‑paying tech gigs tailored for developers, designers, and engineers.
+                        </p>
 
-                            <form id="talent-form" class="space-y-4">
+                        <!-- Feature Cards (2x2 Grid) -->
+                        <div class="grid grid-cols-2 gap-3 sm:gap-4 pt-2 pb-4">
+                            <a href="#courses" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-brand-orange hover:shadow-md transition-all group">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-50 text-brand-orange rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="graduation-cap" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Coaching &<br>Mentorship</h3>
+                                <p class="text-[10px] sm:text-xs text-slate-500 mt-1">Get a private tutor</p>
+                            </a>
+                            <button onclick="document.getElementById('talent-form').scrollIntoView({behavior:'smooth',block:'start'});" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-brand-blue hover:shadow-md transition-all group text-left">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="users" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Internships &<br>Volunteering</h3>
+                                <p class="text-[10px] sm:text-xs text-slate-500 mt-1">Real-world experience</p>
+                            </button>
+                            <button onclick="document.getElementById('talent-form').scrollIntoView({behavior:'smooth',block:'start'});" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-green-500 hover:shadow-md transition-all group text-left">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-50 text-green-500 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="shield-check" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">NYSC<br>Support</h3>
+                                <p class="text-[10px] sm:text-xs text-slate-500 mt-1">Get Certificate & Jobs</p>
+                            </button>
+                            <button onclick="document.getElementById('gigs-section').scrollIntoView({behavior:'smooth',block:'start'});" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center sm:items-start text-center sm:text-left hover:border-purple-500 hover:shadow-md transition-all group text-left">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="briefcase" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-tight">Tech Gigs &<br>Job Support</h3>
+                                <p class="text-[10px] sm:text-xs text-slate-500 mt-1">Freelance & Full-time</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Content: The Form -->
+                    <div class="relative" id="talent-form">
+                        <div class="hidden lg:block absolute inset-0 bg-brand-blue/5 rounded-[2.5rem] transform rotate-3 scale-105"></div>
+                        <div class="relative bg-white p-6 sm:p-10 rounded-[2rem] shadow-2xl border border-slate-100">
+                            <h2 class="text-2xl font-extrabold text-brand-dark mb-2">Join the Waitlist</h2>
+                            <p class="text-slate-500 text-sm mb-8">Register your profile to receive alerts for new tech opportunities.</p>
+                            
+                            <form id="talent-form" class="space-y-5">
+                                
+                                <!-- Selected Gig Reference (Hidden by default) -->
+                                <div id="selectedGigAlert" class="hidden-safely bg-blue-50 border border-brand-blue/20 p-4 rounded-xl flex justify-between items-center mb-4 transition-all">
+                                    <div>
+                                        <span class="text-xs font-bold text-brand-blue uppercase tracking-wider block mb-1">Applying For:</span>
+                                        <span id="selectedGigTitle" class="font-bold text-brand-dark">Frontend Developer</span>
+                                    </div>
+                                    <button type="button" onclick="window.mbtechApp.clearSelectedGig()" class="text-slate-400 hover:text-red-500">
+                                        <i data-lucide="x" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
                                 <input type="hidden" id="tf-opportunity" value="General Talent Pool">
-                                <input type="text" id="tf-name" required placeholder="Full Name" class="w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none transition-shadow">
-                                <input type="email" id="tf-email" required placeholder="Email Address" class="w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none transition-shadow">
-                                <input type="tel" id="tf-phone" required placeholder="Phone Number" class="w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none transition-shadow">
-                                <select id="tf-status" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none text-slate-700 transition-shadow">
-                                    <option value="" disabled selected>Current Status</option><option>Student</option><option>NYSC</option><option>Graduate</option><option>Freelancer</option>
-                                </select>
-                                <select id="tf-skill" required class="w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none text-slate-700 transition-shadow mb-2" onchange="window.mbtechApp.checkCustomSkill(this.value)">
-                                    <option value="" disabled selected>Primary Skill</option>
-                                    <optgroup label="Design"><option>UI/UX Design</option><option>Graphics Design</option><option>Video/Animation</option></optgroup>
-                                    <optgroup label="Engineering"><option>Solar/Inverter Installation</option><option>Hardware/Networking</option><option>CCTV Installation</option></optgroup>
-                                    <optgroup label="Tech"><option>Frontend Development</option><option>Backend Development</option><option>Data Analytics</option><option>Digital Marketing</option></optgroup>
-                                    <option value="Other">Other (Specify)</option>
-                                </select>
-                                <input type="text" id="tf-custom-skill" placeholder="Enter your skill here..." class="hidden-safely w-full p-3.5 rounded-xl border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none transition-shadow">
-                                <button type="submit" class="w-full py-4 bg-purple-600 text-white font-bold rounded-xl shadow-lg hover:bg-purple-700 transition-all flex justify-center items-center gap-2 text-lg">Submit Profile <i data-lucide="send" class="w-5 h-5"></i></button>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Full Name</label>
+                                    <input type="text" id="tf-name" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="e.g. John Doe">
+                                </div>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email Address</label>
+                                        <input type="email" id="tf-email" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="john@example.com">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone Number</label>
+                                        <input type="tel" id="tf-phone" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="08012345678">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Current Status</label>
+                                    <select id="tf-status" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow text-slate-700 appearance-none">
+                                        <option value="" disabled selected>Select your current status</option>
+                                        <option value="Student">Student (Undergraduate)</option>
+                                        <option value="NYSC">NYSC Member (Corper)</option>
+                                        <option value="Graduate">Graduate / Job Seeker</option>
+                                        <option value="Freelancer">Freelancer / Gig Worker</option>
+                                        <option value="Volunteer">Volunteer</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Tech Skill Category</label>
+                                    <select id="tf-skill" required class="w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow text-slate-700 appearance-none mb-2" onchange="window.mbtechApp.checkCustomSkill(this.value)">
+                                        <option value="" disabled selected>Select your primary skill</option>
+                                        <optgroup label="Design">
+                                            <option>UI/UX Design</option>
+                                            <option>Graphics Design</option>
+                                            <option>Video/Animation</option>
+                                        </optgroup>
+                                        <optgroup label="Engineering">
+                                            <option>Solar/Inverter Installation</option>
+                                            <option>Hardware/Networking</option>
+                                            <option>CCTV Installation</option>
+                                        </optgroup>
+                                        <optgroup label="Tech">
+                                            <option>Frontend Development</option>
+                                            <option>Backend Development</option>
+                                            <option>Data Analytics</option>
+                                            <option>Digital Marketing</option>
+                                        </optgroup>
+                                        <option value="Other">Other (Specify)</option>
+                                    </select>
+                                    <input type="text" id="tf-custom-skill" placeholder="Enter your skill here..." class="hidden-safely w-full border border-slate-200 bg-slate-50 p-3.5 rounded-xl text-base focus:ring-2 focus:ring-brand-blue outline-none transition-shadow">
+                                </div>
+
+                                <button type="submit" class="w-full py-4 bg-brand-blue text-white font-bold rounded-xl shadow-lg hover:bg-brand-blueHover transition-all flex justify-center items-center gap-2 text-lg">
+                                    Submit Profile <i data-lucide="send" class="w-5 h-5"></i>
+                                </button>
                             </form>
                         </div>
                     </div>
+                    
                 </div>
-                <div class="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm h-full flex flex-col">
-                    <h2 class="text-2xl font-extrabold mb-2 text-brand-dark">Active Opportunities</h2>
-                    <p class="text-sm text-slate-500 mb-6">Discover internships, freelance gigs, full-time roles, and volunteer spots.</p>
-                    <div id="gigs-grid" class="space-y-4 max-h-[700px] overflow-y-auto pr-2 no-scrollbar flex-1">
-                        <!-- Populated by JS -->
+            </div>
+
+            <!-- Available Gigs Section (matches old layout) -->
+            <div id="gigs-section" class="py-16 bg-white border-y border-slate-100">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+                        <div class="text-center md:text-left">
+                            <h2 class="text-3xl font-extrabold text-brand-dark">Active Opportunities</h2>
+                            <p class="text-slate-500 mt-2">Discover internships, freelance gigs, full‑time roles, and volunteer spots.</p>
+                        </div>
+                    </div>
+
+                    <!-- Gigs Grid (populated by JS from data.gigs) -->
+                    <div id="gigs-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Dynamically rendered by renderViews -->
+                    </div>
+                    
+                    <!-- Empty State (shown when no gigs) -->
+                    <div id="gigs-empty" class="hidden-safely text-center py-16 bg-slate-50 rounded-3xl border border-slate-100">
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-slate-200 text-slate-400">
+                            <i data-lucide="search" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-brand-dark mb-2">No active gigs right now</h3>
+                        <p class="text-slate-500 max-w-md mx-auto">Check back later or join the network above to get notified.</p>
                     </div>
                 </div>
             </div>
         </section>
-
+        
         <!-- ================= INFO VIEW ================= -->
         <section id="view-info" class="page-view flex-1 bg-white">
             <div class="bg-slate-900 py-16 px-4 text-center relative overflow-hidden">
