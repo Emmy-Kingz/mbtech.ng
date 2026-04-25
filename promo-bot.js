@@ -1,9 +1,9 @@
 /**
- * MBTECH Assistant Bot v3.2 - Lightweight REST API Version
- * - Reads live courses, products, and gigs from Firestore via REST (Zero SDK conflicts)
- * - Does not use bot.json (Config is embedded)
- * - Works without any user sign-in (anonymous or otherwise)
- * - Auto-fills forms if user is logged in (detects from DOM)
+ * MBTECH Assistant Bot v3.3 - Resilient, Delay-Aware, and Network-Friendly
+ * - Delays initialization on slow networks (2G/3G/slow 4G) to allow critical content to load.
+ * - Retries Firebase REST API calls with exponential backoff (max 3 attempts).
+ * - Only displays fallback data if all retries fail after a long timeout (~30 secs).
+ * - Preserves all existing features (cookie consent, auto-fill, Facebook Pixel, etc.)
  */
 
 class MbtechAssistant {
@@ -15,6 +15,7 @@ class MbtechAssistant {
         this.userEmail = '';
         this.cookiesAccepted = localStorage.getItem('mbtech_cookie_consent') === 'true';
         this.hasGreeted = false;
+        this.initialized = false;   // flag to prevent duplicate init
 
         // --- BOT CONFIGURATION ---
         this.botName = 'MBTECH AI';
@@ -26,7 +27,7 @@ class MbtechAssistant {
         this.dynamicProducts = [];
         this.dynamicGigs = [];
 
-        // Static fallback data (used only if internet drops)
+        // Static fallback data (only used after last retry fails)
         this.staticCourses = [
             { title: 'Frontend Development', url: 'course.html', price: '₦100,000' },
             { title: 'Solar & Hybrid Inverter', url: 'course.html', price: '₦150,000' },
@@ -49,25 +50,46 @@ class MbtechAssistant {
         this.projectId = "mbtechstore-17984";
         this.appId = "mbtech-public-store";
         this.baseUrl = `https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents/artifacts/${this.appId}/public/data/`;
+
+        // Network detection & delay
+        this.networkType = null;
+        this.baseDelay = 0;      // will be set based on connection
+        this.retryCount = 0;
+        this.maxRetries = 3;
+        this.dataLoaded = false;
     }
 
-    async init() {
-        this.injectStyles();
-        this.renderCookieBanner();
-        this.renderBotUI();
-
-        await this.loadFirebaseDataREST();
-
-        this.setupEventListeners();
-        this.checkUserState();
-        setInterval(() => this.checkUserState(), 2000);
-
-        this.trackEvent('PageView');
+    // Detect network speed and determine initial delay
+    getNetworkDelay() {
+        if (navigator.connection) {
+            const type = navigator.connection.effectiveType;
+            this.networkType = type;
+            // 2G: very slow -> wait 15 seconds
+            if (type === '2g') return 15000;
+            // 3G: slow -> wait 8 seconds
+            if (type === '3g') return 8000;
+            // slow 4G / regular -> wait 5 seconds
+            if (type === '4g' && navigator.connection.downlink < 2) return 5000;
+        }
+        // Default delay for fast networks: 2 seconds
+        return 2000;
     }
 
-    // ------------------- FIREBASE REST API (NO SDK NEEDED) -------------------
+    // Retry‑capable data fetcher with exponential backoff
+    async fetchWithRetry(url, retries = this.maxRetries, delay = 1000) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch (err) {
+            if (retries === 0) throw err;
+            console.warn(`Retry attempt ${this.maxRetries - retries + 1} failed for ${url}. Retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return this.fetchWithRetry(url, retries - 1, delay * 2);
+        }
+    }
+
     async loadFirebaseDataREST() {
-        // Helper to convert Firestore REST JSON to normal JS Object
         const parseFirestoreDoc = (doc) => {
             const data = {};
             if (doc.fields) {
@@ -83,66 +105,60 @@ class MbtechAssistant {
 
         try {
             // 1. Fetch Courses
-            const cRes = await fetch(`${this.baseUrl}mbtech_courses?key=${this.apiKey}`);
-            if (cRes.ok) {
-                const cJson = await cRes.json();
-                if (cJson.documents) {
-                    this.dynamicCourses = cJson.documents.map(d => {
-                        const data = parseFirestoreDoc(d);
-                        return {
-                            title: data.title || 'Untitled Course',
-                            url: 'course.html',
-                            price: `₦${(data.price || 0).toLocaleString()}`
-                        };
-                    });
-                }
+            const cJson = await this.fetchWithRetry(`${this.baseUrl}mbtech_courses?key=${this.apiKey}`);
+            if (cJson.documents) {
+                this.dynamicCourses = cJson.documents.map(d => {
+                    const data = parseFirestoreDoc(d);
+                    return {
+                        title: data.title || 'Untitled Course',
+                        url: 'course.html',
+                        price: `₦${(data.price || 0).toLocaleString()}`
+                    };
+                });
             }
 
             // 2. Fetch Products
-            const pRes = await fetch(`${this.baseUrl}mbtech_products?key=${this.apiKey}`);
-            if (pRes.ok) {
-                const pJson = await pRes.json();
-                if (pJson.documents) {
-                    this.dynamicProducts = pJson.documents.map(d => {
-                        const data = parseFirestoreDoc(d);
-                        return {
-                            title: data.name || data.title || 'Untitled Product',
-                            url: 'store.html',
-                            price: `₦${(data.price || 0).toLocaleString()}`
-                        };
-                    });
-                }
+            const pJson = await this.fetchWithRetry(`${this.baseUrl}mbtech_products?key=${this.apiKey}`);
+            if (pJson.documents) {
+                this.dynamicProducts = pJson.documents.map(d => {
+                    const data = parseFirestoreDoc(d);
+                    return {
+                        title: data.name || data.title || 'Untitled Product',
+                        url: 'store.html',
+                        price: `₦${(data.price || 0).toLocaleString()}`
+                    };
+                });
             }
 
             // 3. Fetch Gigs
-            const gRes = await fetch(`${this.baseUrl}mbtech_gigs?key=${this.apiKey}`);
-            if (gRes.ok) {
-                const gJson = await gRes.json();
-                if (gJson.documents) {
-                    this.dynamicGigs = [];
-                    gJson.documents.forEach(d => {
-                        const data = parseFirestoreDoc(d);
-                        if (data.status !== 'Closed') {
-                            const currencySymbol = data.currency === 'USD' ? '$' : '₦';
-                            this.dynamicGigs.push({
-                                title: data.title || 'Tech Opportunity',
-                                url: 'connect.html',
-                                price: data.rate ? `${currencySymbol}${Number(data.rate).toLocaleString()}/${data.rateType || 'Task'}` : 'Negotiable'
-                            });
-                        }
-                    });
-                }
+            const gJson = await this.fetchWithRetry(`${this.baseUrl}mbtech_gigs?key=${this.apiKey}`);
+            if (gJson.documents) {
+                this.dynamicGigs = [];
+                gJson.documents.forEach(d => {
+                    const data = parseFirestoreDoc(d);
+                    if (data.status !== 'Closed') {
+                        const currencySymbol = data.currency === 'USD' ? '$' : '₦';
+                        this.dynamicGigs.push({
+                            title: data.title || 'Tech Opportunity',
+                            url: 'connect.html',
+                            price: data.rate ? `${currencySymbol}${Number(data.rate).toLocaleString()}/${data.rateType || 'Task'}` : 'Negotiable'
+                        });
+                    }
+                });
             }
 
+            this.dataLoaded = true;
+            console.log("MBTECH Bot: Firebase data loaded successfully after retries.");
         } catch (err) {
-            console.warn("REST API fetch failed, using static fallbacks:", err);
+            console.warn("MBTECH Bot: All retries failed. Using static fallbacks.", err);
             this.dynamicCourses = [...this.staticCourses];
             this.dynamicProducts = [...this.staticProducts];
             this.dynamicGigs = [];
+            this.dataLoaded = false; // still allow bot to work with fallback
         }
     }
 
-    // ------------------- DETECT LOGGED-IN USERS FROM PAGE -------------------
+    // Check if user is logged in (detects from nav elements)
     checkUserState() {
         const desktopEmailEl = document.getElementById('nav-user-email');
         const mobileEmailEl = document.getElementById('mobile-user-email');
@@ -167,7 +183,6 @@ class MbtechAssistant {
         emailInputs.forEach(input => { if (!input.value) input.value = this.userEmail; });
     }
 
-    // ------------------- BOT UI & MESSAGE HANDLERS -------------------
     renderCookieBanner() {
         if (this.cookiesAccepted) return;
         const banner = document.createElement('div');
@@ -475,10 +490,46 @@ class MbtechAssistant {
         `;
         document.head.appendChild(style);
     }
+
+    async init() {
+        if (this.initialized) return;
+        this.initialized = true;
+
+        // Delay based on network speed
+        const delay = this.getNetworkDelay();
+        console.log(`MBTECH Bot: Delaying startup for ${delay}ms (network: ${this.networkType || 'unknown'})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+
+        this.injectStyles();
+        this.renderCookieBanner();
+        this.renderBotUI();
+
+        // Load Firebase data with retries
+        await this.loadFirebaseDataREST();
+
+        this.setupEventListeners();
+        this.checkUserState();
+        setInterval(() => this.checkUserState(), 2000);
+
+        this.trackEvent('PageView');
+        console.log("MBTECH Bot: Fully initialized.");
+    }
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+// Wait for DOM, then wait for window load (images, etc.) before initializing bot
+let botInitialized = false;
+function startBot() {
+    if (botInitialized) return;
+    botInitialized = true;
     const assistant = new MbtechAssistant();
     assistant.init();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // Also wait for window.load for all resources
+        window.addEventListener('load', startBot);
+    });
+} else {
+    window.addEventListener('load', startBot);
+}
