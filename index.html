@@ -651,13 +651,13 @@
         </div>
     </div>
 
-    <!-- MAIN APPLICATION SCRIPT FOR FIREBASE INTEGRATION + MINI STORE -->
+    <!-- MAIN APPLICATION SCRIPT FOR FIREBASE INTEGRATION WITH RETRY & NO PREMATURE FALLBACK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Defer Firebase initialization and auth until the entire homepage finishes loading
+        // Defer Firebase initialization until everything is loaded
         window.addEventListener('load', () => {
             const firebaseConfig = {
                 apiKey: "AIzaSyDRkEVsI2swGV5cgn_0gMHTIWUbLhsacfY",
@@ -673,19 +673,20 @@
             const db = getFirestore(app);
             const appId = 'mbtech-public-store';
 
+            // Anonymous auth (ensures Firestore rules allow reading)
             const initAuth = async () => {
                 try {
                     await signInAnonymously(auth);
                 } catch (error) {
-                    console.error("Auth error:", error);
+                    console.error("Auth error, but will still try to read Firestore:", error);
                 }
             };
             initAuth();
 
-            // --- MINI STORE: Load up to 8 products from Firestore (or fallback to static) ---
+            // ---------- MINI STORE: Load products with improved error handling ----------
             const miniStoreGrid = document.getElementById('mini-store-grid');
             if (miniStoreGrid) {
-                // Static fallback products in case Firebase fails or is empty
+                // Static fallback products (only used if Firestore has no data after a delay)
                 const fallbackProducts = [
                     { id: 'f1', name: "5KVA Hybrid Inverter", category: "Solar & Energy", price: 1200000, image: "https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&q=80&w=800", featured: true },
                     { id: 'f2', name: "MacBook Pro M3", category: "Gadgets", price: 2800000, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&q=80&w=800", featured: true },
@@ -697,21 +698,16 @@
                     { id: 'f8', name: "Wireless Mechanical Keyboard", category: "Gadgets", price: 85000, image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&q=80&w=800", featured: false }
                 ];
 
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_products'), (snapshot) => {
-                    let products = [];
-                    if (!snapshot.empty) {
-                        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    } else {
-                        products = fallbackProducts;
-                    }
-                    // Take first 8 products (or all if less)
-                    const displayProducts = products.slice(0, 8);
-                    
-                    if (displayProducts.length === 0) {
+                let hasReceivedData = false;   // flag to know if Firestore ever returned data
+                let errorCount = 0;
+
+                // Function to render products (either from Firestore or fallback)
+                function renderProducts(productsArray) {
+                    if (!productsArray || productsArray.length === 0) {
                         miniStoreGrid.innerHTML = '<p class="col-span-full text-center text-slate-500">No products available at the moment.</p>';
                         return;
                     }
-
+                    const displayProducts = productsArray.slice(0, 8);
                     miniStoreGrid.innerHTML = displayProducts.map(p => {
                         const price = p.price || 0;
                         return `
@@ -731,44 +727,64 @@
                             </a>
                         `;
                     }).join('');
+                }
+
+                // Firestore listener with fallback delay
+                let fallbackTimer = setTimeout(() => {
+                    if (!hasReceivedData) {
+                        console.warn("Firestore products not loaded after 8 seconds, using fallback.");
+                        renderProducts(fallbackProducts);
+                    }
+                }, 8000);
+
+                const unsub = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_products'), (snapshot) => {
+                    clearTimeout(fallbackTimer);
+                    let products = [];
+                    if (!snapshot.empty) {
+                        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    } else {
+                        products = fallbackProducts;
+                    }
+                    hasReceivedData = true;
+                    renderProducts(products);
                 }, (error) => {
                     console.error("Mini store error:", error);
-                    // Fallback to static products on error
-                    const fallbackHtml = fallbackProducts.slice(0, 8).map(p => `
-                        <a href="store.html" class="group bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all flex flex-col cursor-pointer">
-                            <div class="relative aspect-square bg-slate-100 overflow-hidden p-4">
-                                <img src="${p.image}" class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400?text=Product'">
-                            </div>
-                            <div class="p-4">
-                                <div class="text-[9px] font-extrabold text-emerald-600 uppercase tracking-wider mb-1">${p.category}</div>
-                                <h3 class="font-bold text-slate-900 text-sm leading-tight mb-2 line-clamp-2">${p.name}</h3>
-                                <div class="flex justify-between items-center mt-2">
-                                    <span class="font-extrabold text-slate-900">₦${p.price.toLocaleString()}</span>
-                                    <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Shop Now →</span>
-                                </div>
-                            </div>
-                        </a>
-                    `).join('');
-                    miniStoreGrid.innerHTML = fallbackHtml;
+                    errorCount++;
+                    // If we have never received data and error persists after 2 attempts, use fallback
+                    if (!hasReceivedData && errorCount >= 2) {
+                        clearTimeout(fallbackTimer);
+                        renderProducts(fallbackProducts);
+                    }
                 });
             }
 
-            // --- LOAD NEWS / INSIGHTS ---
+            // ---------- LOAD NEWS / INSIGHTS (similar improved handling) ----------
             const infoGrid = document.getElementById('info-grid');
             if(infoGrid) {
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates'), (snapshot) => {
+                let newsHasData = false;
+                let newsErrorCount = 0;
+                let newsFallbackTimer = setTimeout(() => {
+                    if (!newsHasData) {
+                        console.warn("News not loaded after 8 seconds, using fallback.");
+                        infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load updates at this time. Please check back later.</p>';
+                    }
+                }, 8000);
+
+                const unsubNews = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'mbtech_updates'), (snapshot) => {
+                    clearTimeout(newsFallbackTimer);
                     infoGrid.innerHTML = '';
                     let posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    
                     posts = posts.filter(p => p.published !== false);
                     posts.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                     posts = posts.slice(0, 3);
 
                     if (posts.length === 0) {
                         infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">No recent updates published. Check back soon!</p>';
+                        newsHasData = true;
                         return;
                     }
 
+                    newsHasData = true;
                     posts.forEach(post => {
                         const dateStr = post.createdAt?.seconds ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}) : post.date || 'Recent';
                         const postHTML = `
@@ -796,7 +812,11 @@
                     });
                 }, (error) => {
                     console.error("Error fetching updates", error);
-                    infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load updates at this time.</p>';
+                    newsErrorCount++;
+                    if (!newsHasData && newsErrorCount >= 2) {
+                        clearTimeout(newsFallbackTimer);
+                        infoGrid.innerHTML = '<p class="col-span-full text-center text-slate-500 font-medium bg-slate-50 p-8 rounded-[2rem] border border-slate-200 border-dashed">Unable to load updates at this time. Please check your internet connection.</p>';
+                    }
                 });
             }
         });
