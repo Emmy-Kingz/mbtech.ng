@@ -90,8 +90,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com">
-    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -117,278 +116,67 @@
     </script>
 
     <!-- Paystack & Icons -->
-    <script src="https://js.paystack.co/v1/inline.js">
-    </script>
-    <script src="https://unpkg.com/lucide@latest">
-    </script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
-            background-color: #f8fafc;
-            overflow-x: hidden;
-        }
-        @media (min-width: 768px) {
-            body {
-                padding-bottom: 0;
-            }
-        }
+        html { scroll-behavior: smooth; }
+        body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); background-color: #f8fafc; overflow-x: hidden; }
+        @media (min-width: 768px) { body { padding-bottom: 0; } }
 
         /* Utilities */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .hidden-safely {
-            display: none !important;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hidden-safely { display: none !important; }
 
-        .text-gradient {
-            background: linear-gradient(135deg, #0056b3 0%, #f97316 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .bg-gradient-brand {
-            background: linear-gradient(135deg, #0056b3 0%, #f97316 100%);
-        }
-        .animated-gradient-text {
-            background: linear-gradient(to right, #059669, #10b981, #34d399, #059669);
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shine 3s linear infinite;
-        }
-        @keyframes shine {
-            to {
-                background-position: 200% center;
-            }
-        }
+        .text-gradient { background: linear-gradient(135deg, #0056b3 0%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .bg-gradient-brand { background: linear-gradient(135deg, #0056b3 0%, #f97316 100%); }
+        .animated-gradient-text { background: linear-gradient(to right, #059669, #10b981, #34d399, #059669); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shine 3s linear infinite; }
+        @keyframes shine { to { background-position: 200% center; } }
 
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
         /* Glass Navigation */
-        .glass-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
 
         /* FAQ Styles */
-        .faq-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        .faq-item.active .faq-content {
-            max-height: 300px;
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
+        .faq-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .faq-item.active .faq-content { max-height: 300px; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); }
 
         /* Animations */
-        .fade-in-up {
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .delay-100 {
-            animation-delay: 0.1s;
-        }
-        .delay-200 {
-            animation-delay: 0.2s;
-        }
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
         /* Modals & Routing */
-        .page-view {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-        .page-view.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .page-view { display: none; animation: fadeIn 0.4s ease; }
+        .page-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .modal-overlay {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-content {
-            transform: scale(0.95);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
-        }
+        .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay.active .modal-content { transform: scale(1); }
 
         /* Bot Styles */
-        .bot-fab {
-            position: fixed;
-            bottom: 85px;
-            right: 20px;
-            width: 55px;
-            height: 55px;
-            background: white;
-            border-radius: 50%;
-            border: 2px solid #0056b3;
-            box-shadow: 0 10px 25px rgba(0, 86, 179, 0.3);
-            cursor: pointer;
-            z-index: 9998;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s ease;
-        }
-        @media (min-width: 768px) {
-            .bot-fab {
-                bottom: 30px;
-                right: 30px;
-                width: 60px;
-                height: 60px;
-            }
-        }
-        .bot-fab:hover {
-            transform: scale(1.05);
-        }
-        .fab-pulse {
-            position: absolute;
-            inset: -6px;
-            border-radius: 50%;
-            background: #0056b3;
-            opacity: 0.2;
-            animation: pulseBot 2s infinite;
-            z-index: -1;
-        }
-        @keyframes pulseBot {
-            0% {
-                transform: scale(0.9);
-                opacity: 0.4;
-            }
-            70% {
-                transform: scale(1.4);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(0.9);
-                opacity: 0;
-            }
-        }
-        .chat-window {
-            position: fixed;
-            bottom: 150px;
-            right: 20px;
-            width: calc(100vw - 40px);
-            height: calc(100vh - 180px);
-            max-height: 500px;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transform-origin: bottom right;
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @media (min-width: 768px) {
-            .chat-window {
-                bottom: 100px;
-                right: 30px;
-                width: 350px;
-                height: 500px;
-            }
-        }
-        .chat-window.hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.9) translateY(20px);
-        }
-        .msg-bubble {
-            max-width: 85%;
-            padding: 12px 16px;
-            font-size: 13px;
-            line-height: 1.5;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            animation: fadeIn 0.3s ease;
-        }
-        .bot-msg {
-            background: white;
-            color: #0f172a;
-            border-radius: 16px 16px 16px 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            align-self: flex-start;
-            border: 1px solid #f1f5f9;
-        }
-        .user-msg {
-            background: #0056b3;
-            color: white;
-            border-radius: 16px 16px 4px 16px;
-            align-self: flex-end;
-        }
-        .typing-indicator span {
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            background: #94a3b8;
-            border-radius: 50%;
-            margin: 0 2px;
-            animation: typingBounce 1.4s infinite ease-in-out both;
-        }
-        .typing-indicator span:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-        .typing-indicator span:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-        @keyframes typingBounce {
-            0%,
-            80%,
-            100% {
-                transform: scale(0);
-            }
-            40% {
-                transform: scale(1);
-            }
-        }
+        .bot-fab { position: fixed; bottom: 85px; right: 20px; width: 55px; height: 55px; background: white; border-radius: 50%; border: 2px solid #0056b3; box-shadow: 0 10px 25px rgba(0, 86, 179, 0.3); cursor: pointer; z-index: 9998; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; }
+        @media (min-width: 768px) { .bot-fab { bottom: 30px; right: 30px; width: 60px; height: 60px; } }
+        .bot-fab:hover { transform: scale(1.05); }
+        .fab-pulse { position: absolute; inset: -6px; border-radius: 50%; background: #0056b3; opacity: 0.2; animation: pulseBot 2s infinite; z-index: -1; }
+        @keyframes pulseBot { 0% { transform: scale(0.9); opacity: 0.4; } 70% { transform: scale(1.4); opacity: 0; } 100% { transform: scale(0.9); opacity: 0; } }
+        .chat-window { position: fixed; bottom: 150px; right: 20px; width: calc(100vw - 40px); height: calc(100vh - 180px); max-height: 500px; background: white; border-radius: 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); z-index: 9999; display: flex; flex-direction: column; overflow: hidden; transform-origin: bottom right; transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @media (min-width: 768px) { .chat-window { bottom: 100px; right: 30px; width: 350px; height: 500px; } }
+        .chat-window.hidden { opacity: 0; pointer-events: none; transform: scale(0.9) translateY(20px); }
+        .msg-bubble { max-width: 85%; padding: 12px 16px; font-size: 13px; line-height: 1.5; border-radius: 16px; margin-bottom: 12px; animation: fadeIn 0.3s ease; }
+        .bot-msg { background: white; color: #0f172a; border-radius: 16px 16px 16px 4px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); align-self: flex-start; border: 1px solid #f1f5f9; }
+        .user-msg { background: #0056b3; color: white; border-radius: 16px 16px 4px 16px; align-self: flex-end; }
+        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #94a3b8; border-radius: 50%; margin: 0 2px; animation: typingBounce 1.4s infinite ease-in-out both; }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typingBounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -1319,8 +1107,8 @@
             <div class="bg-white border-t border-slate-100 p-3 rounded-b-3xl">
                 <div id="chat-quick" class="flex gap-2 overflow-x-auto no-scrollbar mb-2 pb-1"></div>
                 <form id="chat-form" class="flex gap-2 bg-slate-100 rounded-full p-1 pl-4 items-center">
-                    <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off" class="flex-1 bg-transparent border-none outline-none text-sm text-slate-800">
-                    <button type="submit" aria-label="Send Message" class="w-8 h-8 rounded-full bg-brand-blue hover:bg-brand-blueHover text-white flex items-center justify-center transition-transform hover:scale-105"><i data-lucide="send" class="w-4 h-4"></i></button>
+                    <input type="text" id="chat-input" placeholder="Type to search products, courses, jobs..." autocomplete="off" class="flex-1 bg-transparent border-none outline-none text-sm text-slate-800">
+                    <button type="submit" aria-label="Send Message" class="w-8 h-8 rounded-full bg-brand-blue hover:bg-brand-blueHover text-white flex items-center justify-center transition-transform hover:scale-105"><i data-lucide="search" class="w-4 h-4"></i></button>
                 </form>
             </div>
         </div>
@@ -1334,7 +1122,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeFirestore, collection, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // Obfuscated Config
         const __fc = {
@@ -1358,7 +1146,8 @@
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db = initializeFirestore(app, { experimentalForceLongPolling: true }); 
+        
         const appId = 'mbtech-public-store';
         const PAYSTACK_KEY = atob(__fc.pk);
         const WHATSAPP_NUM = "2347084672771";
@@ -1457,13 +1246,19 @@
             counters.forEach(counter => observer.observe(counter));
         }
 
-        // 4. Router
+        // 4. Router (Modified to trigger explicit lazy loads)
         function handleRoute() {
             const hash = window.location.hash || '#home';
             document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
             const target = document.getElementById('view-' + hash.substring(1));
-            if (target) { target.classList.add('active');
-                window.scrollTo(0, 0); } else document.getElementById('view-home').classList.add('active');
+            if (target) { target.classList.add('active'); window.scrollTo(0, 0); } 
+            else document.getElementById('view-home').classList.add('active');
+
+            // Force load data immediately if user navigates to specific tabs
+            if (hash === '#courses') loader('mbtech_courses', 'courses');
+            if (hash === '#store') loader('mbtech_products', 'products');
+            if (hash === '#connect') loader('mbtech_gigs', 'gigs');
+            if (hash === '#info') { loader('mbtech_updates', 'updates'); loader('mbtech_events', 'events'); }
 
             document.querySelectorAll('.nav-link, .nav-link-mobile, .nav-link-bottom').forEach(l => {
                 l.classList.remove('text-brand-blue', 'text-brand-green', 'text-brand-purple',
@@ -1662,7 +1457,7 @@
             const sc = window.appState.cart.store;
             const cc = window.appState.cart.courses;
 
-            const sTotal = sc.reduce((a, b) => a + (b.price || 0), 0);
+            const sTotal = sc.reduce((a, b) => a + Number(b.price || 0), 0);
             const stc = document.getElementById('store-cart-count');
             const stt = document.getElementById('store-cart-total');
             const sfc = document.getElementById('store-floating-cart');
@@ -1671,7 +1466,7 @@
             if (sfc) { if (sc.length > 0) sfc.classList.remove('hidden-safely');
                 else sfc.classList.add('hidden-safely'); }
 
-            const cTotal = cc.reduce((a, b) => a + (b.price || 0), 0);
+            const cTotal = cc.reduce((a, b) => a + Number(b.price || 0), 0);
             const ctc = document.getElementById('course-cart-count');
             const ctt = document.getElementById('course-cart-total');
             const cfc = document.getElementById('course-floating-cart');
@@ -1692,8 +1487,7 @@
             }
         }
 
-        // 6. Firebase Listeners - DATA LOADS IMMEDIATELY (no auth required for reads)
-        // Auth state listener ONLY updates UI - does NOT gate data loading
+        // 6. Firebase Listeners (Lazy Loading Enabled)
         onAuthStateChanged(auth, (u) => {
             window.appState.user = u;
             const isAuth = u && !u.isAnonymous;
@@ -1726,28 +1520,48 @@
             if (isAuth && document.getElementById('co-email')) document.getElementById('co-email').value = emailStr;
         });
 
-        // Start data loaders IMMEDIATELY - no auth gating
+        // Track active listeners to prevent duplicate queries
+        const activeListeners = {}; 
+
         const loader = (col, key) => {
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', col), snap => {
-                let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                if (key === 'updates' || key === 'events') {
-                    data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                    if (key === 'updates') data = data.filter(p => p.published !== false).map(p => ({ ...p,
-                        date: formatDate(p.createdAt) }));
-                }
-                window.appState.data[key] = data;
-                renderViews();
-            }, (err) => {
-                console.warn(`Firebase read error (${key}):`, err.message);
-            });
+            if (activeListeners[key]) return; // Already loaded or loading
+            activeListeners[key] = true;
+            try {
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', col), snap => {
+                    let data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (key === 'updates' || key === 'events') {
+                        data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                        if (key === 'updates') data = data.filter(p => p.published !== false).map(p => ({ ...p,
+                            date: formatDate(p.createdAt) }));
+                    }
+                    window.appState.data[key] = data;
+                    renderViews();
+                }, (err) => {
+                    console.warn(`Firebase read error (${key}):`, err.message);
+                });
+            } catch(e) {
+                console.error(`Failed setting up listener for ${key}:`, e);
+            }
         };
 
-        // Kick off all data loaders immediately
-        loader('mbtech_products', 'products');
-        loader('mbtech_courses', 'courses');
-        loader('mbtech_updates', 'updates');
-        loader('mbtech_events', 'events');
-        loader('mbtech_gigs', 'gigs');
+        // 6b. Initial Essential Data Load (For Homepage)
+        const initData = () => {
+            loader('mbtech_products', 'products');
+            loader('mbtech_updates', 'updates');
+
+            // 6c. Lazy Load the rest of the datasets 2.5s after the initial load to speed up page rendering
+            setTimeout(() => {
+                loader('mbtech_courses', 'courses');
+                loader('mbtech_events', 'events');
+                loader('mbtech_gigs', 'gigs');
+            }, 2500);
+        };
+
+        // Guarantee anonymous auth exists BEFORE loading data to prevent silent Firestore permission errors
+        signInAnonymously(auth).then(() => initData()).catch((err) => {
+            console.warn("Anon Auth failed, attempting data load anyway:", err);
+            initData();
+        });
 
         // 7. App Functions
         window.mbtechApp = {
@@ -1766,11 +1580,11 @@
             viewStoreProduct: (id) => {
                 const p = window.appState.data.products.find(x => x.id === id);
                 if (!p) return;
-                document.getElementById('sm-image').src = escapeHtml(p.image) || 'https://placehold.co/400';
-                document.getElementById('sm-category').innerText = escapeHtml(p.category);
-                document.getElementById('sm-title').innerText = escapeHtml(p.name);
-                document.getElementById('sm-desc').innerText = escapeHtml(p.description) || '';
-                document.getElementById('sm-price').innerText = (p.price || 0).toLocaleString();
+                document.getElementById('sm-image').src = p.image || 'https://placehold.co/400';
+                document.getElementById('sm-category').innerText = p.category || '';
+                document.getElementById('sm-title').innerText = p.name || '';
+                document.getElementById('sm-desc').innerText = p.description || '';
+                document.getElementById('sm-price').innerText = Number(p.price || 0).toLocaleString();
                 const badge = document.getElementById('sm-badge');
                 if (p.featured) badge.classList.remove('hidden-safely');
                 else badge.classList.add('hidden-safely');
@@ -1792,11 +1606,11 @@
             viewCourse: (id) => {
                 const c = window.appState.data.courses.find(x => x.id === id);
                 if (!c) return;
-                document.getElementById('cm-title').innerText = escapeHtml(c.title);
-                document.getElementById('cm-desc').innerText = escapeHtml(c.description) || '';
-                document.getElementById('cm-duration').innerText = escapeHtml(c.duration);
-                document.getElementById('cm-level').innerText = escapeHtml(c.level);
-                document.getElementById('cm-price').innerText = (c.price || 0).toLocaleString();
+                document.getElementById('cm-title').innerText = c.title || '';
+                document.getElementById('cm-desc').innerText = c.description || '';
+                document.getElementById('cm-duration').innerText = c.duration || '';
+                document.getElementById('cm-level').innerText = c.level || '';
+                document.getElementById('cm-price').innerText = Number(c.price || 0).toLocaleString();
                 document.getElementById('cm-icon-box').innerHTML =
                     `<i data-lucide="${escapeHtml((c.iconName||'book').toLowerCase())}" class="w-6 h-6"></i>`;
 
@@ -1822,12 +1636,12 @@
             viewUpdate: (id) => {
                 const u = window.appState.data.updates.find(x => x.id === id);
                 if (!u) return;
-                document.getElementById('rm-image').src = escapeHtml(u.image) || 'https://placehold.co/600x400';
-                document.getElementById('rm-category').innerText = escapeHtml(u.category);
+                document.getElementById('rm-image').src = u.image || 'https://placehold.co/600x400';
+                document.getElementById('rm-category').innerText = u.category || '';
                 document.getElementById('rm-date').innerHTML =
                     `<i data-lucide="clock" class="inline w-3.5 h-3.5 mr-1"></i> ${escapeHtml(u.date||'Recent')}`;
-                document.getElementById('rm-title').innerText = escapeHtml(u.title);
-                document.getElementById('rm-content').innerText = escapeHtml(u.content);
+                document.getElementById('rm-title').innerText = u.title || '';
+                document.getElementById('rm-content').innerText = u.content || '';
                 lucide.createIcons();
                 ui.openModal('readModal');
             },
@@ -1847,15 +1661,21 @@
                 document.getElementById('co-count').innerText = arr.length;
                 document.getElementById('co-titles').innerText = arr.map(i => escapeHtml(i.name || i.title)).join(
                 ', ');
-                document.getElementById('co-total').innerText = arr.reduce((a, b) => a + (b.price || 0), 0)
+                document.getElementById('co-total').innerText = arr.reduce((a, b) => a + Number(b.price || 0), 0)
                     .toLocaleString();
-                if (isStore) document.getElementById('co-address').classList.remove('hidden-safely');
-                else document.getElementById('co-address').classList.add('hidden-safely');
+                
+                const addressInput = document.getElementById('co-address');
+                if (isStore) { 
+                    addressInput.classList.remove('hidden-safely');
+                    addressInput.required = true;
+                } else { 
+                    addressInput.classList.add('hidden-safely');
+                    addressInput.required = false;
+                }
                 ui.openModal('checkoutModal');
             },
             processCheckout: async (method) => {
                 const u = window.appState.user;
-                // For Paystack, user MUST be signed in
                 if (method === 'paystack' && (!u || u.isAnonymous)) {
                     ui.closeModal('checkoutModal');
                     ui.openModal('authModal');
@@ -1869,7 +1689,7 @@
 
                 const isStore = window.appState.coType === 'store';
                 const arr = isStore ? window.appState.cart.store : window.appState.cart.courses;
-                const total = arr.reduce((a, b) => a + (b.price || 0), 0);
+                const total = arr.reduce((a, b) => a + Number(b.price || 0), 0);
                 const itemsStr = arr.map(i => i.name || i.title).join(', ');
 
                 const saveOrder = async (ref = null) => {
@@ -1908,9 +1728,7 @@
                                 value: itemsStr }] },
                         callback: async (res) => {
                             await saveOrder(res.reference);
-                            window.open(
-                                `https://wa.me/${WHATSAPP_NUM}?text=Payment successful! Ref: ${res.reference}%0A%0AName: ${encodeURIComponent(name)}%0AItems: ${encodeURIComponent(itemsStr)}%0ATotal: ₦${total.toLocaleString()}`,
-                                '_blank');
+                            window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=Payment successful! Ref: ${res.reference}%0A%0AName: ${encodeURIComponent(name)}%0AItems: ${encodeURIComponent(itemsStr)}%0ATotal: ₦${total.toLocaleString()}`;
                             ui.notify('Payment Successful!');
                         },
                         onClose: () => ui.notify('Payment window closed', 'info')
@@ -1921,13 +1739,15 @@
                     const og = btn.innerHTML;
                     btn.innerHTML =
                     `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Processing...`;
+                    btn.disabled = true;
                     lucide.createIcons();
                     await saveOrder();
-                    window.open(
-                        `https://wa.me/${WHATSAPP_NUM}?text=New ${isStore?'Order':'Enrollment'}!%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0AItems: ${encodeURIComponent(itemsStr)}%0ATotal: ₦${total.toLocaleString()}%0A${isStore?'Address: '+encodeURIComponent(address):''}`,
-                        '_blank');
+                    
+                    window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=New ${isStore?'Order':'Enrollment'}!%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0AItems: ${encodeURIComponent(itemsStr)}%0ATotal: ₦${total.toLocaleString()}%0A${isStore?'Address: '+encodeURIComponent(address):''}`;
+                    
                     ui.notify('Redirecting to WhatsApp...');
                     btn.innerHTML = og;
+                    btn.disabled = false;
                     lucide.createIcons();
                 }
             },
@@ -2004,6 +1824,12 @@
 
         document.getElementById('req-form').addEventListener('submit', async e => {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const ogBtnHTML = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Sending...`;
+            btn.disabled = true;
+            lucide.createIcons();
+
             const n = document.getElementById('req-name').value;
             const p = document.getElementById('req-phone').value;
             const d = document.getElementById('req-desc').value;
@@ -2017,16 +1843,25 @@
                     createdAt: serverTimestamp()
                 });
             } catch (err) { console.warn('Firestore write failed:', err.message); }
-            window.open(
-                `https://wa.me/${WHATSAPP_NUM}?text=Hello! Request from ${encodeURIComponent(n)} (${encodeURIComponent(p)}):%0A${encodeURIComponent(d)}`,
-                '_blank');
+            
+            window.location.href = `https://wa.me/${WHATSAPP_NUM}?text=Hello! Request from ${encodeURIComponent(n)} (${encodeURIComponent(p)}):%0A${encodeURIComponent(d)}`;
+            
             ui.closeModal('requestModal');
             ui.notify('Request logged!');
             e.target.reset();
+            btn.innerHTML = ogBtnHTML;
+            btn.disabled = false;
+            lucide.createIcons();
         });
 
         document.getElementById('talent-form').addEventListener('submit', async e => {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const ogBtnHTML = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Submitting...`;
+            btn.disabled = true;
+            lucide.createIcons();
+
             const n = document.getElementById('tf-name').value;
             const em = document.getElementById('tf-email').value;
             const p = document.getElementById('tf-phone').value;
@@ -2056,6 +1891,9 @@
                 window.mbtechApp.clearSelectedGig();
                 console.warn('Firestore write failed:', err.message);
             }
+            btn.innerHTML = ogBtnHTML;
+            btn.disabled = false;
+            lucide.createIcons();
         });
 
         document.getElementById('contactForm').addEventListener('submit', function(e) {
@@ -2074,7 +1912,7 @@
             e.target.reset();
         });
 
-        // 8. Bot Logic Integration
+        // 8. Bot Logic Integration - Enhanced with Context & Search Features
         class MbtechAssistant {
             constructor() {
                 this.isOpen = false;
@@ -2087,12 +1925,10 @@
                 if (this.isOpen) {
                     cw.classList.remove('hidden-safely');
                     if (!this.hasGreeted) {
-                        this.addBotMsg(
-                            `Hi there! 👋 I am ${this.botName}. How can I assist you with your tech journey today?`
-                            );
+                        this.greetBasedOnContext();
                         this.hasGreeted = true;
-                        this.renderQuick();
                     }
+                    this.renderQuick();
                 } else { cw.classList.add('hidden-safely'); }
             }
             addBotMsg(text, html = null) {
@@ -2121,48 +1957,119 @@
                 c.appendChild(d);
                 c.scrollTop = c.scrollHeight;
             }
+
+            // --- New Feature: Context-Aware Greeting ---
+            greetBasedOnContext() {
+                const hash = window.location.hash || '#home';
+                if (hash === '#store') {
+                    this.addBotMsg(`Welcome to the Tech Store! 🛍️ I can help you find gadgets or solar equipment. Need a recommendation?`);
+                    this.rec('store', true);
+                } else if (hash === '#courses') {
+                    this.addBotMsg(`Ready to upskill? 🎓 Let's find the perfect course to advance your career.`);
+                    this.rec('course');
+                } else if (hash === '#connect') {
+                    this.addBotMsg(`Looking for opportunities? 💼 Here are some active gigs you can apply for right now:`);
+                    this.rec('gig');
+                } else {
+                    this.addBotMsg(`Hi there! 👋 I am ${this.botName}, your personal assistant. I can search our catalog for products, courses, or jobs for you!`);
+                }
+            }
+
+            // --- New Feature: Smart Search & Promo Handler ---
             process(text) {
                 const t = text.toLowerCase();
-                if (t.includes('course') || t.includes('learn') || t.includes('academy') || t.includes('training'))
-                    this.rec('course');
-                else if (t.includes('store') || t.includes('buy') || t.includes('gadget') || t.includes('solar') || t
-                    .includes('inverter')) this.rec('store');
-                else if (t.includes('gig') || t.includes('job') || t.includes('work')) this.rec('gig');
-                else if (t.includes('location')) this.addBotMsg(
-                    "We are located in Ikorodu, Lagos, Nigeria, but operate globally online! 🌍");
-                else if (t.includes('certificate')) this.addBotMsg(
-                    "Yes! All our Academy courses come with recognized, verifiable certificates upon graduation. 🎓");
-                else if (t.includes('pay') || t.includes('price')) this.addBotMsg(
-                    "We securely process payments via Paystack, bank transfers, and automated WhatsApp checkouts. 💳");
-                else this.addBotMsg(
-                    "I'm still learning! Choose an option below or reach out to support@mbtech.ng.");
+                
+                // Intents Checks
+                if (t.includes('hello') || t.includes('hi ') || t === 'hi') { this.addBotMsg("Hello! How can I assist you today?"); return; }
+                if (t.includes('location')) { this.addBotMsg("We are located in Ikorodu, Lagos, Nigeria, but operate globally online! 🌍"); return; }
+                if (t.includes('certificate')) { this.addBotMsg("Yes! All our Academy courses come with recognized, verifiable certificates upon graduation. 🎓"); return; }
+                if (t.includes('pay') || t.includes('price')) { this.addBotMsg("We securely process payments via Paystack, bank transfers, and automated WhatsApp checkouts. 💳"); return; }
+                if (t.includes('promo') || t.includes('featured') || t.includes('deal')) { 
+                    this.addBotMsg("Here are our featured items and deals!"); 
+                    this.rec('store', true); 
+                    return; 
+                }
+
+                // If not an intent, assume it's a search query
+                this.searchData(t);
             }
-            rec(type) {
+
+            searchData(query) {
+                const q = query.toLowerCase().trim();
+                let foundSomething = false;
+
+                // 1. Search Products
+                const p = window.appState.data.products.filter(x => (x.name||'').toLowerCase().includes(q) || (x.category||'').toLowerCase().includes(q) || (x.description||'').toLowerCase().includes(q));
+                if (p.length > 0) {
+                    let html = '<div class="mt-2 flex flex-col gap-2">';
+                    p.slice(0, 3).forEach(x => html += `<div onclick="window.location.hash='#store'; window.mbtechApp.viewStoreProduct('${escapeHtml(x.id)}')" class="bg-emerald-50 p-3 rounded-xl border border-emerald-100 cursor-pointer hover:border-brand-green text-xs transition-colors"><div class="font-extrabold text-brand-dark">${escapeHtml(x.name)}</div><div class="text-emerald-700 font-bold mt-1">₦${(x.price||0).toLocaleString()}</div></div>`);
+                    html += '</div>';
+                    this.addBotMsg(`I found these products matching "${query}":`, html);
+                    foundSomething = true;
+                }
+
+                // 2. Search Courses
+                const c = window.appState.data.courses.filter(x => (x.title||'').toLowerCase().includes(q) || (x.category||'').toLowerCase().includes(q));
+                if (c.length > 0) {
+                    let html = '<div class="mt-2 flex flex-col gap-2">';
+                    c.slice(0, 3).forEach(x => html += `<div onclick="window.location.hash='#courses'; window.mbtechApp.viewCourse('${escapeHtml(x.id)}')" class="bg-blue-50 p-3 rounded-xl border border-blue-100 cursor-pointer hover:border-brand-blue text-xs transition-colors"><div class="font-extrabold text-brand-dark">${escapeHtml(x.title)}</div><div class="text-brand-blue font-bold mt-1">${escapeHtml(x.duration)} | ${escapeHtml(x.level)}</div></div>`);
+                    html += '</div>';
+                    this.addBotMsg(`I found these courses matching "${query}":`, html);
+                    foundSomething = true;
+                }
+
+                // 3. Search Gigs
+                const g = window.appState.data.gigs.filter(x => (x.title||'').toLowerCase().includes(q) || (x.type||'').toLowerCase().includes(q));
+                if (g.length > 0) {
+                    let html = '<div class="mt-2 flex flex-col gap-2">';
+                    g.slice(0, 3).forEach(x => html += `<div onclick="window.location.hash='#connect'; window.mbtechApp.applyGig('${escapeHtml(x.title)}')" class="bg-purple-50 p-3 rounded-xl border border-purple-100 cursor-pointer hover:border-brand-purple text-xs transition-colors"><div class="font-extrabold text-brand-dark">${escapeHtml(x.title)}</div><div class="text-brand-purple font-bold mt-1">${escapeHtml(x.type)} | ${escapeHtml(x.location)}</div></div>`);
+                    html += '</div>';
+                    this.addBotMsg(`I found these job opportunities matching "${query}":`, html);
+                    foundSomething = true;
+                }
+
+                // Fallback
+                if (!foundSomething) {
+                    if (q.includes('course') || q.includes('learn') || q.includes('training')) this.rec('course');
+                    else if (q.includes('store') || q.includes('buy') || q.includes('gadget') || q.includes('solar')) this.rec('store');
+                    else if (q.includes('gig') || q.includes('job') || q.includes('work')) this.rec('gig');
+                    else this.addBotMsg(`I couldn't find exactly what you're looking for regarding "${query}". Try searching for specific courses (e.g., "frontend"), gadgets (e.g., "inverter"), or jobs!`);
+                }
+            }
+
+            rec(type, prioritizeFeatured = false) {
                 let html = '<div class="mt-2 flex flex-col gap-2">';
                 if (type === 'course') {
                     const l = window.appState.data.courses.slice(0, 3);
                     l.forEach(x => html +=
-                        `<div onclick="window.mbtechApp.viewCourse('${escapeHtml(x.id)}')" class="bg-slate-50 p-2 rounded border cursor-pointer hover:border-brand-blue text-xs font-bold text-brand-dark transition-colors">${escapeHtml(x.title)}</div>`
+                        `<div onclick="window.location.hash='#courses'; window.mbtechApp.viewCourse('${escapeHtml(x.id)}')" class="bg-slate-50 p-2.5 rounded-lg border cursor-pointer hover:border-brand-blue text-xs font-bold text-brand-dark transition-colors">${escapeHtml(x.title)}</div>`
                         );
                     html += '</div>';
-                    this.addBotMsg("Here are top courses:", html);
+                    this.addBotMsg("Here are top courses right now:", html);
                 } else if (type === 'store') {
-                    const l = window.appState.data.products.slice(0, 3);
-                    l.forEach(x => html +=
-                        `<div onclick="window.mbtechApp.viewStoreProduct('${escapeHtml(x.id)}')" class="bg-slate-50 p-2 rounded border cursor-pointer hover:border-emerald-500 text-xs font-bold text-emerald-700 transition-colors">${escapeHtml(x.name)} - ₦${(x.price||0).toLocaleString()}</div>`
+                    let l = window.appState.data.products;
+                    if(prioritizeFeatured) {
+                        const feat = l.filter(p => p.featured);
+                        if(feat.length > 0) l = feat;
+                    }
+                    l.slice(0, 3).forEach(x => html +=
+                        `<div onclick="window.location.hash='#store'; window.mbtechApp.viewStoreProduct('${escapeHtml(x.id)}')" class="bg-slate-50 p-2.5 rounded-lg border cursor-pointer hover:border-emerald-500 text-xs font-bold text-emerald-700 transition-colors">${escapeHtml(x.name)} - ₦${(x.price||0).toLocaleString()}</div>`
                         );
                     html += '</div>';
-                    this.addBotMsg("Check out these products:", html);
+                    this.addBotMsg(prioritizeFeatured ? "Check out our featured products!" : "Check out these products:", html);
                 } else if (type === 'gig') {
-                    this.addBotMsg("Check the Connect page for the latest gigs!",
-                        '<a href="#connect" class="block mt-2 text-xs font-bold text-brand-purple underline">View Gigs</a>'
+                    const l = window.appState.data.gigs.slice(0, 3);
+                    l.forEach(x => html +=
+                        `<div onclick="window.location.hash='#connect'; window.mbtechApp.applyGig('${escapeHtml(x.title)}')" class="bg-slate-50 p-2.5 rounded-lg border cursor-pointer hover:border-brand-purple text-xs font-bold text-purple-700 transition-colors">${escapeHtml(x.title)} - ${escapeHtml(x.type)}</div>`
                         );
+                    html += '</div>';
+                    this.addBotMsg("Here are some recent gigs you might like:", html);
                 }
             }
             renderQuick() {
                 document.getElementById('chat-quick').innerHTML = `
-                    <button type="button" class="shrink-0 bg-white border border-brand-blue text-brand-blue px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-brand-blue hover:text-white transition-colors" onclick="window.mbtechBot.trigger('Recommend a Course')"><i data-lucide="book-open" class="inline w-3 h-3 mr-1"></i> Course</button>
-                    <button type="button" class="shrink-0 bg-white border border-emerald-600 text-emerald-600 px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-emerald-600 hover:text-white transition-colors" onclick="window.mbtechBot.trigger('Recommend a Product')"><i data-lucide="shopping-cart" class="inline w-3 h-3 mr-1"></i> Product</button>
+                    <button type="button" class="shrink-0 bg-white border border-brand-blue text-brand-blue px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-brand-blue hover:text-white transition-colors" onclick="window.mbtechBot.trigger('Find a Course')"><i data-lucide="book-open" class="inline w-3 h-3 mr-1"></i> Course</button>
+                    <button type="button" class="shrink-0 bg-white border border-emerald-600 text-emerald-600 px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-emerald-600 hover:text-white transition-colors" onclick="window.mbtechBot.trigger('Show Featured Promos')"><i data-lucide="shopping-cart" class="inline w-3 h-3 mr-1"></i> Promos</button>
                     <button type="button" class="shrink-0 bg-white border border-brand-purple text-brand-purple px-3 py-1.5 rounded-full text-[10px] font-bold hover:bg-brand-purple hover:text-white transition-colors" onclick="window.mbtechBot.trigger('Show Gigs')"><i data-lucide="briefcase" class="inline w-3 h-3 mr-1"></i> Gigs</button>
                 `;
                 lucide.createIcons();
