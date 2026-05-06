@@ -79,7 +79,7 @@
             ShieldAlert, Loader2, CreditCard, Search, Phone, MapPin,
             Clock, Package, CheckCircle, XCircle, Send, ShieldCheck,
             Download, UploadCloud, ChevronLeft, ChevronRight, Trello, Plus, Settings,
-            Bold, Italic, Underline, Link, HelpCircle, FileText
+            Bold, Italic, Underline, Link, HelpCircle, FileText, Trash2
         } from 'lucide-react';
 
         // --- FIREBASE IMPORTS ---
@@ -106,6 +106,111 @@
             try { return str ? atob(str) : ''; } catch (e) { return ''; }
         };
 
+        // --- TEMPLATES ---
+        const getMbtechTemplate = (customerName) => `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <title>Welcome to MBTECH NG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style type="text/css">
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse !important; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8fafc; font-family: 'Plus Jakarta Sans', Helvetica, Arial, sans-serif; }
+    .email-container { max-width: 600px !important; margin: 0 auto !important; width: 100% !important; }
+    .content-block { padding: 40px 30px !important; }
+    @media screen and (max-width: 600px) {
+      .content-block { padding: 30px 20px !important; }
+      .mobile-center { text-align: center !important; }
+      .button-full { display: block !important; width: 100% !important; margin-bottom: 12px !important; text-align: center !important; }
+      .h1 { font-size: 26px !important; }
+    }
+  </style>
+</head>
+<body style="background-color: #f8fafc; margin: 0; padding: 0;">
+  <div style="display: none; max-height: 0px; overflow: hidden;">
+    Welcome to MBTECH NG. Explore our premium digital solutions and professional tech academy.
+  </div>
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc;">
+    <tr>
+      <td align="center" style="padding: 20px 0;">
+        <table border="0" cellpadding="0" cellspacing="0" width="600" class="email-container" style="background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <tr>
+            <td align="center" style="background-color: #0f172a; padding: 35px 20px; background-image: linear-gradient(to bottom right, #0f172a, #1e293b);">
+              <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: -1px;">MBTECH <span style="color: #3b82f6;">NG</span></div>
+              <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-top: 6px;">Digital Solutions & Academy</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="content-block" style="padding: 45px 40px; background-color: #ffffff;">
+              <h1 class="h1" style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 28px; font-weight: 800; color: #0f172a; margin: 0 0 15px 0; line-height: 1.2;">
+                Hello, <span style="color: #2563eb;">${customerName}</span>!
+              </h1>
+              <p style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 16px; color: #475569; margin: 0 0 25px 0; line-height: 1.6;">
+                We're excited to have you on board. At <strong>MBTECH NG</strong>, we bridge the gap between ideas and digital reality. From high-end software development to professional training, we provide the tools you need to thrive in the modern economy.
+              </p>
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 35px; background-color: #f8fafc; border-radius: 12px; border: 1px solid #f1f5f9;">
+                <tr>
+                  <td style="padding: 25px;">
+                    <h3 style="margin: 0 0 15px 0; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 14px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Our Core Offerings:</h3>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="padding-bottom: 12px; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 15px; color: #1e293b;"><strong>Digital Solutions:</strong> Web and Mobile Development, Strategic Branding, and Digital Marketing.</td>
+                      </tr>
+                      <tr>
+                        <td style="padding-bottom: 12px; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 15px; color: #1e293b;"><strong>Tech Academy:</strong> Professional courses in Web Development, Data Science, and UI/UX Design.</td>
+                      </tr>
+                      <tr>
+                        <td style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 15px; color: #1e293b;"><strong>Tech Store:</strong> Premium laptops, gadgets, and sustainable solar energy solutions.</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <div style="text-align: center; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 30px 20px; margin-bottom: 30px;">
+                <h2 style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0;">Have a Project in Mind?</h2>
+                <p style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 15px; color: #64748b; margin: 0 0 20px 0;">Speak with our consultants today to receive a custom roadmap for your business or career goals.</p>
+                <table border="0" cellpadding="0" cellspacing="0" align="center">
+                  <tr>
+                    <td align="center" style="border-radius: 8px; background-color: #2563eb;">
+                      <a href="https://mbtech.com.ng/#connect" target="_blank" style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #ffffff; text-decoration: none; padding: 16px 35px; display: inline-block; border-radius: 8px;">Book a Free Consultation</a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <p style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5; margin: 0;">
+                Prefer a direct conversation? <a href="https://wa.me/2347084672771" style="color: #2563eb; text-decoration: none; font-weight: 600;">Message us on WhatsApp</a>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 40px 20px; border-top: 1px solid #e2e8f0; text-align: center;">
+              <p style="margin: 0 0 25px 0;">
+                <a href="https://facebook.com/mbtech.ng" style="text-decoration: none; margin: 0 8px;"><img src="https://cdn-icons-png.flaticon.com/32/733/733547.png" width="22" height="22" alt="Facebook" /></a>
+                <a href="https://instagram.com/mbtech_ng" style="text-decoration: none; margin: 0 8px;"><img src="https://cdn-icons-png.flaticon.com/32/2111/2111463.png" width="22" height="22" alt="Instagram" /></a>
+                <a href="https://linkedin.com/company/mbtech-ng" style="text-decoration: none; margin: 0 8px;"><img src="https://cdn-icons-png.flaticon.com/32/3536/3536505.png" width="22" height="22" alt="LinkedIn" /></a>
+                <a href="https://tiktok.com/@mbtech_ng" style="text-decoration: none; margin: 0 8px;"><img src="https://cdn-icons-png.flaticon.com/32/3046/3046121.png" width="22" height="22" alt="TikTok" /></a>
+              </p>
+              <p style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 12px; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.6;">
+                You are receiving this because you signed up at <a href="https://mbtech.com.ng" style="color: #3b82f6; text-decoration: none;">mbtech.com.ng</a>.<br />
+                Ikorodu, Lagos, Nigeria.
+              </p>
+              <p style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 11px; color: #cbd5e1; margin: 0;">
+                &copy; 2026 Mesobest Technology NG. All rights reserved. <br />
+                <a href="mailto:support@mbtech.com.ng?subject=Unsubscribe%20Request" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
         // --- COMPONENTS ---
         function Toast({ message, type, onClose }) {
             useEffect(() => { const timer = setTimeout(onClose, 3500); return () => clearTimeout(timer); }, [onClose]);
@@ -123,7 +228,6 @@
         function RichTextEditor({ value, onChange }) {
             const editorRef = useRef(null);
             
-            // Set initial value
             useEffect(() => {
                 if (editorRef.current && !editorRef.current.innerHTML && value) {
                     editorRef.current.innerHTML = value;
@@ -218,8 +322,12 @@
             );
         }
 
-        function OrderDetailsModal({ order, onClose, onUpdateStatus, onUpdatePaymentStatus }) {
+        function OrderDetailsModal({ order, currentUserEmail, onClose, onUpdateStatus, onUpdatePaymentStatus, onDeleteOrder }) {
+            const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
             if (!order) return null;
+
+            const isSuperAdmin = currentUserEmail === 'emmanuel.amobi03@gmail.com';
+
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay bg-slate-900/60 backdrop-blur-sm">
                     <div className="bg-white rounded-[2rem] shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden modal-content">
@@ -278,6 +386,24 @@
                                     })}
                                 </div>
                             </div>
+
+                            {/* Super Admin Deletion Zone */}
+                            {isSuperAdmin && (
+                                <div className="mt-8 pt-6 border-t border-red-100 bg-red-50 p-6 rounded-2xl">
+                                    <h4 className="font-extrabold text-red-900 mb-2 flex items-center gap-2"><ShieldAlert size={18}/> Danger Zone</h4>
+                                    {!showDeleteConfirm ? (
+                                        <button onClick={() => setShowDeleteConfirm(true)} className="px-5 py-2.5 bg-white border border-red-200 text-red-600 text-sm font-bold rounded-xl hover:bg-red-600 hover:text-white transition-colors flex items-center gap-2">
+                                            <Trash2 size={16}/> Delete Order Record
+                                        </button>
+                                    ) : (
+                                        <div className="flex items-center gap-3 bg-red-100 p-4 rounded-xl border border-red-200">
+                                            <span className="text-sm font-bold text-red-800">Are you absolutely sure?</span>
+                                            <button onClick={() => onDeleteOrder(order.id)} className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-red-700 transition-colors">Yes, Delete</button>
+                                            <button onClick={() => setShowDeleteConfirm(false)} className="px-4 py-2 bg-white text-slate-700 border border-slate-200 text-sm font-bold rounded-xl hover:bg-slate-50 transition-colors">Cancel</button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -310,7 +436,6 @@
                         </div>
                         
                         <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-                            {/* Left Col: Order History */}
                             <div className="w-full lg:w-1/2 border-r border-slate-100 flex flex-col bg-slate-50/50">
                                 <div className="p-6 border-b border-slate-100">
                                     <h4 className="font-extrabold text-slate-900 flex items-center gap-2"><ShoppingBag size={18} className="text-brand-blue"/> Order & Lead History</h4>
@@ -331,7 +456,6 @@
                                 </div>
                             </div>
 
-                            {/* Right Col: CRM Notes */}
                             <div className="w-full lg:w-1/2 flex flex-col bg-white">
                                 <div className="p-6 border-b border-slate-100">
                                     <h4 className="font-extrabold text-slate-900 flex items-center gap-2"><Trello size={18} className="text-brand-orange"/> Activity & Notes</h4>
@@ -373,6 +497,7 @@
         // --- MAIN APP ---
         function App() {
             const [hasAdminAccess, setHasAdminAccess] = useState(false);
+            const [currentUserEmail, setCurrentUserEmail] = useState('');
             const [isAuthenticating, setIsAuthenticating] = useState(false);
             const [authError, setAuthError] = useState('');
             const [username, setUsername] = useState('');
@@ -383,7 +508,6 @@
             const [leads, setLeads] = useState([]);
             const [allNotes, setAllNotes] = useState([]);
             
-            // Filters, search, pagination
             const [orderStatusFilter, setOrderStatusFilter] = useState('all');
             const [orderSearchTerm, setOrderSearchTerm] = useState('');
             const [orderCurrentPage, setOrderCurrentPage] = useState(1);
@@ -399,9 +523,9 @@
             const [selectedEmails, setSelectedEmails] = useState(new Set());
             const [campaignSubject, setCampaignSubject] = useState('');
             const [campaignBody, setCampaignBody] = useState('');
+            const [campaignMode, setCampaignMode] = useState('editor'); // 'editor' or 'template'
             const [sendingCampaign, setSendingCampaign] = useState(false);
 
-            // Dynamic EmailJS Config - stored as base64 encrypted locally
             const [emailJsConfig, setEmailJsConfig] = useState({
                 publicKey: safeDecode(localStorage.getItem('mbtech_emailjs_pk')),
                 serviceId: safeDecode(localStorage.getItem('mbtech_emailjs_sid')),
@@ -409,16 +533,19 @@
             });
             const [isConfiguringEmail, setIsConfiguringEmail] = useState(false);
 
-            // Auth Listener
             useEffect(() => {
                 const unsubscribe = onAuthStateChanged(auth, (user) => {
-                    if (user && !user.isAnonymous) setHasAdminAccess(true);
-                    else setHasAdminAccess(false);
+                    if (user && !user.isAnonymous) {
+                        setHasAdminAccess(true);
+                        setCurrentUserEmail(user.email);
+                    } else {
+                        setHasAdminAccess(false);
+                        setCurrentUserEmail('');
+                    }
                 });
                 return () => unsubscribe();
             }, []);
 
-            // Data Fetching
             useEffect(() => {
                 if (!hasAdminAccess) return;
                 
@@ -446,7 +573,6 @@
                 return () => { unsubOrders(); unsubLeads(); unsubNotes(); };
             }, [hasAdminAccess]);
 
-            // Customers derived from orders + leads
             const customers = useMemo(() => {
                 const map = new Map();
                 leads.forEach(l => { 
@@ -534,6 +660,15 @@
                 } catch (e) { showToast(e.message, 'error'); }
             };
 
+            const handleDeleteOrder = async (orderId) => {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_orders', orderId);
+                    await deleteDoc(docRef);
+                    showToast(`Order successfully deleted`);
+                    setSelectedOrder(null);
+                } catch (e) { showToast(e.message, 'error'); }
+            };
+
             const updateLeadStatus = async (leadId, newStatus) => {
                 try {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mbtech_connect_leads', leadId);
@@ -554,10 +689,8 @@
                 } catch(e) { showToast('Error adding note', 'error'); }
             };
 
-            // Enhanced Security: Base64 Encrypt Keys locally
             const saveEmailConfig = (e) => {
                 e.preventDefault();
-                // Store securely obfuscated by base64 encryption
                 localStorage.setItem('mbtech_emailjs_pk', btoa(emailJsConfig.publicKey));
                 localStorage.setItem('mbtech_emailjs_sid', btoa(emailJsConfig.serviceId));
                 localStorage.setItem('mbtech_emailjs_tid', btoa(emailJsConfig.templateId));
@@ -581,8 +714,12 @@
                     setIsConfiguringEmail(true);
                     return;
                 }
-                if (!campaignSubject || !campaignBody) {
-                    showToast("Subject and Message are required", "error");
+                if (!campaignSubject) {
+                    showToast("A Subject Line is required.", "error");
+                    return;
+                }
+                if (campaignMode === 'editor' && !campaignBody) {
+                    showToast("Please enter an email message.", "error");
                     return;
                 }
 
@@ -597,11 +734,18 @@
                     for (const email of recipients) {
                         try {
                             const customer = customers.find(c => c.email === email);
+                            const customerName = customer?.name || 'Valued Customer';
+                            
+                            // Decide HTML injection based on Mode
+                            const htmlBody = campaignMode === 'template' 
+                                ? getMbtechTemplate(customerName)
+                                : campaignBody;
+
                             await emailjs.send(emailJsConfig.serviceId, emailJsConfig.templateId, {
                                 to_email: email,
-                                to_name: customer?.name || 'Valued Customer',
+                                to_name: customerName,
                                 subject: campaignSubject,
-                                message: campaignBody, // Passes the raw HTML from RichTextEditor
+                                message: htmlBody, 
                             });
                             successCount++;
                         } catch (err) {
@@ -675,9 +819,17 @@
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 sm:h-20 items-center">
                             <div className="flex items-center gap-3">
                                 <img src="logo.png" alt="MBTECH" className="h-8 sm:h-10 w-auto object-contain" onError={(e)=>{e.target.style.display='none'}}/>
-                                <div className="border-l-2 border-slate-200 pl-3"><h1 className="text-lg sm:text-xl font-extrabold text-brand-dark leading-none">CRM <span className="text-brand-blue">Portal</span></h1></div>
+                                <div className="border-l-2 border-slate-200 pl-3">
+                                    <h1 className="text-lg sm:text-xl font-extrabold text-brand-dark leading-none">CRM <span className="text-brand-blue">Portal</span></h1>
+                                </div>
                             </div>
-                            <button onClick={handleLogout} className="text-slate-500 hover:text-red-600 font-bold text-sm flex items-center gap-2 transition-colors bg-slate-50 hover:bg-red-50 px-4 py-2 rounded-lg"><LogOut size={16}/> <span className="hidden sm:inline">Logout</span></button>
+                            <div className="flex items-center gap-4">
+                                <div className="hidden md:flex flex-col text-right">
+                                    <span className="text-xs font-bold text-slate-900 leading-tight">{currentUserEmail}</span>
+                                    <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">{currentUserEmail === 'emmanuel.amobi03@gmail.com' ? 'Super Admin' : 'Admin'}</span>
+                                </div>
+                                <button onClick={handleLogout} className="text-slate-500 hover:text-red-600 font-bold text-sm flex items-center gap-2 transition-colors bg-slate-50 hover:bg-red-50 px-4 py-2 rounded-lg"><LogOut size={16}/> <span className="hidden sm:inline">Logout</span></button>
+                            </div>
                         </div>
                     </nav>
 
@@ -889,16 +1041,56 @@
                                             </div>
                                         </div>
                                         <div className="lg:col-span-2 bg-white rounded-[2rem] border border-slate-200 shadow-sm p-6 sm:p-8 flex flex-col min-h-[500px]">
-                                            <h3 className="font-extrabold text-xl text-slate-900 mb-6">HTML Composer</h3>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h3 className="font-extrabold text-xl text-slate-900">HTML Composer</h3>
+                                                
+                                                {/* Composition Mode Toggle */}
+                                                <div className="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                                                    <button 
+                                                        onClick={() => setCampaignMode('editor')} 
+                                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${campaignMode === 'editor' ? 'bg-white text-brand-dark shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                                    >
+                                                        Rich Text Editor
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => setCampaignMode('template')} 
+                                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${campaignMode === 'template' ? 'bg-white text-brand-dark shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                                    >
+                                                        MBTECH Template
+                                                    </button>
+                                                </div>
+                                            </div>
+
                                             <div className="space-y-5 flex-1 flex flex-col">
                                                 <div>
                                                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Subject Line</label>
                                                     <input value={campaignSubject} onChange={e => setCampaignSubject(e.target.value)} className="w-full border border-slate-200 bg-slate-50 p-4 rounded-xl font-bold text-slate-900 focus:ring-2 focus:ring-brand-blue outline-none transition-shadow" placeholder="e.g. Special Offer from MBTECH NG!"/>
                                                 </div>
-                                                <div className="flex-1 flex flex-col">
-                                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Email Content (Rich Text)</label>
-                                                    <RichTextEditor value={campaignBody} onChange={setCampaignBody} />
-                                                </div>
+                                                
+                                                {campaignMode === 'editor' ? (
+                                                    <div className="flex-1 flex flex-col">
+                                                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Email Content (Rich Text)</label>
+                                                        <RichTextEditor value={campaignBody} onChange={setCampaignBody} />
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex-1 flex flex-col">
+                                                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Template Preview</label>
+                                                        <div className="flex-1 border border-slate-200 rounded-xl overflow-hidden bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
+                                                            <div className="bg-white shadow-sm border border-slate-100 rounded-2xl p-6 w-full max-w-sm scale-95 opacity-80 pointer-events-none mb-4">
+                                                                <div className="w-full h-12 bg-slate-900 rounded-lg mb-4 flex items-center justify-center"><span className="text-white font-extrabold text-sm">MBTECH NG</span></div>
+                                                                <div className="h-4 bg-slate-200 rounded w-3/4 mb-3"></div>
+                                                                <div className="h-3 bg-slate-100 rounded w-full mb-2"></div>
+                                                                <div className="h-3 bg-slate-100 rounded w-5/6 mb-6"></div>
+                                                                <div className="h-10 bg-brand-blue rounded w-full"></div>
+                                                            </div>
+                                                            <span className="font-extrabold text-brand-blue text-sm uppercase tracking-wider bg-blue-100 px-4 py-2 rounded-full border border-blue-200">
+                                                                Using Standard MBTECH Template
+                                                            </span>
+                                                            <p className="text-xs text-slate-500 mt-3 max-w-xs">The system will dynamically inject the subject and customer name into the predefined HTML structure.</p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                             </div>
                                             <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-slate-100 pt-6 gap-4">
                                                 <div className="text-sm font-bold text-slate-500 flex items-center gap-2"><Users size={18} className="text-brand-blue"/> {selectedEmails.size} Recipients Selected</div>
@@ -911,7 +1103,14 @@
                         </main>
                     </div>
                     
-                    <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={updateOrderStatus} onUpdatePaymentStatus={updatePaymentStatus} />
+                    <OrderDetailsModal 
+                        order={selectedOrder} 
+                        currentUserEmail={currentUserEmail}
+                        onClose={() => setSelectedOrder(null)} 
+                        onUpdateStatus={updateOrderStatus} 
+                        onUpdatePaymentStatus={updatePaymentStatus}
+                        onDeleteOrder={handleDeleteOrder} 
+                    />
                     
                     <CustomerProfileModal 
                         customer={selectedCustomer} 
